@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rysera 3D Printing</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Rysera 3D Printing</h1>
+    <p>Transform Your Digital Designs Into Reality</p>
+    <nav>
+      <a href="#services">Services</a>
+      <a href="#equipment">Equipment</a>
+      <a href="#materials">Materials</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <section id="intro">
+    <h2>Why Choose Us?</h2>
+    <ul>
+      <li>2+ Years Experience</li>
+      <li>300+ Projects Completed</li>
+      <li>10+ Premium Filaments</li>
+      <li>99% Client Satisfaction</li>
+    </ul>
+  </section>
+
+  <section id="services">
+    <h2>Our Services</h2>
+    <div class="service-card">Rapid Prototyping</div>
+    <div class="service-card">Small Batch Production</div>
+    <div class="service-card">Custom Design Services</div>
+  </section>
+
+  <section id="equipment">
+    <h2>Our Equipment</h2>
+    <ul>
+      <li>Bambu Lab P1S – FDM – 256×256×256mm</li>
+      <li>Creality Ender 3 V3 – FDM – 220×220×250mm</li>
+    </ul>
+  </section>
+
+  <section id="materials">
+    <h2>Premium Filaments</h2>
+    <div class="material">PLA+ – Black, White, Gray, etc.</div>
+    <div class="material">PETG – Durable & Transparent</div>
+    <div class="material">TPU – Flexible</div>
+    <div class="material">ABS – Tough & Heat-Resistant</div>
+  </section>
+
+  <section id="contact">
+    <h2>Contact Us</h2>
+    <p>Email: rysera.innovations@gmail.com</p>
+    <p>Phone: +94 70 335 9118</p>
+    <p>Address: 17/6 Ashoka Place, Moratuwa, Sri Lanka</p>
+  </section>
+
+  <footer>
+    <p>© 2025 Rysera 3D Printing. All rights reserved.</p>
+  </footer>
+</body>
+</html>

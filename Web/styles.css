@@ -1,0 +1,158 @@
+/* Using CSS variables for the new color theme */
+:root {
+  --primary-color: #000000; /* Black */
+  --secondary-color: #D72323; /* Red */
+  --light-color: #F5EDED; /* Off-white */
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+  background-color: var(--primary-color);
+  color: var(--light-color);
+}
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  /* Always justify content with space between to maintain layout */
+  justify-content: space-between;
+  padding: 20px 40px;
+  transition: background-color 0.4s ease-in-out;
+  background-color: transparent;
+}
+
+header.scrolled {
+  background-color: rgba(0, 0, 0, 0.8);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.amboss-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--light-color);
+  transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
+}
+
+.amboss-logo.hidden {
+  /* Set opacity to 0 to hide it, but keep it in the flow to maintain space */
+  opacity: 0;
+}
+
+nav {
+  display: flex;
+  /* Reduced gap to provide more room for the links */
+  gap: 20px;
+  flex-grow: 1; /* Allows nav to take up remaining space */
+  justify-content: flex-end; /* Pushes the nav items to the right */
+}
+
+nav a {
+  color: var(--light-color);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+  white-space: nowrap; /* Prevents text from wrapping */
+}
+
+nav a:hover {
+  color: var(--secondary-color);
+}
+
+.hero-parallax {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--light-color);
+}
+
+.hero-parallax::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Gradient overlay for better text visibility */
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.0));
+}
+
+.hero-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1; /* Puts the image behind the hero content */
+}
+
+.hero-content {
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  transform: translateY(-50%);
+  z-index: 3;
+  text-align: left;
+  padding: 0 20px;
+}
+
+.hero-content h1 {
+  font-size: 5rem; /* Made the font size much larger */
+  margin-bottom: 0.5rem;
+  color: var(--light-color);
+}
+
+.hero-content p {
+  font-size: 2.5rem; /* Made the font size much larger */
+  color: var(--light-color);
+}
+
+.content-section {
+  background-color: var(--primary-color);
+  padding: 60px 20px;
+  color: var(--light-color);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.service-card, .material-card {
+  background-color: var(--primary-color);
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 8px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid var(--secondary-color);
+  color: var(--light-color);
+}
+
+.service-card:hover, .material-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(215, 35, 35, 0.3);
+}
+
+.service-card h3, .material-card h3 {
+  margin-top: 0;
+  color: var(--secondary-color);
+}
+
+.content-section ul li {
+  color: var(--light-color);
+}
+
+footer {
+  background-color: var(--primary-color);
+  color: var(--light-color);
+  text-align: center;
+  padding: 20px;
+  margin-top: 20px;
+}

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMBOSS</title>
+  
+  <!-- Linking to Google Fonts for a clean look -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Linking to the external stylesheet -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <!-- "AMBOSS" text, initially hidden by CSS -->
+    <div class="amboss-logo hidden">AMBOSS</div>
+    
+    <nav>
+      <a href="#intro">About Us</a>
+      <a href="#services">Services</a>
+      <a href="#materials-section">Materials</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <!-- The parallax hero section -->
+  <section class="hero-parallax">
+    <!-- Image for the hero section -->
+    <img src="img/printhead.jpg" alt="AMBOSS" class="hero-image">
+    <div class="hero-content">
+      <h1>AMBOSS</h1>
+      <p>Shaping your future</p>
+    </div>
+  </section>
+  
+  <!-- Main content sections -->
+  <section id="intro" class="content-section">
+    <h2>Why Choose Us?</h2>
+    <ul>
+      <li>2+ Years Experience</li>
+      <li>300+ Projects Completed</li>
+      <li>10+ Premium Filaments</li>
+      <li>99% Client Satisfaction</li>
+    </ul>
+  </section>
+
+  <section id="services" class="content-section">
+    <h2>Our Services</h2>
+    <p>We offer a wide range of 3D printing services tailored to your needs, from rapid prototyping to small batch production.</p>
+    <div class="service-card">
+        <h3>Rapid Prototyping</h3>
+        <p>Quickly bring your ideas to life with our fast and efficient prototyping services.</p>
+    </div>
+    <div class="service-card">
+        <h3>Small Batch Production</h3>
+        <p>Produce high-quality, consistent parts for your products in small quantities.</p>
+    </div>
+    <div class="service-card">
+        <h3>Custom Design & Consultation</h3>
+        <p>Our experts can help you refine your designs for optimal 3D printing results.</p>
+    </div>
+  </section>
+  
+  <section id="materials-section" class="content-section">
+    <h2>Premium Filaments</h2>
+    <p>We use only the highest quality filaments to ensure durability and precision in every print.</p>
+    <div class="material-card">
+        <h3>PLA+</h3>
+        <p>An enhanced version of PLA, offering greater strength and durability.</p>
+    </div>
+    <div class="material-card">
+        <h3>PETG</h3>
+        <p>Known for its strength and chemical resistance, perfect for functional parts.</p>
+    </div>
+    <div class="material-card">
+        <h3>TPU</h3>
+        <p>A flexible material ideal for phone cases, gaskets, and other flexible components.</p>
+    </div>
+    <div class="material-card">
+        <h3>ABS</h3>
+        <p>A strong, impact-resistant thermoplastic commonly used in injection molding.</p>
+    </div>
+  </section>
+  
+  <section id="contact" class="content-section">
+    <h2>Contact Us</h2>
+    <p>Email: amboss.manufacturing@gmail.com</p>
+    <p>Phone: +94 70 335 9118</p>
+    <p>Address: Amboss Industries, Elhenage Watta, Hapugala, Galle.</p>
+  </section>
+
+  <footer>
+    <p>© 2025 Amboss Industries. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // A script to handle the parallax effect and header behavior
+    window.addEventListener('scroll', function() {
+      const heroImage = document.querySelector('.hero-image');
+      let scrollPosition = window.pageYOffset;
+      
+      // Move the image up slightly as the user scrolls down for the parallax effect
+      heroImage.style.transform = 'translateY(' + scrollPosition * 0.5 + 'px)';
+
+      const heroContent = document.querySelector('.hero-content');
+      const header = document.querySelector('header');
+      const ambossLogo = document.querySelector('.amboss-logo');
+      
+      // Get the position of the hero content relative to the viewport
+      const heroContentRect = heroContent.getBoundingClientRect();
+      
+      // Toggle the 'scrolled' class on the header and logo based on hero content visibility
+      if (heroContentRect.bottom <= 0) {
+          header.classList.add('scrolled');
+          ambossLogo.classList.remove('hidden');
+      } else {
+          header.classList.remove('scrolled');
+          ambossLogo.classList.add('hidden');
+      }
+    });
+  </script>
+</body>
+</html>
