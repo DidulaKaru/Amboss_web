@@ -5,38 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AMBOSS</title>
   
-  <!-- Linking to Google Fonts for a clean look -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <!-- Linking to the external stylesheet -->
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header>
-    <!-- "AMBOSS" text, initially hidden by CSS -->
     <div class="amboss-logo hidden">AMBOSS</div>
     
     <nav>
-      <a href="#intro">About Us</a>
-      <a href="#services">Services</a>
-      <a href="#materials-section">Materials</a>
-      <a href="#contact">Contact</a>
+      <ul class="menu">
+        <li><a href="#intro">About Us</a></li>
+        <li class="has-submenu">
+          <a href="#">Services</a>
+          <ul class="submenu">
+            <li><a href="#services">3D Printing</a></li>
+            <li class="has-submenu">
+              <a href="#">Materials</a>
+              <ul class="submenu">
+                <li><a href="#materials-section">PLA+</a></li>
+                <li><a href="#materials-section">PETG</a></li>
+                <li><a href="#materials-section">TPU</a></li>
+                <li><a href="#materials-section">ABS</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li><a href="products.html">Products</a></li>
+        <li><a href="research.html">Research</a></li>
+        <li><a href="contact-us.html">Contact Us</a></li>
+      </ul>
     </nav>
   </header>
 
-  <!-- The parallax hero section -->
   <section class="hero-parallax">
-    <!-- Image for the hero section -->
     <img src="img/printhead.jpg" alt="AMBOSS" class="hero-image">
     <div class="hero-content">
       <h1>AMBOSS</h1>
-      <p>Shaping your future</p>
+      <p>Shaping <span style="color: rgb(215, 35, 35)">your</span> future</p>
     </div>
   </section>
   
-  <!-- Main content sections -->
   <section id="intro" class="content-section">
     <h2>Why Choose Us?</h2>
     <ul>

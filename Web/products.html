@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMBOSS - Products</title>
+  
+  <!-- Linking to Google Fonts for a clean look -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Linking to the external stylesheet -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="amboss-logo hidden">AMBOSS</div>
+    
+    <nav>
+      <ul class="menu">
+        <li><a href="home.html#intro">About Us</a></li>
+        <li class="has-submenu">
+          <a href="#">Services</a>
+          <ul class="submenu">
+            <li><a href="index.html#services">3D Printing</a></li>
+            <li class="has-submenu">
+              <a href="#">Materials</a>
+              <ul class="submenu">
+                <li><a href="index.html#materials-section">PLA+</a></li>
+                <li><a href="index.html#materials-section">PETG</a></li>
+                <li><a href="index.html#materials-section">TPU</a></li>
+                <li><a href="index.html#materials-section">ABS</a></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li><a href="products.html">Products</a></li>
+        <li><a href="research.html">Research</a></li>
+        <li><a href="contact-us.html">Contact Us</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="content-section">
+    <h2>Our Products</h2>
+    <p>Explore our range of high-quality filaments, accessories, and custom-designed 3D printed objects available for purchase.</p>
+    
+    <div class="product-grid">
+      <div class="material-card">
+        <h3>Custom Printed Parts</h3>
+        <p>From prototypes to final products, we can bring your designs to life with precision and quality.</p>
+      </div>
+      <div class="material-card">
+        <h3>Filament Rolls</h3>
+        <p>Purchase the same premium filaments we use in our printing services for your own projects.</p>
+      </div>
+      <div class="material-card">
+        <h3>3D Printer Accessories</h3>
+        <p>Find essential tools and accessories to maintain and optimize your 3D printing experience.</p>
+      </div>
+      <div class="material-card">
+        <h3>Project Showcase</h3>
+        <p>Browse a gallery of our completed projects to see the quality and detail of our work.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 Amboss Industries. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Parallax and header script for all pages
+    window.addEventListener('scroll', function() {
+      const heroContent = document.querySelector('.hero-content');
+      const header = document.querySelector('header');
+      const ambossLogo = document.querySelector('.amboss-logo');
+      
+      if (window.pageYOffset > 50) {
+          header.classList.add('scrolled');
+          ambossLogo.classList.remove('hidden');
+      } else {
+          header.classList.remove('scrolled');
+          ambossLogo.classList.add('hidden');
+      }
+    });
+  </script>
+</body>
+</html>
