@@ -14,6 +14,7 @@ body {
   color: var(--light-color);
 }
 
+
 header {
   position: fixed;
   top: 0;
@@ -291,3 +292,84 @@ footer {
   padding: 20px;
   margin-top: 20px;
 }
+
+/* Styles for the new printer card layout */
+.printer-grid {
+  display: grid;
+  /* Max two cards per row with a min width of 350px each */
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.printer-card {
+  background-color: var(--primary-color);
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 8px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid var(--secondary-color);
+  color: var(--light-color);
+  text-align: center;
+}
+
+.printer-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(215, 35, 35, 0.3);
+}
+
+.printer-card img {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  object-fit: cover;
+}
+
+.printer-card h3 {
+  margin-top: 0;
+  color: var(--secondary-color);
+  font-weight: 700;
+}
+
+.service-card, .material-card, .printer-card {
+    position: relative;
+    overflow: hidden; /* This hides the pseudo-element before it animates in */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.service-card::before,
+.material-card::before,
+.printer-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: skewX(-20deg);
+    transition: transform 0.7s ease-in-out; /* Define the animation duration */
+    z-index: 1;
+}
+
+.service-card:hover,
+.material-card:hover,
+.printer-card:hover {
+    background-color: rgba(40, 40, 40, 0.75);
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3), 0 0 12px 2px var(--secondary-color);
+    backdrop-filter: blur(10px);
+}
+
+/*
+ * Animate the pseudo-element on hover.
+ * Move it from off-screen left to off-screen right to create the wipe effect.
+ */
+.service-card:hover::before,
+.material-card:hover::before,
+.printer-card:hover::before {
+    transform: skewX(-20deg) translateX(190%);
+}
+
