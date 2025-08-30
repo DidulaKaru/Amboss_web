@@ -17,9 +17,16 @@
   <header>
     <div class="amboss-logo hidden">AMBOSS</div>
     
+    <!-- Mobile hamburger menu -->
+    <div class="mobile-menu-toggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    
     <nav>
       <ul class="menu">
-        <li><a href="home.html#intro">About Us</a></li>
+        <li><a href="index.html#intro">About Us</a></li>
         <li class="has-submenu">
           <a href="#">Services</a>
           <ul class="submenu">
@@ -77,6 +84,49 @@
   </footer>
 
   <script>
+    // Mobile navigation functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+      const nav = document.querySelector('nav');
+      const hasSubmenuItems = document.querySelectorAll('.has-submenu');
+      
+      // Toggle mobile menu
+      mobileMenuToggle.addEventListener('click', function() {
+        mobileMenuToggle.classList.toggle('active');
+        nav.classList.toggle('active');
+      });
+      
+      // Handle submenu toggles on mobile
+      hasSubmenuItems.forEach(item => {
+        const link = item.querySelector('a');
+        link.addEventListener('click', function(e) {
+          if (window.innerWidth <= 767) {
+            e.preventDefault();
+            item.classList.toggle('active');
+          }
+        });
+      });
+      
+      // Close mobile menu when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!nav.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+          mobileMenuToggle.classList.remove('active');
+          nav.classList.remove('active');
+        }
+      });
+      
+      // Close mobile menu when clicking on a link
+      const menuLinks = document.querySelectorAll('.menu a');
+      menuLinks.forEach(link => {
+        link.addEventListener('click', function() {
+          if (window.innerWidth <= 767) {
+            mobileMenuToggle.classList.remove('active');
+            nav.classList.remove('active');
+          }
+        });
+      });
+    });
+    
     // Parallax and header script for all pages
     window.addEventListener('scroll', function() {
       const heroContent = document.querySelector('.hero-content');
@@ -89,6 +139,17 @@
       } else {
           header.classList.remove('scrolled');
           ambossLogo.classList.add('hidden');
+      }
+    });
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+      const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+      const nav = document.querySelector('nav');
+      
+      if (window.innerWidth > 767) {
+        mobileMenuToggle.classList.remove('active');
+        nav.classList.remove('active');
       }
     });
   </script>
