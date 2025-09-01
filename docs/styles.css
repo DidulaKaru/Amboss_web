@@ -240,6 +240,8 @@ nav {
   color: var(--light-color);
   position: relative;
   overflow: hidden;
+  max-width: 400px;
+  margin: 15px auto;
 }
 
 .service-card:hover, .material-card:hover, .printer-card:hover {
@@ -260,7 +262,7 @@ nav {
 }
 
 .printer-card img {
-  width: 100%;
+  width: 75%;
   max-width: 400px;
   height: auto;
   border-radius: 4px;
@@ -303,6 +305,14 @@ nav {
   grid-template-columns: 1fr;
   gap: 20px;
   margin-top: 20px;
+  justify-items: center;
+}
+
+.material-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px; /* Adjust the gap between cards as needed */
+    margin-top: 20px;
 }
 
 /* ===== CONTACT FORM ===== */
