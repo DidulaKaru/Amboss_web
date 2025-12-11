@@ -82,9 +82,9 @@ export default function Navbar() {
             )
           ))}
           <a
-            href="#contact"
+            href="#footer"
             onClick={handleHashClick("#contact")}
-            className="rounded-full bg-red-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-red-500"
+            className="rounded-full bg-amboss-accent hover:bg-amboss-accent/80"
           >
             Contact
           </a>
@@ -150,9 +150,9 @@ export default function Navbar() {
             ))}
             <li className="pt-1">
               <a
-                href="#contact"
+                href="#footer"
                 onClick={handleHashClick("#contact")}
-                className="block rounded-lg bg-red-600 px-3 py-2 text-center text-white hover:bg-red-500"
+                className="block rounded-lg bg-amboss-accent hover:bg-amboss-accent/80"
               >
                 Contact
               </a>
@@ -163,5 +163,6 @@ export default function Navbar() {
     </header>
   );
 }
+
 
 

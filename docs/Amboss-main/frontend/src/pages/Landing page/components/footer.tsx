@@ -60,7 +60,7 @@ export default function Footer({
   ],
 }: FooterProps) {
   return (
-    <footer className="mt-16 border-t border-amboss-accent/30 bg-amboss-bg">
+    <footer id="footer" className="mt-16 border-t border-amboss-accent/30 bg-amboss-bg">
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid gap-10 md:grid-cols-3">
           <div className="space-y-4">
@@ -134,5 +134,6 @@ export default function Footer({
     </footer>
   );
 }
+
 
 

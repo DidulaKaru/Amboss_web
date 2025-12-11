@@ -61,7 +61,7 @@ function Capabilities({
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="space-y-3">
-          <p className="text-xs uppercase tracking-[0.2em] text-red-500/80">{kicker}</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-amboss-light/70">{kicker}</p>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white">{title}</h2>
           <p className="text-sm md:text-base text-amboss-light/70 max-w-3xl">{subtitle}</p>
         </div>
@@ -124,5 +124,6 @@ function Capabilities({
 }
 
 export default Capabilities; // <-- default export
+
 
 
