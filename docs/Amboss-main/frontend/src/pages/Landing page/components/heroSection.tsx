@@ -9,8 +9,14 @@ type HeroProps = {
   ctaSecondary?: { label: string; href: string };
 };
 
+const asset = (p: string) => {
+  const base = import.meta.env.BASE_URL || "/"
+  const normalized = p.startsWith("/") ? p.slice(1) : p
+  return `${base}${normalized}`
+}
+
 export default function Hero({
-  bgSrc = "/images/hero-bg.jpg",
+  bgSrc = asset("/images/hero-bg.jpg"),
   title = "Industrial-grade 3D printing, on demand",
   tagline = "From concept to reality",
   blurb = "From first prototype to short-run production, we deliver precise parts, expert guidance, and predictable timelines.",

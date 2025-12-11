@@ -88,9 +88,7 @@ function Services({
               <h3 className="text-lg md:text-xl font-semibold text-white">{s.title}</h3>
               <p className="mt-2 text-sm text-zinc-400">{s.desc}</p>
 
-              <div className="mt-4 inline-flex items-center text-red-400 text-sm opacity-0 group-hover:opacity-100 transition">
-                Learn more →
-              </div>
+              {/* Removed per request */}
 
               {/* subtle hover glow */}
               <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition"
