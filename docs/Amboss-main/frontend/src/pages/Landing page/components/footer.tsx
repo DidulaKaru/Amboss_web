@@ -66,7 +66,7 @@ export default function Footer({
           <div className="space-y-4">
             <a href="#home" className="inline-flex items-center gap-3">
               <img
-                src={`${import.meta.env.BASE_URL}images/amboss-logo.png`}
+                src="/Amboss_web/images/amboss-logo.png"
                 alt="Amboss logo"
                 className="h-8 w-auto"
                 loading="lazy"
@@ -134,3 +134,4 @@ export default function Footer({
     </footer>
   );
 }
+

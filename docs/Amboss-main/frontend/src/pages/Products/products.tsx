@@ -8,13 +8,13 @@ type Product = {
 const DEFAULT_PRODUCTS: Product[] = [
   {
     name: "Print on Demand - FDM",
-    img: `${import.meta.env.BASE_URL}images/fdm-printing.png`,
+    img: "/Amboss_web/images/fdm-printing.png",
     desc: "High-quality FDM 3D printing services for functional prototypes, custom parts, and mechanical components.",
     badges: ["Fast Turnaround", "Multiple Materials", "Custom Colors"],
   },
   {
     name: "Print on Demand - SLA",
-    img: `${import.meta.env.BASE_URL}images/sla-figurines.jpg`,
+    img: "/Amboss_web/images/sla-figurines.jpg",
     desc: "Precision resin printing for highly detailed figurines, miniatures, and intricate models with smooth surface finish.",
     badges: ["High Detail", "Smooth Finish", "Multiple Resins"],
   },
@@ -81,3 +81,4 @@ export default function Products({
     </section>
   );
 }
+

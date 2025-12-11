@@ -17,16 +17,10 @@ type CapabilitiesProps = {
   columns?: 1 | 2 | 3;
 };
 
-const asset = (p: string) => {
-  const base = import.meta.env.BASE_URL || "/"
-  const normalized = p.startsWith("/") ? p.slice(1) : p
-  return `${base}${normalized}`
-}
-
 const DEFAULT_ITEMS: Capability[] = [
   {
     name: "FDM Printers",
-    img: asset("/images/centauri-carbon.png"), // place image at public/images/centauri-carbon.png
+    img: "/Amboss_web/images/centauri-carbon.png", // place image at public/images/centauri-carbon.png
     desc:
       "Dimensional accuracy across multiple machines for functional parts and jigs. Tuned profiles for engineering filaments and fiber blends.",
     specs: [
@@ -38,7 +32,7 @@ const DEFAULT_ITEMS: Capability[] = [
   },
   {
     name: "SLA Printers",
-    img: asset("/images/saturn-4.png"),
+    img: "/Amboss_web/images/saturn-4.png",
     desc:
       "High-resolution resin printing for detailed models, fixtures, and snap-fit prototypes with smooth surfaces.",
     specs: [
@@ -130,3 +124,4 @@ function Capabilities({
 }
 
 export default Capabilities; // <-- default export
+
