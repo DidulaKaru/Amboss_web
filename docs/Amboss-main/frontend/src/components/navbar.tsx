@@ -51,7 +51,7 @@ export default function Navbar() {
           className="flex items-center gap-2 text-lg font-semibold tracking-tight text-white"
         >
           <img
-            src="/images/amboss-logo.png"
+            src="/Amboss_web/images/amboss-logo.png"
             alt="Amboss logo"
             className="h-8 w-auto"
             loading="lazy"
@@ -163,3 +163,4 @@ export default function Navbar() {
     </header>
   );
 }
+
