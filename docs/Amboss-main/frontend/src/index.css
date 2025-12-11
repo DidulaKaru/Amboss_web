@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+/* Global dark theme */
+:root {
+	color-scheme: dark;
+	scroll-behavior: smooth;
+}
+
+html,
+body,
+#root {
+	height: 100%;
+}
+
+/* Make the whole app black with light text */
+body {
+	background-color: #000; /* black */
+	color: #e4e4e7; /* zinc-200-ish */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+a {
+	color: #d4d4d8; /* zinc-300 */
+}
+a:hover {
+	color: #ffffff;
+}
+
+/* Ensure focus rings are visible on dark */
+*:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.5); /* red-600/50 */
+	border-radius: 0.25rem;
+}
+
