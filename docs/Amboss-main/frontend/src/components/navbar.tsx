@@ -42,7 +42,7 @@ export default function Navbar() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/5 bg-zinc-950/80 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/60">
+    <header className="sticky top-0 z-50 border-b border-amboss-accent/20 bg-amboss-bg/80 backdrop-blur supports-[backdrop-filter]:bg-amboss-bg/60">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand */}
         <Link
@@ -59,14 +59,14 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-6 text-sm text-zinc-300">
+        <nav className="hidden md:flex items-center gap-6 text-sm text-amboss-light">
           {NAV_ITEMS.map((item) => (
             item.href.startsWith("#") ? (
               <a
                 key={item.href}
                 href={item.href}
                 onClick={handleHashClick(item.href)}
-                className="transition hover:text-white"
+                className="transition hover:text-white hover:bg-amboss-accent/30 px-3 py-1 rounded"
               >
                 {item.label}
               </a>
@@ -75,7 +75,7 @@ export default function Navbar() {
                 key={item.href}
                 to={item.href}
                 onClick={() => setOpen(false)}
-                className="transition hover:text-white"
+                className="transition hover:text-white hover:bg-amboss-accent/30 px-3 py-1 rounded"
               >
                 {item.label}
               </Link>
@@ -96,7 +96,7 @@ export default function Navbar() {
           aria-expanded={open}
           aria-controls="mobile-nav"
           onClick={() => setOpen((v) => !v)}
-          className="md:hidden inline-flex items-center justify-center rounded-md p-2 text-zinc-300 hover:bg-white/5 hover:text-white focus:outline-none focus:ring-2 focus:ring-red-600/50"
+          className="md:hidden inline-flex items-center justify-center rounded-md p-2 text-amboss-light hover:bg-white/5 hover:text-white hover:bg-amboss-accent/30 px-3 py-1 rounded focus:outline-none focus:ring-2 focus:ring-red-600/50"
         >
           <span className="sr-only">Toggle navigation</span>
           <svg
@@ -121,7 +121,7 @@ export default function Navbar() {
       {/* Mobile menu */}
       <div
         id="mobile-nav"
-        className={`md:hidden origin-top overflow-hidden border-t border-white/5 bg-zinc-950/95 transition-[max-height,opacity] ${
+        className={`md:hidden origin-top overflow-hidden border-t border-amboss-accent/20 bg-zinc-950/95 transition-[max-height,opacity] ${
           open ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
@@ -133,7 +133,7 @@ export default function Navbar() {
                   <a
                     href={item.href}
                     onClick={handleHashClick(item.href)}
-                    className="block rounded-lg px-3 py-2 text-zinc-300 hover:bg-white/5 hover:text-white"
+                    className="block rounded-lg px-3 py-2 text-amboss-light hover:bg-white/5 hover:text-white hover:bg-amboss-accent/30 px-3 py-1 rounded"
                   >
                     {item.label}
                   </a>
@@ -141,7 +141,7 @@ export default function Navbar() {
                   <Link
                     to={item.href}
                     onClick={() => setOpen(false)}
-                    className="block rounded-lg px-3 py-2 text-zinc-300 hover:bg-white/5 hover:text-white"
+                    className="block rounded-lg px-3 py-2 text-amboss-light hover:bg-white/5 hover:text-white hover:bg-amboss-accent/30 px-3 py-1 rounded"
                   >
                     {item.label}
                   </Link>
@@ -163,4 +163,5 @@ export default function Navbar() {
     </header>
   );
 }
+
 

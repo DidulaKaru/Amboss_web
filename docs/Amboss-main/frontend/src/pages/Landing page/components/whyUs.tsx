@@ -23,7 +23,7 @@ function WhyUs({
         {/* Heading */}
         <div className="space-y-3">
           {kicker && (
-            <p className="text-xs uppercase tracking-[0.2em] text-red-500/80">
+            <p className="text-xs uppercase tracking-[0.2em] text-amboss-light/70">
               {kicker}
             </p>
           )}
@@ -31,7 +31,7 @@ function WhyUs({
             {title}
           </h2>
           {subtitle && (
-            <p className="text-sm md:text-base text-zinc-400 max-w-3xl">
+            <p className="text-sm md:text-base text-amboss-light/70 max-w-3xl">
               {subtitle}
             </p>
           )}
@@ -45,7 +45,7 @@ function WhyUs({
               key={label}
               className="min-h-[90px] md:min-h-[110px]
                          flex items-center justify-center text-center
-                         rounded-2xl border border-white/10 bg-white/5
+                         rounded-2xl border border-amboss-accent/30 bg-amboss-section/30
                          px-6 py-5 md:px-8 md:py-7
                          text-base md:text-lg font-medium text-zinc-200
                          shadow-[inset_0_1px_0_rgba(255,255,255,.06)]"
@@ -61,3 +61,4 @@ function WhyUs({
 }
 
 export default WhyUs;
+

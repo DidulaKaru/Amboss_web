@@ -67,9 +67,9 @@ function Services({
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="space-y-3">
-          <p className="text-xs uppercase tracking-[0.2em] text-red-500/80">{kicker}</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-amboss-light/70">{kicker}</p>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white">{title}</h2>
-          <p className="text-sm md:text-base text-zinc-400 max-w-3xl">{subtitle}</p>
+          <p className="text-sm md:text-base text-amboss-light/70 max-w-3xl">{subtitle}</p>
         </div>
 
         {/* Cards */}
@@ -77,16 +77,16 @@ function Services({
           {items.map((s) => (
             <article
               key={s.title}
-              className="group relative overflow-hidden rounded-2xl border border-white/10
-                         bg-gradient-to-b from-white/[0.06] to-white/[0.02]
+              className="group relative overflow-hidden rounded-2xl border border-amboss-accent/30
+                         bg-gradient-to-b from-amboss-section/50 to-amboss-bg/50
                          p-6 md:p-7 shadow-[inset_0_1px_0_rgba(255,255,255,.05)]
-                         hover:border-red-500/40 transition"
+                         hover:border-amboss-light/50 transition"
             >
               <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-white/5 p-3 text-zinc-200 group-hover:text-white">
                 {s.icon}
               </div>
               <h3 className="text-lg md:text-xl font-semibold text-white">{s.title}</h3>
-              <p className="mt-2 text-sm text-zinc-400">{s.desc}</p>
+              <p className="mt-2 text-sm text-amboss-light/70">{s.desc}</p>
 
               {/* Removed per request */}
 
@@ -112,3 +112,4 @@ function Services({
 }
 
 export default Services;
+

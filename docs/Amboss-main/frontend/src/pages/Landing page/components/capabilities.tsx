@@ -63,7 +63,7 @@ function Capabilities({
         <div className="space-y-3">
           <p className="text-xs uppercase tracking-[0.2em] text-red-500/80">{kicker}</p>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white">{title}</h2>
-          <p className="text-sm md:text-base text-zinc-400 max-w-3xl">{subtitle}</p>
+          <p className="text-sm md:text-base text-amboss-light/70 max-w-3xl">{subtitle}</p>
         </div>
 
         {/* Cards */}
@@ -71,9 +71,9 @@ function Capabilities({
           {items.map((c) => (
             <article
               key={c.name}
-              className="group overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]"
+              className="group overflow-hidden rounded-2xl border border-amboss-accent/30 bg-amboss-section/30"
             >
-              <div className="relative h-64 bg-black">
+              <div className="relative h-64 bg-amboss-bg">
                 <img
                   src={c.img}
                   alt={c.name}
@@ -81,12 +81,12 @@ function Capabilities({
                   loading="lazy"
                   decoding="async"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/85 via-zinc-950/30 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-amboss-bg/85 via-amboss-bg/30 to-transparent" />
                 <div
                   className="absolute inset-0 pointer-events-none opacity-0 transition group-hover:opacity-100"
                   style={{
                     background:
-                      "radial-gradient(600px circle at var(--x,50%) var(--y,50%), rgba(239,68,68,.10), transparent 40%)",
+                      "radial-gradient(600px circle at var(--x,50%) var(--y,50%), rgba(50, 130, 184, 0.15), transparent 40%)",
                   }}
                   onMouseMove={(e) => {
                     const el = e.currentTarget as HTMLDivElement;
@@ -101,13 +101,13 @@ function Capabilities({
               </div>
 
               <div className="p-6">
-                <p className="text-sm text-zinc-300">{c.desc}</p>
+                <p className="text-sm text-amboss-light">{c.desc}</p>
                 {c.specs && c.specs.length > 0 && (
                   <ul className="mt-4 flex flex-wrap gap-2">
                     {c.specs.map((s, i) => (
                       <li
                         key={i}
-                        className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-200"
+                        className="rounded-full border border-amboss-accent/30 bg-white/5 px-3 py-1 text-xs text-amboss-light/80"
                       >
                         {s}
                       </li>
@@ -124,4 +124,5 @@ function Capabilities({
 }
 
 export default Capabilities; // <-- default export
+
 

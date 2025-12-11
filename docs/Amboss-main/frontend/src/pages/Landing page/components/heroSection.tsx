@@ -34,10 +34,10 @@ export default function Hero({
           loading="eager"
           decoding="async"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-zinc-950 via-zinc-950/70 to-zinc-950" />
+        <div className="absolute inset-0 bg-gradient-to-b from-amboss-bg via-amboss-bg/70 to-amboss-bg" />
         {/* subtle radial glow */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(239,68,68,0.12),transparent_60%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(50, 130, 184, 0.15),transparent_60%)]" />
         </div>
       </div>
 
@@ -70,7 +70,7 @@ export default function Hero({
               <a
                 href={ctaPrimary.href}
                 onClick={handleWhatsAppClick}
-                className="inline-flex items-center rounded-full bg-red-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-red-500 scroll-smooth"
+                className="inline-flex items-center rounded-full bg-amboss-accent hover:bg-amboss-accent/80 scroll-smooth"
               >
                 {ctaPrimary.label}
               </a>
@@ -78,7 +78,7 @@ export default function Hero({
             {ctaSecondary && (
               <a
                 href={ctaSecondary.href}
-                className="inline-flex items-center rounded-full px-5 py-3 text-sm font-medium text-white/90 ring-1 ring-white/10 transition hover:ring-white/30 scroll-smooth"
+                className="inline-flex items-center rounded-full px-5 py-3 text-sm font-medium text-white/90 ring-1 ring-amboss-light/20 hover:ring-amboss-light/50 scroll-smooth"
               >
                 {ctaSecondary.label}
               </a>
@@ -89,4 +89,5 @@ export default function Hero({
     </header>
   );
 }
+
 

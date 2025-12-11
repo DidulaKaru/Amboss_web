@@ -38,9 +38,9 @@ function Pill({
   return (
     <Comp
       onClick={onClick}
-      className={`rounded-xl border border-white/10 bg-white/[0.04]
+      className={`rounded-xl border border-amboss-accent/30 bg-white/[0.04]
                   px-4 py-3 text-center text-sm text-zinc-200
-                  hover:border-red-500/40 hover:bg-white/[0.06] transition
+                  hover:border-amboss-light/50 hover:bg-amboss-section/30 transition
                   focus:outline-none focus:ring-2 focus:ring-red-600/40`}
     >
       {children}
@@ -62,13 +62,13 @@ function Materials({
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="space-y-3">
-          <p className="text-xs uppercase tracking-[0.2em] text-red-500/80">
+          <p className="text-xs uppercase tracking-[0.2em] text-amboss-light/70">
             {kicker}
           </p>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white">
             {title}
           </h2>
-          <p className="text-sm md:text-base text-zinc-400 max-w-3xl">
+          <p className="text-sm md:text-base text-amboss-light/70 max-w-3xl">
             {subtitle}
           </p>
         </div>
@@ -103,3 +103,4 @@ function Materials({
 }
 
 export default Materials;
+

@@ -60,7 +60,7 @@ export default function Footer({
   ],
 }: FooterProps) {
   return (
-    <footer className="mt-16 border-t border-white/10 bg-zinc-950">
+    <footer className="mt-16 border-t border-amboss-accent/30 bg-amboss-bg">
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid gap-10 md:grid-cols-3">
           <div className="space-y-4">
@@ -72,7 +72,7 @@ export default function Footer({
                 loading="lazy"
               />
             </a>
-            <p className="text-sm text-zinc-400 max-w-sm">
+            <p className="text-sm text-amboss-light/60 max-w-sm">
               Shaping your future with precise, reliable 3D printingfrom rapid prototyping to small-batch production.
             </p>
             <div className="flex items-center gap-3 pt-1">
@@ -83,7 +83,7 @@ export default function Footer({
                   aria-label={s.label}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-zinc-300 hover:text-white hover:border-red-500/40 transition"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-amboss-accent/30 bg-amboss-section/30 text-amboss-light/80 hover:text-white hover:border-amboss-light/50 transition"
                 >
                   {s.icon}
                 </a>
@@ -95,7 +95,7 @@ export default function Footer({
             <ul className="mt-3 space-y-2">
               {links.map((l) => (
                 <li key={l.href}>
-                  <a href={l.href} className="text-sm text-zinc-300 hover:text-white transition">
+                  <a href={l.href} className="text-sm text-amboss-light/80 hover:text-white transition">
                     {l.label}
                   </a>
                 </li>
@@ -104,16 +104,16 @@ export default function Footer({
           </div>
           <div className="space-y-3">
             <h4 className="text-sm font-medium text-white">Contact</h4>
-            <div className="flex items-start gap-3 text-sm text-zinc-300">
-              <span className="mt-0.5 text-zinc-400"><IconMail /></span>
+            <div className="flex items-start gap-3 text-sm text-amboss-light/80">
+              <span className="mt-0.5 text-amboss-light/60"><IconMail /></span>
               <a href={`mailto:${email}`} className="hover:text-white break-all">{email}</a>
             </div>
-            <div className="flex items-start gap-3 text-sm text-zinc-300">
-              <span className="mt-0.5 text-zinc-400"><IconPhone /></span>
+            <div className="flex items-start gap-3 text-sm text-amboss-light/80">
+              <span className="mt-0.5 text-amboss-light/60"><IconPhone /></span>
               <a href={`https://wa.me/${phone.replace(/[^+\d]/g, "")}`} target="_blank" rel="noopener noreferrer" className="hover:text-white">{phone}</a>
             </div>
-            <div className="flex items-start gap-3 text-sm text-zinc-300">
-              <span className="mt-0.5 text-zinc-400"><IconMap /></span>
+            <div className="flex items-start gap-3 text-sm text-amboss-light/80">
+              <span className="mt-0.5 text-amboss-light/60"><IconMap /></span>
               <p className="whitespace-pre-line">
                 {addressLines.join("\n")}
               </p>
@@ -121,8 +121,8 @@ export default function Footer({
           </div>
         </div>
       </div>
-      <div className="border-t border-white/10">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8 py-4 text-xs text-zinc-400">
+      <div className="border-t border-amboss-accent/30">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8 py-4 text-xs text-amboss-light/60">
           <p> {new Date().getFullYear()} {company}. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <a href="#home" className="hover:text-white">Back to top</a>
@@ -134,4 +134,5 @@ export default function Footer({
     </footer>
   );
 }
+
 
