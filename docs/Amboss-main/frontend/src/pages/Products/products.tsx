@@ -8,13 +8,13 @@ type Product = {
 const DEFAULT_PRODUCTS: Product[] = [
   {
     name: "Print on Demand - FDM",
-    img: "/images/fdm-printing.png",
+    img: "/images/fdm-3d-print.jpg",
     desc: "High-quality FDM 3D printing services for functional prototypes, custom parts, and mechanical components.",
     badges: ["Fast Turnaround", "Multiple Materials", "Custom Colors"],
   },
   {
     name: "Print on Demand - SLA",
-    img: "/images/sla-figurines.jpg",
+    img: "/images/anime-figurines.webp",
     desc: "Precision resin printing for highly detailed figurines, miniatures, and intricate models with smooth surface finish.",
     badges: ["High Detail", "Smooth Finish", "Multiple Resins"],
   },
