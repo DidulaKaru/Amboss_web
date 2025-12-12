@@ -126,8 +126,6 @@ export default function Footer({
           <p> {new Date().getFullYear()} {company}. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <a href="#home" className="hover:text-white">Back to top</a>
-            <a href="#" className="hover:text-white">Privacy</a>
-            <a href="#" className="hover:text-white">Terms</a>
           </div>
         </div>
       </div>

@@ -78,6 +78,7 @@ function Capabilities({
                   src={c.img}
                   alt={c.name}
                   className="absolute inset-0 h-full w-full object-contain"
+                  style={{ filter: "drop-shadow(0 0 22px rgba(50, 130, 184, 0.35))" }}
                   loading="lazy"
                   decoding="async"
                 />
