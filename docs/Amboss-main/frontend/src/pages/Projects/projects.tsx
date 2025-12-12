@@ -57,11 +57,11 @@ export default function Projects() {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8">
           {/* Project 1 */}
           <div className="group overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition hover:border-[#3282B8] hover:shadow-xl hover:shadow-[#3282B8]/10">
-            <div className="aspect-video w-full overflow-hidden bg-zinc-800">
+            <div className="aspect-[3/4] w-full overflow-hidden bg-zinc-800">
               <img
                 src="/images/pure-mechanical-arm.jpeg"
                 alt="Body-powered mechanical prosthetic arm"
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
               />
             </div>
             <div className="p-6">
@@ -78,11 +78,11 @@ export default function Projects() {
 
           {/* Project 2 */}
           <div className="group overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition hover:border-[#3282B8] hover:shadow-xl hover:shadow-[#3282B8]/10">
-            <div className="aspect-video w-full overflow-hidden bg-zinc-800">
+            <div className="aspect-[3/4] w-full overflow-hidden bg-zinc-800">
               <img
                 src="/images/set-gestured-arm.jpeg"
                 alt="Gesture-controlled prosthetic arm"
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
               />
             </div>
             <div className="p-6">
@@ -99,11 +99,11 @@ export default function Projects() {
 
           {/* Project 3 */}
           <div className="group overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition hover:border-[#3282B8] hover:shadow-xl hover:shadow-[#3282B8]/10">
-            <div className="aspect-video w-full overflow-hidden bg-zinc-800">
+            <div className="aspect-[3/4] w-full overflow-hidden bg-zinc-800">
               <img
                 src="/images/myoelectric-arm.jpeg"
                 alt="Myoelectric prosthetic arm with EMG sensors"
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
               />
             </div>
             <div className="p-6">
@@ -120,11 +120,11 @@ export default function Projects() {
 
           {/* Project 4 */}
           <div className="group overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition hover:border-[#3282B8] hover:shadow-xl hover:shadow-[#3282B8]/10">
-            <div className="aspect-video w-full overflow-hidden bg-zinc-800">
+            <div className="aspect-[3/4] w-full overflow-hidden bg-zinc-800">
               <img
                 src="/images/project-placeholder-4.jpg"
                 alt="Nightingale vein visualization device"
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
               />
             </div>
             <div className="p-6">
