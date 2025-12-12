@@ -7,16 +7,16 @@ export default function Projects() {
           alt="Pawsthetics by AMBOSS team with dogs"
           className="absolute inset-0 h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-zinc-900/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent" />
 
-        <div className="relative z-10 flex h-full w-full items-center">
-          <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-8 sm:px-6 md:px-12 md:py-12">
+        <div className="absolute inset-0 z-10 flex flex-col justify-end">
+          <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 pb-8 sm:px-6 md:px-12 md:pb-12">
             <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.18em] text-[#BBE1FA]">
               Featured Project
             </p>
             <div className="inline-flex items-center rounded-lg">
               <img
-                src="/images/pawsthetics_by_amboss.png"
+                src="/images/by%20amboss.png"
                 alt="Pawsthetics by AMBOSS"
                 className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto drop-shadow-[0_2px_8px_rgba(50,130,184,0.35)]"
                 loading="eager"
@@ -80,7 +80,7 @@ export default function Projects() {
           <div className="group overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition hover:border-[#3282B8] hover:shadow-xl hover:shadow-[#3282B8]/10">
             <div className="aspect-[3/4] w-full overflow-hidden bg-zinc-800">
               <img
-                src="/images/set-gestured-arm.jpeg"
+                src="/images/set_gestered_arm.jpeg"
                 alt="Gesture-controlled prosthetic arm"
                 className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
               />
