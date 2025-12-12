@@ -59,7 +59,7 @@ export default function Projects() {
           <div className="group overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition hover:border-[#3282B8] hover:shadow-xl hover:shadow-[#3282B8]/10">
             <div className="aspect-video w-full overflow-hidden bg-zinc-800">
               <img
-                src="/images/project-placeholder-1.jpg"
+                src="/images/pure-mechanical-arm.jpeg"
                 alt="Body-powered mechanical prosthetic arm"
                 className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
@@ -80,7 +80,7 @@ export default function Projects() {
           <div className="group overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition hover:border-[#3282B8] hover:shadow-xl hover:shadow-[#3282B8]/10">
             <div className="aspect-video w-full overflow-hidden bg-zinc-800">
               <img
-                src="/images/project-placeholder-2.jpg"
+                src="/images/set-gestured-arm.jpeg"
                 alt="Gesture-controlled prosthetic arm"
                 className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
@@ -101,7 +101,7 @@ export default function Projects() {
           <div className="group overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition hover:border-[#3282B8] hover:shadow-xl hover:shadow-[#3282B8]/10">
             <div className="aspect-video w-full overflow-hidden bg-zinc-800">
               <img
-                src="/images/project-placeholder-3.jpg"
+                src="/images/myoelectric-arm.jpeg"
                 alt="Myoelectric prosthetic arm with EMG sensors"
                 className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
