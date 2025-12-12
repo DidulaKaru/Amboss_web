@@ -3,7 +3,7 @@ export default function Projects() {
     <main className="min-h-screen bg-zinc-950 text-white">
       <section className="relative w-full min-h-[70vh] md:min-h-[80vh]">
         <img
-          src="/images/pawsthetics-banner.jpg"
+          src="/images/hero-bg.jpg"
           alt="Pawsthetics by AMBOSS team with dogs"
           className="absolute inset-0 h-full w-full object-cover"
         />
