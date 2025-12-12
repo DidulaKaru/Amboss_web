@@ -10,7 +10,7 @@ type HeroProps = {
 };
 
 export default function Hero({
-  bgSrc = "/images/bambu%20labs.jpg",
+  bgSrc = "/images/bambulabs.jpg",
   title = "Industrial-grade 3D printing, on demand",
   tagline = "",
   blurb = "From first prototype to short-run production, we deliver precise parts, expert guidance, and predictable timelines.",
