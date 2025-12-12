@@ -14,7 +14,7 @@ export default function Projects() {
             <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.18em] text-[#BBE1FA]">
               Featured Project
             </p>
-            <div className="inline-flex items-center rounded-lg bg-white/10 px-4 py-2 backdrop-blur-sm">
+            <div className="inline-flex items-center rounded-lg bg-white/10 px-4 py-2">
               <img
                 src="/images/pawsthetics_by_amboss.png"
                 alt="Pawsthetics by AMBOSS"
