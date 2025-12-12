@@ -42,28 +42,6 @@ const DEFAULT_ITEMS: Capability[] = [
       "Build: up to 211.68×118.37×220 mm",
     ],
   }, 
-  {
-    name: "Print on Demand – FDM",
-    img: "/images/print%20on%20demand%20FDM.jpg",
-    desc:
-      "On-demand filament printing for prototypes and jigs, optimized for speed, strength, and consistent surface finish across batches.",
-    specs: [
-      "Lead times: 2–7 days",
-      "Batch: 1–100 parts",
-      "QC: dimensional checks + photo proofs",
-    ],
-  },
-  {
-    name: "Print on Demand – SLA",
-    img: "/images/print%20on%20demand%20SLA.jpg",
-    desc:
-      "Resin-based on-demand parts with ultra-fine detail and smooth finishes—ideal for housings, models, and snap-fit prototypes.",
-    specs: [
-      "Lead times: 3–10 days",
-      "Resins: clear, tough, ABS-like",
-      "QC: post-cure + visual inspection",
-    ],
-  },
 ];
 
 function Capabilities({
