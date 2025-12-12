@@ -77,7 +77,7 @@ function Capabilities({
                 <img
                   src={c.img}
                   alt={c.name}
-                  className="absolute inset-0 h-full w-full object-contain"
+                  className="absolute inset-0 h-full w-full object-cover"
                   style={{ filter: "drop-shadow(0 0 22px rgba(50, 130, 184, 0.35))" }}
                   loading="lazy"
                   decoding="async"
