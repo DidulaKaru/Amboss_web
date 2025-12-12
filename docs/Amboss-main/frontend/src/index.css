@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
-/* Global dark theme with custom palette */
+/* Global dark theme with custom palette (reverted) */
 :root {
-color-scheme: dark;
-scroll-behavior: smooth;
---color-bg: #1B262C;
---color-section: #0F4C75;
---color-accent: #3282B8;
---color-light: #BBE1FA;
+	color-scheme: dark;
+	scroll-behavior: smooth;
+	--color-bg: #1B262C;
+	--color-section: #0F4C75;
+	--color-accent: #3282B8;
+	--color-light: #BBE1FA;
 }
 
 html,
@@ -35,7 +35,8 @@ color: #ffffff;
 
 /* Focus rings */
 *:focus-visible {
-outline: none;
-box-shadow: 0 0 0 2px rgba(50, 130, 184, 0.5);
-border-radius: 0.25rem;
+	outline: none;
+	box-shadow: 0 0 0 2px rgba(50, 130, 184, 0.5);
+	border-radius: 0.25rem;
 }
+
