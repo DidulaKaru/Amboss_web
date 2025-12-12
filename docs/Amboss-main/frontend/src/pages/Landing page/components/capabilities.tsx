@@ -20,7 +20,7 @@ type CapabilitiesProps = {
 const DEFAULT_ITEMS: Capability[] = [
   {
     name: "FDM Printers",
-    img: "/images/centauri-carbon.png", // place image at public/images/centauri-carbon.png
+    img: "/images/FDM printer.jpg",
     desc:
       "Dimensional accuracy across multiple machines for functional parts and jigs. Tuned profiles for engineering filaments and fiber blends.",
     specs: [
@@ -32,7 +32,7 @@ const DEFAULT_ITEMS: Capability[] = [
   },
   {
     name: "SLA Printers",
-    img: "/images/saturn-4.png",
+    img: "/images/SLA printer.jpg",
     desc:
       "High-resolution resin printing for detailed models, fixtures, and snap-fit prototypes with smooth surfaces.",
     specs: [
@@ -42,6 +42,28 @@ const DEFAULT_ITEMS: Capability[] = [
       "Build: up to 211.68×118.37×220 mm",
     ],
   }, 
+  {
+    name: "Print on Demand – FDM",
+    img: "/images/print on demand FDM.jpg",
+    desc:
+      "On-demand filament printing for prototypes and jigs, optimized for speed, strength, and consistent surface finish across batches.",
+    specs: [
+      "Lead times: 2–7 days",
+      "Batch: 1–100 parts",
+      "QC: dimensional checks + photo proofs",
+    ],
+  },
+  {
+    name: "Print on Demand – SLA",
+    img: "/images/print on demand SLA.jpg",
+    desc:
+      "Resin-based on-demand parts with ultra-fine detail and smooth finishes—ideal for housings, models, and snap-fit prototypes.",
+    specs: [
+      "Lead times: 3–10 days",
+      "Resins: clear, tough, ABS-like",
+      "QC: post-cure + visual inspection",
+    ],
+  },
 ];
 
 function Capabilities({
