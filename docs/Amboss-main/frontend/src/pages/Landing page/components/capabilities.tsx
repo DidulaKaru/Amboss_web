@@ -20,7 +20,7 @@ type CapabilitiesProps = {
 const DEFAULT_ITEMS: Capability[] = [
   {
     name: "FDM Printers",
-    img: "/Amboss_web/images/centauri-carbon.png", // place image at public/images/centauri-carbon.png
+    img: "/images/centauri-carbon.png", // place image at public/images/centauri-carbon.png
     desc:
       "Dimensional accuracy across multiple machines for functional parts and jigs. Tuned profiles for engineering filaments and fiber blends.",
     specs: [
@@ -32,7 +32,7 @@ const DEFAULT_ITEMS: Capability[] = [
   },
   {
     name: "SLA Printers",
-    img: "/Amboss_web/images/saturn-4.png",
+    img: "/images/saturn-4.png",
     desc:
       "High-resolution resin printing for detailed models, fixtures, and snap-fit prototypes with smooth surfaces.",
     specs: [
@@ -124,6 +124,7 @@ function Capabilities({
 }
 
 export default Capabilities; // <-- default export
+
 
 
 
