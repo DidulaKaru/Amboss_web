@@ -122,7 +122,7 @@ export default function Projects() {
           <div className="group overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition hover:border-[#3282B8] hover:shadow-xl hover:shadow-[#3282B8]/10">
             <div className="aspect-[3/4] w-full overflow-hidden bg-zinc-800">
               <img
-                src="/images/project-placeholder-4.jpg"
+                src="/images/vein-finder.jpeg"
                 alt="Nightingale vein visualization device"
                 className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
               />
