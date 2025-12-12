@@ -10,9 +10,9 @@ type HeroProps = {
 };
 
 export default function Hero({
-  bgSrc = "/images/hero-bg.jpg",
+  bgSrc = "/images/bambulabs.jpg",
   title = "Industrial-grade 3D printing, on demand",
-  tagline = "From concept to reality",
+  tagline = "",
   blurb = "From first prototype to short-run production, we deliver precise parts, expert guidance, and predictable timelines.",
   ctaPrimary = { label: "Get a quote", href: "https://wa.me/94779902796" },
   ctaSecondary = { label: "Explore services", href: "#services" },
@@ -59,11 +59,11 @@ export default function Hero({
             </p>
           )}
 
-          <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl">
+          <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8), -1px -1px 2px rgba(0,0,0,0.6)' }}>
             {title}
           </h1>
 
-          {blurb && <p className="max-w-2xl text-zinc-400">{blurb}</p>}
+          {blurb && <p className="max-w-2xl text-white" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.8), -1px -1px 2px rgba(0,0,0,0.6)' }}>{blurb}</p>}
 
           <div className="flex items-center gap-3 pt-2">
             {ctaPrimary && (
