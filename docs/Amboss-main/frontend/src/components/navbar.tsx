@@ -83,8 +83,8 @@ export default function Navbar() {
           ))}
           <a
             href="#footer"
-            onClick={handleHashClick("#contact")}
-            className="rounded-full bg-amboss-accent hover:bg-amboss-accent/80"
+            onClick={handleHashClick("#footer")}
+            className="rounded-full bg-amboss-accent hover:bg-amboss-accent/80 px-4 py-2 text-white"
           >
             Contact
           </a>
@@ -151,8 +151,8 @@ export default function Navbar() {
             <li className="pt-1">
               <a
                 href="#footer"
-                onClick={handleHashClick("#contact")}
-                className="block rounded-lg bg-amboss-accent hover:bg-amboss-accent/80"
+                onClick={handleHashClick("#footer")}
+                className="block rounded-lg bg-amboss-accent hover:bg-amboss-accent/80 px-4 py-2 text-white"
               >
                 Contact
               </a>

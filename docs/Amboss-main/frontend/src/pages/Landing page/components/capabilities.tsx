@@ -20,7 +20,7 @@ type CapabilitiesProps = {
 const DEFAULT_ITEMS: Capability[] = [
   {
     name: "FDM Printers",
-    img: "/images/FDM printer.jpg",
+    img: "/images/FDM%20printer.jpg",
     desc:
       "Dimensional accuracy across multiple machines for functional parts and jigs. Tuned profiles for engineering filaments and fiber blends.",
     specs: [
@@ -32,7 +32,7 @@ const DEFAULT_ITEMS: Capability[] = [
   },
   {
     name: "SLA Printers",
-    img: "/images/SLA printer.jpg",
+    img: "/images/SLA%20printer.jpg",
     desc:
       "High-resolution resin printing for detailed models, fixtures, and snap-fit prototypes with smooth surfaces.",
     specs: [
@@ -44,7 +44,7 @@ const DEFAULT_ITEMS: Capability[] = [
   }, 
   {
     name: "Print on Demand – FDM",
-    img: "/images/print on demand FDM.jpg",
+    img: "/images/print%20on%20demand%20FDM.jpg",
     desc:
       "On-demand filament printing for prototypes and jigs, optimized for speed, strength, and consistent surface finish across batches.",
     specs: [
@@ -55,7 +55,7 @@ const DEFAULT_ITEMS: Capability[] = [
   },
   {
     name: "Print on Demand – SLA",
-    img: "/images/print on demand SLA.jpg",
+    img: "/images/print%20on%20demand%20SLA.jpg",
     desc:
       "Resin-based on-demand parts with ultra-fine detail and smooth finishes—ideal for housings, models, and snap-fit prototypes.",
     specs: [
