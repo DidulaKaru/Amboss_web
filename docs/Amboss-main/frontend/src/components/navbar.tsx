@@ -82,6 +82,13 @@ export default function Navbar() {
             )
           ))}
           <Link
+            to="/about-us"
+            onClick={() => setOpen(false)}
+            className="transition hover:text-white hover:bg-amboss-accent/30 px-3 py-1 rounded"
+          >
+            About us
+          </Link>
+          <Link
             to="/news"
             onClick={() => setOpen(false)}
             className="rounded-full bg-amboss-accent hover:bg-amboss-accent/80 px-4 py-2 text-white"
@@ -149,6 +156,15 @@ export default function Navbar() {
               </li>
             ))}
             <li className="pt-1">
+              <Link
+                to="/about-us"
+                onClick={() => setOpen(false)}
+                className="block rounded-lg px-4 py-2 text-white hover:bg-amboss-accent/30"
+              >
+                About us
+              </Link>
+            </li>
+            <li>
               <Link
                 to="/news"
                 onClick={() => setOpen(false)}

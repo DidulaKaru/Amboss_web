@@ -144,7 +144,7 @@ export default function News() {
               <article
                 key={item.id}
                 id={item.anchorId}
-                className="relative rounded-xl border border-amboss-accent/40 bg-zinc-900/50 p-6 md:p-8 shadow-[0_0_24px_rgba(37,99,235,0.35)]"
+                className="relative rounded-xl border border-amboss-accent/40 bg-zinc-900/50 p-6 md:p-8 shadow-[0_0_24px_rgba(37,99,235,0.35)] scroll-mt-20"
               >
                 <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
                   <img
@@ -157,12 +157,10 @@ export default function News() {
                     <p className="text-amboss-light text-base md:text-lg leading-relaxed mb-4">{item.content}</p>
                     <a
                       href={`#${item.anchorId}`}
-                      className="inline-flex items-center gap-2 text-amboss-accent hover:text-white"
+                      className="sr-only"
+                      aria-label={`Permalink to ${item.title}`}
                     >
                       Permalink
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8" />
-                      </svg>
                     </a>
                   </div>
                 </div>
