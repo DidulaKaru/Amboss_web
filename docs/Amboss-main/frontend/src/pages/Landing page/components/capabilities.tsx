@@ -20,7 +20,7 @@ type CapabilitiesProps = {
 const DEFAULT_ITEMS: Capability[] = [
   {
     name: "FDM Printers",
-    img: "/images/FDM%20printer.jpg",
+    img: `${import.meta.env.BASE_URL}images/FDM%20printer.jpg`,
     desc:
       "Dimensional accuracy across multiple machines for functional parts and jigs. Tuned profiles for engineering filaments and fiber blends.",
     specs: [
@@ -32,7 +32,7 @@ const DEFAULT_ITEMS: Capability[] = [
   },
   {
     name: "SLA Printers",
-    img: "/images/SLA%20printer.jpg",
+    img: `${import.meta.env.BASE_URL}images/SLA%20printer.jpg`,
     desc:
       "High-resolution resin printing for detailed models, fixtures, and snap-fit prototypes with smooth surfaces.",
     specs: [

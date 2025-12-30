@@ -18,7 +18,7 @@ export default function AboutUs() {
                 Amboss began with a simple idea: bring precision engineering and accessible manufacturing together to help ideas become products. Starting as a small workshop, we focused on solving real-world problems through practical design, rapid prototyping, and a relentless attention to detail.
               </p>
               <p className="text-amboss-light text-lg leading-relaxed mb-6">
-                Over time, our capabilities grew—so did our ambition. Today, we collaborate across disciplines, deliver quality at speed, and continue to refine our craft. This section is placeholder content—feel free to replace it with your own origin story and milestones.
+                Over time, our capabilities grew—so did our ambition. Today, we collaborate across disciplines, deliver quality at speed, and continue to refine our craft. We collaborate with different engineering fields and other disciplines to deliver comprehensive solutions that meet the unique needs of each project.
               </p>
               <p className="text-amboss-light text-lg leading-relaxed">
                 Our journey reflects the values we stand for: reliability, innovation, and hands-on problem solving.

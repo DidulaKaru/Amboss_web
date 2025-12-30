@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface NewsItem {
   id: number;
@@ -14,48 +14,72 @@ const newsItems: NewsItem[] = [
     id: 1,
     anchorId: "news-1",
     title: "Rextro Exhibition",
-    summary: "Amboss showcased innovations and prototypes at Rextro Exhibition.",
-    imageUrl: "/images/rextro.jpeg",
+    summary: "Amboss showcased multiple innovative projects at Rextro 2025.",
+    imageUrl: `${import.meta.env.BASE_URL}images/rextro_crop.jpg`,
     content:
-      "Amboss Industries participated in the Rextro Exhibition, presenting a selection of precision-engineered prototypes, rapid-manufacturing workflows, and collaborative design processes. The showcase highlighted our end-to-end capability—from concept to production—while engaging with partners and students to foster innovation in engineering.",
+      "Amboss shined at the Rextro Exhibition, presenting a selection of precision-engineered prototypes, rapid-manufacturing workflows, and collaborative design processes. The showcase highlighted our end-to-end capability—from concept to production—while engaging with partners and students to foster innovation in engineering.",
   },
   {
     id: 2,
     anchorId: "news-2",
     title: "Rextro Souvenir",
-    summary: "Limited-run custom souvenirs manufactured for Rextro.",
-    imageUrl: "/images/souvenir.jpeg",
+    summary: "Limited-run custom souvenirs manufactured for the Silver Jubilee of the Faculty of Engineering.",
+    imageUrl: `${import.meta.env.BASE_URL}images/souvenir_crop.jpg`,
     content:
-      "To commemorate the Rextro Exhibition, Amboss produced a limited series of custom souvenirs. Designed for durability and precise detail, these items demonstrate our craftsmanship and small-batch manufacturing discipline, including robust QA workflows and elegant finishing.",
+      "To commemorate the Rextro Exhibition, Amboss designed and manufactured a limited series of custom souvenirs. Designed for durability and precise detail, these items demonstrate our craftsmanship and small-batch manufacturing discipline, including robust QA workflows and elegant finishing.",
   },
   {
     id: 3,
     anchorId: "news-3",
     title: "Falcon 9 Pen",
-    summary: "Aerospace-inspired precision pen concept unveiled.",
-    imageUrl: "https://images.unsplash.com/photo-1586864387634-29eba8edd65e?w=1600&h=900&fit=crop",
+    summary: "Bringing a history defining rocket on to your desk.",
+    imageUrl: `${import.meta.env.BASE_URL}images/falcon9.jpg`,
     content:
-      "Inspired by aerospace engineering, the Falcon 9 pen concept blends performance, ergonomics, and material science. The form factor leverages lightweight alloys while achieving a balanced writing experience. Future iterations will explore modular components and customizable textures.",
+      "Designed and Manufactured by Amboss for SEDS Ruhuna chapter. Inspired by aerospace engineering, the Falcon 9 pen blends performance, ergonomics, and style. Crafted with precision 3D printing and high-quality materials, it offers a smooth writing experience while celebrating the spirit of innovation and exploration.",
   },
   {
     id: 4,
     anchorId: "news-4",
     title: "Disaster Relief",
-    summary: "Rapid-response equipment and solutions for relief operations.",
-    imageUrl: "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=1600&h=900&fit=crop",
+    summary: "Giving back to the community in times of need.",
+    imageUrl: `${import.meta.env.BASE_URL}images/disaster_relief.jpg`,
     content:
-      "Amboss contributes engineering support and rapid-response equipment to aid disaster relief operations. Our approach centers on modularity, field-serviceability, and the use of resilient materials suitable for harsh environments. Partnerships enable deployment at speed with reliable logistics.",
+      "Amboss was able to contribute to disaster relief efforts in the aftermath of cyclone Ditwah by donating critical aid - including food, sanitary items, and medical supplies - to affected communities in Gampola. We are committed to supporting our community and standing together in times of crisis.",
   },
 ];
 
 export default function News() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const newsArticlesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
+      if (document.visibilityState !== "visible") return; // pause when tab is hidden
       setCurrentSlide((prev) => (prev + 1) % newsItems.length);
     }, 5000);
     return () => clearInterval(timer);
+  }, []);
+
+  // Handle hash-based navigation for scrolling to news items
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.slice(1); // Remove the '#'
+      if (hash) {
+        const el = document.getElementById(hash);
+        if (el) {
+          setTimeout(() => {
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 100);
+        }
+      }
+    };
+
+    // Call on mount in case there's a hash in the URL
+    handleHashChange();
+
+    // Listen for hash changes
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
 
   const goToSlide = (index: number) => setCurrentSlide(index);
@@ -64,17 +88,26 @@ export default function News() {
 
   const handleLearnMore = (anchorId: string) => {
     const el = document.getElementById(anchorId);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (el) {
+      // Update the URL hash without forcing an extra jump
+      window.history.replaceState(null, "", `#${anchorId}`);
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   };
 
   return (
     <div className="min-h-screen bg-amboss-bg">
       {/* Carousel Section */}
-      <section className="relative w-screen overflow-hidden" style={{ aspectRatio: "4/3" }}>
+      <section className="relative w-screen overflow-hidden" style={{ aspectRatio: "16/9" }}>
         {newsItems.map((item, index) => (
           <div
             key={item.id}
-            className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? "opacity-100" : "opacity-0"}`}
+            className={`absolute inset-0 transition-opacity duration-1000 ${
+              index === currentSlide
+                ? "opacity-100 pointer-events-auto z-10"
+                : "opacity-0 pointer-events-none z-0"
+            }`}
+            aria-hidden={index !== currentSlide}
           >
             {/* Image */}
             <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
@@ -105,7 +138,7 @@ export default function News() {
         {/* Navigation Arrows */}
         <button
           onClick={goToPrevious}
-          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition"
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 pointer-events-auto bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition"
           aria-label="Previous slide"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,7 +147,7 @@ export default function News() {
         </button>
         <button
           onClick={goToNext}
-          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition"
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 pointer-events-auto bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition"
           aria-label="Next slide"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -136,7 +169,7 @@ export default function News() {
       </section>
 
       {/* News Articles */}
-      <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8">
+      <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8" ref={newsArticlesRef}>
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-10">News</h2>
           <div className="grid grid-cols-1 gap-8">

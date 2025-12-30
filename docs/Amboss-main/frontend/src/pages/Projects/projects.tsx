@@ -3,7 +3,7 @@ export default function Projects() {
     <main className="min-h-screen bg-zinc-950 text-white">
       <section className="relative w-full min-h-[70vh] md:min-h-[80vh]">
         <img
-          src="/images/pawsthetics.jpeg"
+          src={`${import.meta.env.BASE_URL}images/pawsthetics.jpeg`}
           alt="Pawsthetics by AMBOSS team with dogs"
           className="absolute inset-0 h-full w-full object-cover"
         />
@@ -16,7 +16,7 @@ export default function Projects() {
             </p>
             <div className="inline-flex items-center rounded-lg">
               <img
-                src="/images/by%20amboss.png"
+                src={`${import.meta.env.BASE_URL}images/by%20amboss.png`}
                 alt="Pawsthetics by AMBOSS"
                 className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto drop-shadow-[0_2px_8px_rgba(50,130,184,0.35)]"
                 loading="eager"
@@ -54,12 +54,12 @@ export default function Projects() {
 
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 md:px-12">
         <h2 className="mb-8 text-center text-3xl font-bold md:text-4xl">Other Projects</h2>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:gap-8">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
           {/* Project 1 */}
           <div className="group overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition hover:border-[#3282B8] hover:shadow-xl hover:shadow-[#3282B8]/10">
-            <div className="aspect-[3/4] w-full overflow-hidden bg-zinc-800">
+            <div className="aspect-[4/5] w-full overflow-hidden bg-zinc-800">
               <img
-                src="/images/pure-mechanical-arm.jpeg"
+                src={`${import.meta.env.BASE_URL}images/pure%20mechanical%20arm.jpg`}
                 alt="Body-powered mechanical prosthetic arm"
                 className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
               />
@@ -78,9 +78,9 @@ export default function Projects() {
 
           {/* Project 2 */}
           <div className="group overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition hover:border-[#3282B8] hover:shadow-xl hover:shadow-[#3282B8]/10">
-            <div className="aspect-[3/4] w-full overflow-hidden bg-zinc-800">
+            <div className="aspect-[4/5] w-full overflow-hidden bg-zinc-800">
               <img
-                src="/images/set_gestered_arm.jpeg"
+                src={`${import.meta.env.BASE_URL}images/set-gestured-arm.jpg`}
                 alt="Gesture-controlled prosthetic arm"
                 className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
               />
@@ -99,9 +99,9 @@ export default function Projects() {
 
           {/* Project 3 */}
           <div className="group overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition hover:border-[#3282B8] hover:shadow-xl hover:shadow-[#3282B8]/10">
-            <div className="aspect-[3/4] w-full overflow-hidden bg-zinc-800">
+            <div className="aspect-[4/5] w-full overflow-hidden bg-zinc-800">
               <img
-                src="/images/myoelectric-arm.jpeg"
+                src={`${import.meta.env.BASE_URL}images/Myoelectric%20arm.jpg`}
                 alt="Myoelectric prosthetic arm with EMG sensors"
                 className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
               />
@@ -120,9 +120,9 @@ export default function Projects() {
 
           {/* Project 4 */}
           <div className="group overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition hover:border-[#3282B8] hover:shadow-xl hover:shadow-[#3282B8]/10">
-            <div className="aspect-[3/4] w-full overflow-hidden bg-zinc-800">
+            <div className="aspect-[4/5] w-full overflow-hidden bg-zinc-800">
               <img
-                src="/images/vein-finder.jpeg"
+                src={`${import.meta.env.BASE_URL}images/vein%20finder.jpg`}
                 alt="Nightingale vein visualization device"
                 className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
               />
