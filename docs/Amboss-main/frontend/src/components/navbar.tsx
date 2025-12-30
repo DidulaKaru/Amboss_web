@@ -42,8 +42,8 @@ export default function Navbar() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-amboss-accent/20 bg-amboss-bg/80 backdrop-blur supports-[backdrop-filter]:bg-amboss-bg/60">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 w-full border-b border-amboss-accent/20 bg-amboss-bg/80 backdrop-blur supports-[backdrop-filter]:bg-amboss-bg/60">
+      <div className="flex h-14 w-full items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand */}
         <Link
           to="/"
@@ -51,7 +51,7 @@ export default function Navbar() {
           className="flex items-center gap-2 text-lg font-semibold tracking-tight text-white"
         >
           <img
-            src="/images/amboss-logo.png"
+            src={`${import.meta.env.BASE_URL}images/amboss-logo.png`}
             alt="Amboss logo"
             className="h-8 w-auto"
             loading="lazy"
@@ -81,13 +81,20 @@ export default function Navbar() {
               </Link>
             )
           ))}
-          <a
-            href="#footer"
-            onClick={handleHashClick("#footer")}
+          <Link
+            to="/about-us"
+            onClick={() => setOpen(false)}
+            className="transition hover:text-white hover:bg-amboss-accent/30 px-3 py-1 rounded"
+          >
+            About us
+          </Link>
+          <Link
+            to="/news"
+            onClick={() => setOpen(false)}
             className="rounded-full bg-amboss-accent hover:bg-amboss-accent/80 px-4 py-2 text-white"
           >
-            Contact
-          </a>
+            News
+          </Link>
         </nav>
 
         {/* Mobile hamburger */}
@@ -125,7 +132,7 @@ export default function Navbar() {
           open ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <nav className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-4">
+        <nav className="w-full px-4 sm:px-6 lg:px-8 py-4">
           <ul className="space-y-2 text-sm">
             {NAV_ITEMS.map((item) => (
               <li key={item.href}>
@@ -149,13 +156,22 @@ export default function Navbar() {
               </li>
             ))}
             <li className="pt-1">
-              <a
-                href="#footer"
-                onClick={handleHashClick("#footer")}
+              <Link
+                to="/about-us"
+                onClick={() => setOpen(false)}
+                className="block rounded-lg px-4 py-2 text-white hover:bg-amboss-accent/30"
+              >
+                About us
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/news"
+                onClick={() => setOpen(false)}
                 className="block rounded-lg bg-amboss-accent hover:bg-amboss-accent/80 px-4 py-2 text-white"
               >
-                Contact
-              </a>
+                News
+              </Link>
             </li>
           </ul>
         </nav>

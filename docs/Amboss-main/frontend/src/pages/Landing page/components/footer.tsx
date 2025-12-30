@@ -52,7 +52,6 @@ export default function Footer({
     { label: "Services", href: "#services" },
     { label: "Capabilities", href: "#capabilities" },
     { label: "Materials", href: "#materials" },
-    { label: "Research", href: "#research" },
   ],
   socials = [
     { label: "Instagram", href: "https://www.instagram.com/amboss.official_?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==", icon: <IconIG /> },
@@ -66,7 +65,7 @@ export default function Footer({
           <div className="space-y-4">
             <a href="#home" className="inline-flex items-center gap-3">
               <img
-                src="/images/amboss-logo.png"
+                src={`${import.meta.env.BASE_URL}images/amboss-logo.png`}
                 alt="Amboss logo"
                 className="h-8 w-auto"
                 loading="lazy"
