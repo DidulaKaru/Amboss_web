@@ -138,7 +138,7 @@ export default function News() {
         {/* Navigation Arrows */}
         <button
           onClick={goToPrevious}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 pointer-events-auto bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition"
+          className="hidden sm:flex absolute left-3 md:left-6 top-1/2 -translate-y-1/2 z-20 pointer-events-auto bg-black/35 hover:bg-black/50 border border-white/30 text-white p-2.5 md:p-3 rounded-full transition"
           aria-label="Previous slide"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -147,7 +147,7 @@ export default function News() {
         </button>
         <button
           onClick={goToNext}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 pointer-events-auto bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white p-3 rounded-full transition"
+          className="hidden sm:flex absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-20 pointer-events-auto bg-black/35 hover:bg-black/50 border border-white/30 text-white p-2.5 md:p-3 rounded-full transition"
           aria-label="Next slide"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
