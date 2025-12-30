@@ -4,9 +4,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 type NavItem = { label: string; href: string };
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Services", href: "#services" },
-  { label: "Capabilities", href: "#capabilities" },
-  { label: "Materials", href: "#materials" },
   { label: "Projects", href: "/projects" },
   { label: "Products", href: "/products" },
 ];
