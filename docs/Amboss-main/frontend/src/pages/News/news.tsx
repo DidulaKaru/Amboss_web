@@ -154,14 +154,6 @@ export default function News() {
     return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
 
-  const handleLearnMore = (anchorId: string) => {
-    const el = document.getElementById(anchorId);
-    if (el) {
-      window.history.replaceState(null, "", `#${anchorId}`);
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
-
   return (
     <div className="min-h-screen bg-amboss-bg">
       <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8">
