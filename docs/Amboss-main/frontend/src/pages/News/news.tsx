@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 
-interface NewsItem {
+export interface NewsItem {
   id: number;
   anchorId: string;
   title: string;
@@ -9,7 +9,7 @@ interface NewsItem {
   content: string;
 }
 
-const newsItems: NewsItem[] = [
+export const newsItems: NewsItem[] = [
   {
     id: 1,
     anchorId: "news-1",
@@ -48,22 +48,97 @@ const newsItems: NewsItem[] = [
   },
 ];
 
-export default function News() {
+type NewsCarouselProps = {
+  onLearnMore: (anchorId: string) => void;
+};
+
+export function NewsCarousel({ onLearnMore }: NewsCarouselProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const newsArticlesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      if (document.visibilityState !== "visible") return; // pause when tab is hidden
+      if (document.visibilityState !== "visible") return;
       setCurrentSlide((prev) => (prev + 1) % newsItems.length);
     }, 5000);
     return () => clearInterval(timer);
   }, []);
 
-  // Handle hash-based navigation for scrolling to news items
+  const goToSlide = (index: number) => setCurrentSlide(index);
+  const goToPrevious = () => setCurrentSlide((prev) => (prev - 1 + newsItems.length) % newsItems.length);
+  const goToNext = () => setCurrentSlide((prev) => (prev + 1) % newsItems.length);
+
+  return (
+    <section className="relative w-screen overflow-hidden" style={{ aspectRatio: "16/9" }}>
+      {newsItems.map((item, index) => (
+        <div
+          key={item.id}
+          className={`absolute inset-0 transition-opacity duration-1000 ${
+            index === currentSlide
+              ? "opacity-100 pointer-events-auto z-10"
+              : "opacity-0 pointer-events-none z-0"
+          }`}
+          aria-hidden={index !== currentSlide}
+        >
+          <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+
+          <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12 lg:p-16">
+            <div className="max-w-6xl mx-auto">
+              <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4">{item.title}</h2>
+              <p className="text-lg md:text-xl text-gray-200 max-w-3xl mb-4">{item.summary}</p>
+              <button
+                onClick={() => onLearnMore(item.anchorId)}
+                className="inline-flex items-center gap-2 text-white bg-amboss-accent hover:bg-amboss-accent/80 px-4 py-2 rounded"
+                aria-label={`Learn more about ${item.title}`}
+              >
+                Learn more
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
+
+      <button
+        onClick={goToPrevious}
+        className="hidden sm:flex absolute left-3 md:left-6 top-1/2 -translate-y-1/2 z-20 pointer-events-auto bg-black/35 hover:bg-black/50 border border-white/30 text-white p-2.5 md:p-3 rounded-full transition"
+        aria-label="Previous slide"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <button
+        onClick={goToNext}
+        className="hidden sm:flex absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-20 pointer-events-auto bg-black/35 hover:bg-black/50 border border-white/30 text-white p-2.5 md:p-3 rounded-full transition"
+        aria-label="Next slide"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+        {newsItems.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => goToSlide(index)}
+            className={`w-3 h-3 rounded-full transition-all ${index === currentSlide ? "bg-white w-8" : "bg-white/50 hover:bg-white/75"}`}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export default function News() {
   useEffect(() => {
     const handleHashChange = () => {
-      const hash = window.location.hash.slice(1); // Remove the '#'
+      const hash = window.location.hash.slice(1);
       if (hash) {
         const el = document.getElementById(hash);
         if (el) {
@@ -74,22 +149,14 @@ export default function News() {
       }
     };
 
-    // Call on mount in case there's a hash in the URL
     handleHashChange();
-
-    // Listen for hash changes
     window.addEventListener("hashchange", handleHashChange);
     return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
 
-  const goToSlide = (index: number) => setCurrentSlide(index);
-  const goToPrevious = () => setCurrentSlide((prev) => (prev - 1 + newsItems.length) % newsItems.length);
-  const goToNext = () => setCurrentSlide((prev) => (prev + 1) % newsItems.length);
-
   const handleLearnMore = (anchorId: string) => {
     const el = document.getElementById(anchorId);
     if (el) {
-      // Update the URL hash without forcing an extra jump
       window.history.replaceState(null, "", `#${anchorId}`);
       el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
@@ -97,79 +164,7 @@ export default function News() {
 
   return (
     <div className="min-h-screen bg-amboss-bg">
-      {/* Carousel Section */}
-      <section className="relative w-screen overflow-hidden" style={{ aspectRatio: "16/9" }}>
-        {newsItems.map((item, index) => (
-          <div
-            key={item.id}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentSlide
-                ? "opacity-100 pointer-events-auto z-10"
-                : "opacity-0 pointer-events-none z-0"
-            }`}
-            aria-hidden={index !== currentSlide}
-          >
-            {/* Image */}
-            <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
-
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
-
-            {/* Text Content */}
-            <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12 lg:p-16">
-              <div className="max-w-6xl mx-auto">
-                <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4">{item.title}</h2>
-                <p className="text-lg md:text-xl text-gray-200 max-w-3xl mb-4">{item.summary}</p>
-                <button
-                  onClick={() => handleLearnMore(item.anchorId)}
-                  className="inline-flex items-center gap-2 text-white bg-amboss-accent hover:bg-amboss-accent/80 px-4 py-2 rounded"
-                  aria-label={`Learn more about ${item.title}`}
-                >
-                  Learn more
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-
-        {/* Navigation Arrows */}
-        <button
-          onClick={goToPrevious}
-          className="hidden sm:flex absolute left-3 md:left-6 top-1/2 -translate-y-1/2 z-20 pointer-events-auto bg-black/35 hover:bg-black/50 border border-white/30 text-white p-2.5 md:p-3 rounded-full transition"
-          aria-label="Previous slide"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <button
-          onClick={goToNext}
-          className="hidden sm:flex absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-20 pointer-events-auto bg-black/35 hover:bg-black/50 border border-white/30 text-white p-2.5 md:p-3 rounded-full transition"
-          aria-label="Next slide"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-
-        {/* Dots Indicator */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-          {newsItems.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goToSlide(index)}
-              className={`w-3 h-3 rounded-full transition-all ${index === currentSlide ? "bg-white w-8" : "bg-white/50 hover:bg-white/75"}`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* News Articles */}
-      <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8" ref={newsArticlesRef}>
+      <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-10">News</h2>
           <div className="grid grid-cols-1 gap-8">

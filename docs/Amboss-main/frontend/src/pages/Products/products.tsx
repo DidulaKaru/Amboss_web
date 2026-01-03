@@ -8,19 +8,19 @@ type Product = {
 const DEFAULT_PRODUCTS: Product[] = [
   {
     name: "Print on Demand - FDM",
-    img: `${import.meta.env.BASE_URL}images/fdm-3d-print.jpg`,
+    img: `${import.meta.env.BASE_URL}images/FDM_print.jpg`,
     desc: "High-quality FDM 3D printing services for functional prototypes, custom parts, and mechanical components.",
     badges: ["Fast Turnaround", "Multiple Materials", "Custom Colors"],
   },
   {
     name: "Print on Demand - SLA",
-    img: `${import.meta.env.BASE_URL}images/anime-figurines.webp`,
+    img: `${import.meta.env.BASE_URL}images/resin_print.jpg`,
     desc: "Precision resin printing for highly detailed figurines, miniatures, and intricate models with smooth surface finish.",
     badges: ["High Detail", "Smooth Finish", "Multiple Resins"],
   },
   {
     name: "Amboss Electronics",
-    img: "https://images.unsplash.com/photo-1553406830-ef2513450d76?q=80&w=1600&auto=format&fit=crop",
+    img: `${import.meta.env.BASE_URL}images/electronics.jpg`,
     desc: "Electronics for enthusiasts and students. Arduino boards, sensors, and development kits for your projects.",
     badges: ["Coming Soon", "For Students", "Maker Friendly"],
   },
@@ -49,11 +49,11 @@ export default function Products({
         <div className="mt-8 grid gap-6 sm:gap-7 md:grid-cols-2 lg:grid-cols-3">
           {items.map((p) => (
             <article key={p.name} className="group overflow-hidden rounded-2xl border border-amboss-accent/30 bg-white/[0.03]">
-              <div className="relative h-64 bg-black">
+              <div className="relative aspect-video bg-black">
                 <img
                   src={p.img}
                   alt={p.name}
-                  className="absolute inset-0 h-full w-full object-contain"
+                  className="absolute inset-0 h-full w-full object-cover"
                   loading="lazy"
                   decoding="async"
                 />
