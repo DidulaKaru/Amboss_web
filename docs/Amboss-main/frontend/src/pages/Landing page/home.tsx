@@ -17,11 +17,11 @@ function Home() {
   return (
     <main>
       <Hero />
-      <NewsCarousel onLearnMore={handleNewsLearnMore} />
       <WhyUs />
       <Services />
       <Capabilities />
       <Materials />
+      <NewsCarousel onLearnMore={handleNewsLearnMore} />
       <Footer />
     </main>
   )
