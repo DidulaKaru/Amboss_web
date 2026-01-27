@@ -94,10 +94,10 @@ export function NewsCarousel({ onLearnMore }: NewsCarouselProps) {
             <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/90 via-black/60 to-transparent" />
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12 lg:p-16">
+          <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-8 md:p-12 lg:p-16">
             <div className="max-w-6xl mx-auto">
-              <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4">{item.title}</h2>
-              <p className="text-lg md:text-xl text-gray-200 max-w-3xl mb-4">{item.summary}</p>
+              <h2 className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4">{item.title}</h2>
+              <p className="text-sm sm:text-lg md:text-xl text-gray-200 max-w-3xl mb-4">{item.summary}</p>
               <button
                 onClick={() => onLearnMore(item.anchorId)}
                 className="inline-flex items-center gap-2 text-white bg-amboss-accent hover:bg-amboss-accent/80 px-4 py-2 rounded"
