@@ -49,7 +49,7 @@ export const newsItems: NewsItem[] = [
   {
     id: 5,
     anchorId: "news-5",
-    title: "Amboss in University of Vavuniya",
+    title: "Amboss at University of Vavuniya",
     summary: "Showcasing our projects at the opening ceremony of the VALID center in University of Vavuniya",
     imageUrl: `${import.meta.env.BASE_URL}images/Vavuniya.jpg`,
     content:
