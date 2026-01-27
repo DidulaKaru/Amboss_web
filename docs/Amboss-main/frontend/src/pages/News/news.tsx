@@ -46,6 +46,15 @@ export const newsItems: NewsItem[] = [
     content:
       "Amboss was able to contribute to disaster relief efforts in the aftermath of cyclone Ditwah by donating critical aid - including food, sanitary items, and medical supplies - to affected communities in Gampola. We are committed to supporting our community and standing together in times of crisis.",
   },
+  {
+    id: 5,
+    anchorId: "news-5",
+    title: "Amboss in University of Vavuniya",
+    summary: "Showcasing our projects at the opening ceremony of the VALID center in University of Vavuniya",
+    imageUrl: `${import.meta.env.BASE_URL}images/Vavuniya.jpg`,
+    content:
+      "We were honored to be invited to the opening ceremony of the Center for Verification of Accuracy and Learning for Innovation and Development at the University of Vavuniya to showcase our projects in biomedical engineering.",
+  },
 ];
 
 type NewsCarouselProps = {
