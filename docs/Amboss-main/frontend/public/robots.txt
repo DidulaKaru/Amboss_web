@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://amboss.lk/sitemap.xml
+Host: amboss.lk
