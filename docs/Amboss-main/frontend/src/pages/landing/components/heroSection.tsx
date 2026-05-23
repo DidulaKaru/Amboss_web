@@ -1,4 +1,5 @@
  
+import { SITE } from '../../../config/site'
 
 type HeroProps = {
   bgSrc?: string;
@@ -14,7 +15,7 @@ export default function Hero({
   title = "Industrial-grade 3D printing, on demand",
   tagline = "",
   blurb = "From first prototype to short-run production, we deliver precise parts, expert guidance, and predictable timelines.",
-  ctaPrimary = { label: "Get a quote", href: "https://wa.me/94779902796" },
+  ctaPrimary = { label: "Get a quote", href: `https://wa.me/${SITE.phone.replace(/[^\d]/g, '')}` },
   ctaSecondary = { label: "Explore services", href: "#services" },
 }: HeroProps) {
   const handleWhatsAppClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -89,6 +90,3 @@ export default function Hero({
     </header>
   );
 }
-
-
-

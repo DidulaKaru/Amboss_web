@@ -125,7 +125,3 @@ function Capabilities({
 }
 
 export default Capabilities; // <-- default export
-
-
-
-

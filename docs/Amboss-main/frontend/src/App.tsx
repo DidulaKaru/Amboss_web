@@ -1,21 +1,22 @@
 import './App.css'
 import Navbar from './components/navbar'
-import Home from './pages/Landing page/home'
-import Products from './pages/Products/products'
-import Projects from './pages/Projects/projects'
-import News from './pages/News/news'
-import AboutUs from './pages/AboutUs/aboutUs'
+import Home from './pages/landing/home'
+import Products from './pages/products/products'
+import Projects from './pages/projects/projects'
+import News from './pages/news/news'
+import AboutUs from './pages/aboutus/aboutUs'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Seo from './components/seo'
+import { SITE } from './config/site'
 
 const localBusinessSchema = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
-  name: 'AMBOSS',
-  url: 'https://amboss.lk/',
-  image: 'https://amboss.lk/images/amboss-logo.png',
-  email: 'amboss.manufacturing@gmail.com',
-  telephone: '+94779902796',
+  name: SITE.company,
+  url: SITE.url,
+  image: SITE.image,
+  email: SITE.email,
+  telephone: SITE.phone,
   address: {
     '@type': 'PostalAddress',
     addressLocality: 'Galle',

@@ -88,8 +88,6 @@ function Services({
               <h3 className="text-lg md:text-xl font-semibold text-white">{s.title}</h3>
               <p className="mt-2 text-sm text-amboss-light/70">{s.desc}</p>
 
-              {/* Removed per request */}
-
               {/* subtle hover glow */}
               <div
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition"
@@ -113,5 +111,3 @@ function Services({
 }
 
 export default Services;
-
-

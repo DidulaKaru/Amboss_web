@@ -24,8 +24,6 @@ export default function Navbar() {
 
     if (location.pathname !== "/") {
       navigate("/");
-      // allow navigation to home before scrolling
-      setTimeout(scrollToHash, 50);
     } else {
       scrollToHash();
     }
