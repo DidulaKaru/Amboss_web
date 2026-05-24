@@ -75,9 +75,9 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'prod_010',
-    name: 'Resistors 1/4W',
+    name: 'Resistors, 1/4W, 10 pack',
     description: 'Message us for the specific values you want',
-    price: 1,
+    price: 30,
     stock: 50,
     image_url: '/images/1_4-W-Resistors.png',
   },
