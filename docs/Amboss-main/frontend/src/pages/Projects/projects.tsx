@@ -55,7 +55,6 @@ export default function Projects() {
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 md:px-12">
         <h2 className="mb-8 text-center text-3xl font-bold md:text-4xl">Other Projects</h2>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-          {/* Project 1 */}
           <div className="group overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition hover:border-[#3282B8] hover:shadow-xl hover:shadow-[#3282B8]/10">
             <div className="aspect-[4/5] w-full overflow-hidden bg-zinc-800">
               <img
@@ -76,7 +75,6 @@ export default function Projects() {
             </div>
           </div>
 
-          {/* Project 2 */}
           <div className="group overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition hover:border-[#3282B8] hover:shadow-xl hover:shadow-[#3282B8]/10">
             <div className="aspect-[4/5] w-full overflow-hidden bg-zinc-800">
               <img
@@ -97,7 +95,6 @@ export default function Projects() {
             </div>
           </div>
 
-          {/* Project 3 */}
           <div className="group overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition hover:border-[#3282B8] hover:shadow-xl hover:shadow-[#3282B8]/10">
             <div className="aspect-[4/5] w-full overflow-hidden bg-zinc-800">
               <img
@@ -118,7 +115,6 @@ export default function Projects() {
             </div>
           </div>
 
-          {/* Project 4 */}
           <div className="group overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition hover:border-[#3282B8] hover:shadow-xl hover:shadow-[#3282B8]/10">
             <div className="aspect-[4/5] w-full overflow-hidden bg-zinc-800">
               <img
@@ -143,4 +139,3 @@ export default function Projects() {
     </main>
   );
 }
-

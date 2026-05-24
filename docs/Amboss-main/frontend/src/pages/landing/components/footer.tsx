@@ -1,5 +1,6 @@
 // Footer.tsx
 import React from "react";
+import { SITE } from '../../../config/site'
 
 type FooterProps = {
   company?: string;
@@ -44,18 +45,18 @@ const IconLinkedIn = () => (
 );
 
 export default function Footer({
-  company = "Amboss Industries",
-  email = "amboss.manufacturing@gmail.com",
-  phone = "+94779902796",
-  addressLines = ["Amboss Industries", "Elhenage Watta, Hapugala", "Galle, Sri Lanka"],
+  company = SITE.company,
+  email = SITE.email,
+  phone = SITE.phone,
+  addressLines = SITE.addressLines,
   links = [
     { label: "Services", href: "#services" },
     { label: "Capabilities", href: "#capabilities" },
     { label: "Materials", href: "#materials" },
   ],
   socials = [
-    { label: "Instagram", href: "https://www.instagram.com/amboss.official_?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==", icon: <IconIG /> },
-    { label: "LinkedIn", href: "https://www.linkedin.com/company/amboss-manufacturing/", icon: <IconLinkedIn /> },
+    { label: "Instagram", href: SITE.socials[0].href, icon: <IconIG /> },
+    { label: "LinkedIn", href: SITE.socials[1].href, icon: <IconLinkedIn /> },
   ],
 }: FooterProps) {
   return (
@@ -109,7 +110,7 @@ export default function Footer({
             </div>
             <div className="flex items-start gap-3 text-sm text-amboss-light/80">
               <span className="mt-0.5 text-amboss-light/60"><IconPhone /></span>
-              <a href={`https://wa.me/${phone.replace(/[^+\d]/g, "")}`} target="_blank" rel="noopener noreferrer" className="hover:text-white">{phone}</a>
+              <a href={`https://wa.me/${phone.replace(/[^\d]/g, "")}`} target="_blank" rel="noopener noreferrer" className="hover:text-white">{phone}</a>
             </div>
             <div className="flex items-start gap-3 text-sm text-amboss-light/80">
               <span className="mt-0.5 text-amboss-light/60"><IconMap /></span>
@@ -131,7 +132,3 @@ export default function Footer({
     </footer>
   );
 }
-
-
-
-
