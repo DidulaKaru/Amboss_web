@@ -64,7 +64,7 @@ export default function Navbar() {
           </nav>
 
           {/* Cart Icon & Mobile Menu */}
-          <div className="flex items-center gap-4">
+          <div className="ml-auto flex items-center gap-4">
             {/* Cart Icon */}
             <div className="relative">
               <button
