@@ -20,7 +20,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const isOutOfStock = product.stock === 0
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-lg border border-amboss-accent/30 bg-amboss-dark hover:border-amboss-accent/60 transition-all duration-300">
+    <div className="flex flex-col overflow-hidden rounded-lg border-2 border-amboss-accent/30 bg-amboss-dark hover:border-amboss-accent/60 transition-all duration-300">
       {/* Image Container */}
       <div className="aspect-square overflow-hidden bg-amboss-dark/50">
         <img

@@ -55,7 +55,7 @@ export const PRODUCTS: Product[] = [
     description: '830-840 tie-point, white solderless project board used for prototyping electronic circuits',
     price: 230,
     stock: 50,
-    image_url: '/images/Project-Board.png',
+    image_url: '/images/Arduino-DIPProject-Board.png',
   },
   {
     id: 'prod_008',
