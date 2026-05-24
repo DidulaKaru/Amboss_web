@@ -7,11 +7,21 @@ export default function Shop() {
       <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold text-white mb-4">AMBOSS Shop</h1>
+          <h1 className="text-4xl font-bold text-white mb-4">AMBOSS Maker Store</h1>
           <p className="text-lg text-amboss-light max-w-2xl mx-auto">
-            Explore our premium 3D printing services and custom parts. High-precision
-            manufacturing with fast turnaround times.
+            Your hub for electronic components, microcontrollers and 3D printing filaments.
           </p>
+
+          <div className="mt-4">
+            <a
+              href="https://wa.me/94779902796"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block bg-[#0F4C75] text-white text-sm px-4 py-2 rounded-full"
+            >
+              Need a custom 3D print? Contact Us
+            </a>
+          </div>
         </div>
 
         {/* Products Grid */}

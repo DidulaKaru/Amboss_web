@@ -11,9 +11,10 @@ A complete e-commerce Shop feature has been implemented with global state manage
 - Stock numbers are never rendered in UI
 
 ### 2. **Mock Data** (`src/data/products.ts`)
-- 4 sample products with realistic 3D printing services
-- Includes FDM brackets, SLA resin models, rapid prototyping kits, and custom assemblies
-- Stock ranges from 5-12 units per product
+- 10 inventory items representing the shop catalog
+- Includes Arduino, ESP32, sensors, breadboards, solder, LEDs, and resistors
+- `prod_001` uses the local public asset path `/images/Uno.jpg`
+- Stock values are stored in data and never rendered in the UI
 
 ### 3. **Global State** (`src/context/CartContext.tsx`)
 - React Context with `CartProvider` wrapper
@@ -65,7 +66,7 @@ A complete e-commerce Shop feature has been implemented with global state manage
 ### Updated Files
 
 #### `src/components/navbar.tsx`
-- Added "Shop" to navigation menu
+- Navigation now places Shop, Projects, News, and About Us in the main nav flow
 - Added shopping cart icon button with item count badge
 - Cart icon opens/closes the Cart sidebar
 - Responsive design for mobile and desktop
@@ -108,10 +109,15 @@ All components use the existing Tailwind CSS theme:
 5. Click "Proceed to Order" to send order via WhatsApp
 6. Cart persists across page reloads and route changes
 
+## 🖼️ Asset Notes
+
+- The first product image is served from `public/images/Uno.jpg`
+- Local public assets should use `/images/<file>` URLs so Vite serves them correctly
+
 ## 📦 Build Status
 
 ✅ **Successfully compiled** with TypeScript strict mode (`verbatimModuleSyntax`)  
-✅ **Production build** completed: 281.97 kB (87.62 kB gzipped)  
+✅ **Production build** completed: 278.52 kB (87.17 kB gzipped)  
 ✅ **Ready for deployment**
 
 ## 🔐 Key Implementation Details
