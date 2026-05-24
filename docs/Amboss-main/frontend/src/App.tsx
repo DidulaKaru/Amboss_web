@@ -1,10 +1,11 @@
 import './App.css'
 import Navbar from './components/navbar'
 import Home from './pages/landing/home'
-import Products from './pages/products/products'
-import Projects from './pages/projects/projects'
+import Projects from './pages/Projects/projects'
 import News from './pages/news/news'
-import AboutUs from './pages/aboutus/aboutUs'
+import AboutUs from './pages/AboutUs/aboutUs'
+import Shop from './pages/shop/Shop'
+import { CartProvider } from './context/CartContext'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Seo from './components/seo'
 import { SITE } from './config/site'
@@ -34,17 +35,6 @@ const localBusinessSchema = {
 
 function RouteSeo() {
   const { pathname } = useLocation()
-
-  if (pathname === '/products') {
-    return (
-      <Seo
-        title="Products & Services | AMBOSS"
-        description="Explore AMBOSS 3D printing services in Sri Lanka: FDM, SLA resin printing, and custom parts with fast turnaround."
-        path="/products"
-        keywords="3d printing services sri lanka, fdm printing sri lanka, sla printing sri lanka, custom 3d parts galle"
-      />
-    )
-  }
 
   if (pathname === '/projects') {
     return (
@@ -79,6 +69,17 @@ function RouteSeo() {
     )
   }
 
+  if (pathname === '/shop') {
+    return (
+      <Seo
+        title="Shop | AMBOSS"
+        description="Browse AMBOSS 3D printing services and custom parts. Premium quality with fast turnaround and expert manufacturing."
+        path="/shop"
+        keywords="buy 3d printed parts sri lanka, custom 3d printing services, amboss shop, fdm sla printing"
+      />
+    )
+  }
+
   return (
     <Seo
       title="AMBOSS | 3D Printing Services in Sri Lanka"
@@ -92,17 +93,19 @@ function RouteSeo() {
 
 function App() {
   return (
-    <>
-      <RouteSeo />
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/products" element={<Products />} />
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/news" element={<News />} />
-        <Route path="/about-us" element={<AboutUs />} />
-      </Routes>
-    </>
+    <CartProvider>
+      <>
+        <RouteSeo />
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/news" element={<News />} />
+          <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/shop" element={<Shop />} />
+        </Routes>
+      </>
+    </CartProvider>
   )
 }
 
