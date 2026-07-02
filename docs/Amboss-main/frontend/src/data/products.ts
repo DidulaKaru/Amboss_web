@@ -6,7 +6,7 @@ export const PRODUCTS: Product[] = [
     name: 'Arduino Uno R3 DIP',
     description: 'Atmega328P microcontroller, 14 digital I/O pins (6 PWM), 6 analog inputs, a 16 MHz resonator',
     price: 1400,
-    stock: 50,
+    stock: 49,
     image_url: '/images/Arduino-DIP.png',
   },
   {
@@ -22,7 +22,7 @@ export const PRODUCTS: Product[] = [
     name: 'Arduino Uno USB',
     description: 'USB type A to USB type B',
     price: 130,
-    stock: 40,
+    stock: 39,
     image_url: '/images/Arduino-USB.png',
   },
   {
@@ -91,10 +91,10 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'prod_012',
-    name: 'Jumper Cables',
+    name: 'Jumper Cables (Sets of 40)',
     description: 'Male-Male, Male-Female, Female-Female',
     price: 180,
-    stock: 0,
+    stock: 57,
     image_url: '/images/Jumper-cables.png',
   },
   /*
