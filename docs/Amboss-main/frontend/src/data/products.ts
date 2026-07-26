@@ -70,7 +70,7 @@ export const PRODUCTS: Product[] = [
     name: 'LED 3mm RED',
     description: '',
     price: 5,
-    stock: 50,
+    stock: 0,
     image_url: '/images/LED.png',
   },
   {
