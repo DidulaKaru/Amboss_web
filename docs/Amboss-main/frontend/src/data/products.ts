@@ -99,7 +99,7 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'prod_013',
-    name: 'Jumper Cables (Sets of 40) - Male-Female',
+    name: 'Jumper Cables - Male-Female',
     description: 'Sets of 40',
     price: 180,
     stock: 57,
@@ -107,7 +107,7 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'prod_014',
-    name: 'Jumper Cables (Sets of 40) - Female-Female',
+    name: 'Jumper Cables - Female-Female',
     description: 'Sets of 40',
     price: 180,
     stock: 57,
