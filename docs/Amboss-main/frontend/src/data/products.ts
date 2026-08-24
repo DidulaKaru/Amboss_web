@@ -11,7 +11,7 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'prod_002',
-    name: 'ESP32 WROOM type c 38pin',
+    name: 'ESP32 NodeMCU-32S',
     description: 'ESP-WROOM-32 module, featuring a dual-core CPU, built-in Wi-Fi and Bluetooth, 38 GPIO',
     price: 1450,
     stock: 48,
