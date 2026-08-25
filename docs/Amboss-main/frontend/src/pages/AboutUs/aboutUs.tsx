@@ -24,15 +24,6 @@ export default function AboutUs() {
             </div>
           </div>
         </section>
-
-        <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8 border-t border-amboss-accent/20 bg-zinc-900/30">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Meet the Team</h2>
-            <p className="text-amboss-light">This section will feature the team soon.</p>
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            </div>
-          </div>
-        </section>
       </div>
     );
 }

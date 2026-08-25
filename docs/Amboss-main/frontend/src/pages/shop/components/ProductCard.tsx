@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { Product } from '../../../types/shop'
-import { useCart } from '../../../context/CartContext'
+import { useCart } from '../../../context/useCart'
 
 interface ProductCardProps {
   product: Product
@@ -8,14 +8,22 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const [quantity, setQuantity] = useState(1)
+  const [added, setAdded] = useState(false)
   const { addToCart } = useCart()
 
   const handleAddToCart = () => {
     const success = addToCart(product, quantity)
     if (success) {
       setQuantity(1)
+      setAdded(true)
     }
   }
+
+  useEffect(() => {
+    if (!added) return
+    const t = setTimeout(() => setAdded(false), 900)
+    return () => clearTimeout(t)
+  }, [added])
 
   const isOutOfStock = product.stock === 0
 
@@ -67,13 +75,25 @@ export default function ProductCard({ product }: ProductCardProps) {
           <button
             onClick={handleAddToCart}
             disabled={isOutOfStock}
-            className={`flex-1 rounded py-2 px-4 font-medium transition ${
+            aria-pressed={added}
+            className={`flex-1 rounded py-2 px-4 font-medium transition-flex ${
               isOutOfStock
                 ? 'bg-amboss-dark/50 text-amboss-light/50 cursor-not-allowed border border-amboss-accent/20'
                 : 'bg-amboss-accent text-amboss-dark hover:bg-amboss-accent/90'
-            }`}
+            } ${added ? 'btn-add-animate' : ''}`}
           >
-            {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+            {isOutOfStock ? (
+              'Out of Stock'
+            ) : added ? (
+              <span className="added-badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+                  <path d="M20 6L9 17l-5-5" stroke="#0F172A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                Added
+              </span>
+            ) : (
+              'Add to Cart'
+            )}
           </button>
         </div>
       </div>

@@ -40,3 +40,44 @@ color: #ffffff;
 	border-radius: 0.25rem;
 }
 
+/* Smooth site-wide transition utility */
+:root {
+	--amboss-animation-duration: 300ms;
+	--amboss-animation-ease: cubic-bezier(.2,.9,.2,1);
+}
+
+/* Apply lightweight smooth transitions for common properties. */
+/* Use the `.smooth-transitions` utility on high-level containers to enable. */
+.smooth-transitions * {
+	transition-property: background-color, border-color, color, transform, opacity, box-shadow;
+	transition-duration: var(--amboss-animation-duration);
+	transition-timing-function: var(--amboss-animation-ease);
+}
+
+/* Add-to-cart button 'pop' animation */
+@keyframes amboss-add-pop {
+	0% { transform: scale(1); }
+	40% { transform: scale(1.08); }
+	65% { transform: scale(0.98); }
+	100% { transform: scale(1); }
+}
+
+.btn-add-animate {
+	animation: amboss-add-pop 420ms var(--amboss-animation-ease) both;
+	will-change: transform;
+}
+
+/* Small ephemeral 'Added' badge */
+.added-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0.25rem 0.6rem;
+	border-radius: 9999px;
+	font-weight: 600;
+	font-size: 0.875rem;
+	background: rgba(255,255,255,0.06);
+	color: var(--color-bg);
+}
+
+

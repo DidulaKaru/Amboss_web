@@ -1,19 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import type { Product, CartItem } from '../types/shop'
-
-interface CartContextType {
-  cartItems: CartItem[]
-  addToCart: (product: Product, quantity: number) => boolean
-  removeFromCart: (id: string) => void
-  updateQuantity: (id: string, newQuantity: number) => boolean
-  clearCart: () => void
-  cartTotal: number
-  itemCount: number
-}
-
-const CartContext = createContext<CartContextType | undefined>(undefined)
-
-const STORAGE_KEY = 'amboss_cart'
+import CartContext, { STORAGE_KEY } from './cartInternal'
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([])
@@ -120,10 +107,4 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
-export function useCart() {
-  const context = useContext(CartContext)
-  if (context === undefined) {
-    throw new Error('useCart must be used within a CartProvider')
-  }
-  return context
-}
+// Note: `useCart` hook is exported from `src/context/useCart.ts`

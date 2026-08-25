@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useCart } from '../../../context/CartContext'
+import { useCart } from '../../../context/useCart'
 
 interface CartProps {
   isOpen: boolean
@@ -20,7 +20,7 @@ export default function Cart({ isOpen, onClose }: CartProps) {
 
     // Format message with items and total
     const itemsList = cartItems
-      .map((item) => `${item.name} x ${item.quantity}`)
+      .map((item: { name: string; quantity: number }) => `${item.name} x ${item.quantity}`)
       .join('\n')
 
     const message = `Hello! I would like to place an order:\n\n${itemsList}\n\nTotal Price: Rs ${cartTotal.toLocaleString()}\n\nPlease confirm availability and payment details.`
@@ -76,7 +76,7 @@ export default function Cart({ isOpen, onClose }: CartProps) {
             </div>
           ) : (
             <div className="space-y-4">
-              {cartItems.map((item) => (
+              {cartItems.map((item: { id: string; image_url: string; name: string; price: number; quantity: number; stock: number }) => (
                 <div
                   key={item.id}
                   className="flex gap-4 p-4 rounded bg-amboss-dark/50 border border-amboss-accent/20"

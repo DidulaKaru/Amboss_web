@@ -33,19 +33,21 @@ const LABELS: Record<string, string> = {
 function Pill({
   children,
   onClick,
-}: React.PropsWithChildren<{ onClick?: () => void }>) {
-  const Comp = onClick ? "button" : "div";
-  return (
-    <Comp
-      onClick={onClick}
-      className={`rounded-xl border border-amboss-accent/30 bg-white/[0.04]
+}: React.PropsWithChildren<{ onClick?: () => void }>): React.ReactElement {
+  const pillClass = `rounded-xl border border-amboss-accent/30 bg-white/[0.04]
                   px-4 py-3 text-center text-sm text-zinc-200
                   hover:border-amboss-light/50 hover:bg-amboss-section/30 transition
-                  focus:outline-none focus:ring-2 focus:ring-red-600/40`}
-    >
-      {children}
-    </Comp>
-  ) as any;
+                  focus:outline-none focus:ring-2 focus:ring-red-600/40`;
+
+  if (onClick) {
+    return (
+      <button onClick={onClick} className={pillClass}>
+        {children}
+      </button>
+    );
+  }
+
+  return <div className={pillClass}>{children}</div>;
 }
 
 function Materials({

@@ -20,14 +20,14 @@ type CapabilitiesProps = {
 const DEFAULT_ITEMS: Capability[] = [
   {
     name: "FDM Printers",
-    img: `${import.meta.env.BASE_URL}images/FDM%20printer.jpg`,
+    img: `${import.meta.env.BASE_URL}images/k2plus.jpg`,
     desc:
       "Dimensional accuracy across multiple machines for functional parts and jigs. Tuned profiles for engineering filaments and fiber blends.",
     specs: [
-      "Models: Bambu Labs A1 (AMS), Bambu Labs A1 mini, Elegoo Centauri Carbon, Elegoo Neptune 4 Pro",
+      "Models: Bambu Labs A1 (AMS), Bambu Labs A1 mini, Elegoo Centauri Carbon, Elegoo Neptune 4 Pro, Creality K2 Plus",
       "Materials: PLA, PETG, ABS, TPU, Nylon, CF blends",
       "Layer: 0.08–0.28 mm",
-      "Build: up to 256×256×256 mm",
+      "Build: up to 350×350×350 mm",
     ],
   },
   {

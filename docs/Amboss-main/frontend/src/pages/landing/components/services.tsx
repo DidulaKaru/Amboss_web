@@ -38,27 +38,27 @@ const IconDesign = () => (
 
 const DEFAULT_ITEMS: Service[] = [
   {
-    title: "Rapid Prototyping",
-    desc: "Same-week prints with tight tolerances, photos for approval, and iterative tweaks.",
+    title: "3D Design & CAD",
+    desc: "Turn sketches, rough ideas, or physical samples into functional 3D digital models ready for manufacturing.",
+    icon: <IconDesign />,
+  },
+  {
+    title: "3D Printing & Prototyping",
+    desc: "Fast turnaround for single prototypes and small batches. High-precision parts built for testing, assembly, or end-use.",
     icon: <IconBolt />,
   },
   {
-    title: "Small Batch Production",
-    desc: "Repeatable parts with DFM checks, serialized QC, and clear lead times.",
+    title: "Mold Making & Casting",
+    desc: "Custom silicone molds and gypsum casting for architectural objects, artistic pieces, and batch duplications without expensive tooling.",
     icon: <IconBatch />,
-  },
-  {
-    title: "Custom Design & Consultation",
-    desc: "From CAD help to jigs & fixtures—orientation, infill, and materials tuned for performance.",
-    icon: <IconDesign />,
   },
 ];
 
 function Services({
   id = "services",
-  kicker = "Our services",
-  title = "From idea to short-run production",
-  subtitle = "A flexible menu to match your timeline and budget—every job includes orientation planning and a basic QC check.",
+  kicker = "OUR SERVICES",
+  title = "From initial sketch to finished product",
+  subtitle = "Full-cycle design and fabrication tailored to your timeline, material needs, and budget.",
   items = DEFAULT_ITEMS,
   className = "",
 }: ServicesProps) {

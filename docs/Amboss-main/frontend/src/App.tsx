@@ -26,6 +26,8 @@ const localBusinessSchema = {
   areaServed: ['Sri Lanka', 'Galle'],
   serviceType: [
     '3D printing services',
+    'Large-format FDM printing (350×350×350 mm) - Creality K2 Plus',
+    'Enclosed printers for high-temperature and specialty materials (ABS, Nylon, Carbon-fiber blends)',
     'Rapid prototyping',
     'Custom part manufacturing',
     'FDM printing',
@@ -73,9 +75,9 @@ function RouteSeo() {
     return (
       <Seo
         title="Shop | AMBOSS"
-        description="Browse AMBOSS 3D printing services and custom parts. Premium quality with fast turnaround and expert manufacturing."
+        description="Buy electronics components and prototyping supplies in Sri Lanka — Arduino, ESP32, sensors, breadboards, solder and more with local delivery to Galle."
         path="/shop"
-        keywords="buy 3d printed parts sri lanka, custom 3d printing services, amboss shop, fdm sla printing"
+        keywords="electronics components sri lanka, electronics components galle, arduino uno sri lanka, esp32 sri lanka, ultrasonic sensor hc-sr04, mpu6050 galle, breadboard jumper cables, solder wire sri lanka, prototyping supplies galle, maker electronics shop"
       />
     )
   }
@@ -83,9 +85,9 @@ function RouteSeo() {
   return (
     <Seo
       title="AMBOSS | 3D Printing Services in Sri Lanka"
-      description="AMBOSS offers industrial-grade 3D printing, rapid prototyping, and custom manufacturing services in Sri Lanka, including Galle."
+      description="AMBOSS offers industrial-grade 3D printing (including large-format Creality K2 Plus), rapid prototyping, and specialty-material printing (ABS, Nylon, carbon-fiber blends) with local delivery across Sri Lanka and Galle."
       path="/"
-      keywords="3d printing services sri lanka, 3d printing galle, rapid prototyping sri lanka, custom manufacturing sri lanka"
+      keywords="3d printing services sri lanka, 3d printing galle, large format 3d printing 350x350x350, creality k2 plus sri lanka, enclosed printers abs nylon, carbon-fiber 3d printing, rapid prototyping sri lanka, custom manufacturing sri lanka, 3d CAD modelling sri lanka, silicone mold making sri lanka, casting sri lanka"
       jsonLd={localBusinessSchema}
     />
   )
@@ -94,7 +96,7 @@ function RouteSeo() {
 function App() {
   return (
     <CartProvider>
-      <>
+      <div className="smooth-transitions">
         <RouteSeo />
         <Navbar />
         <Routes>
@@ -104,7 +106,7 @@ function App() {
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/shop" element={<Shop />} />
         </Routes>
-      </>
+      </div>
     </CartProvider>
   )
 }
