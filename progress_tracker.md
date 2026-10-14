@@ -45,14 +45,14 @@ This document tracks execution status across all development phases. Update this
 ---
 
 ## Phase 4: Backend API & PostgreSQL Database
-- [ ] **Task 4.1:** Initialize Fastify TypeScript project in `server/` with linting and scripts.
-- [ ] **Task 4.2:** Configure Drizzle ORM and design schemas for `materials`, `machines`, `products`, and `quotes`.
-- [ ] **Task 4.3:** Create database seed scripts with Amboss machine specs (K2 Plus, Bambu A1, Saturn 4 Ultra) and material rates.
-- [ ] **Task 4.4:** Implement API routes (`/materials`, `/products`, `/quote/calculate`) with Zod schema validation.
-- [ ] **Task 4.5:** Write integration test suite verifying backend calculation and API responses.
+- [x] **Task 4.1:** Initialize Fastify TypeScript project in `server/` with linting and scripts.
+- [x] **Task 4.2:** Configure Drizzle ORM and design schemas for `materials`, `machines`, `products`, and `quotes`.
+- [x] **Task 4.3:** Create database seed scripts with Amboss machine specs (K2 Plus, Elegoo Centauri Carbon, Bambu A1, Saturn 4 Ultra) and material rates.
+- [x] **Task 4.4:** Implement API routes (`/materials`, `/machines`, `/products`, `/quote/calculate`, `/orders/whatsapp-payload`, `/health`) with Zod schema validation.
+- [x] **Task 4.5:** Write integration test suite verifying backend calculation, printer routing, and API responses.
 
 *Verification Notes:*
-> _Pending execution._
+> Fastify v5 application architecture implemented in `server/` with Drizzle ORM schemas (`materials`, `machines`, `products`, `quotes`), security plugins (`@fastify/helmet`, `@fastify/cors`), and Zod validation. Seed dataset built with all 7 active materials (PLA+ Rs 20/g, PETG Rs 22/g, ABS Rs 25/g, TPU Rs 35/g, PETG-CF Rs 35/g, Lite Resin Rs 35/g, Clear Resin Rs 40/g), 5 machines with build volume and enclosure constraints, and the maker electronics catalog. Integration test suite passing 11/11 tests across 5 test suites covering geometry pricing, printer routing (ABS/PETG-CF to enclosed Elegoo Centauri Carbon / Creality K2 Plus, SLA to Saturn 4 Ultra), catalog filtering, and WhatsApp order payload generation. Monorepo-wide test and build pass cleanly.
 
 ---
 
