@@ -203,7 +203,8 @@ export default function QuoteForm({
         <button
           type="button"
           onClick={handleWhatsAppQuote}
-          className="w-full py-2.5 px-4 bg-zinc-100 hover:bg-white text-zinc-950 font-medium text-xs tracking-tight rounded transition-all cursor-pointer"
+          style={{ color: '#09090b' }}
+          className="w-full py-2.5 px-4 bg-zinc-100 hover:bg-white text-zinc-950 hover:text-black font-semibold text-xs tracking-tight rounded transition-all cursor-pointer shadow-sm"
         >
           Order via WhatsApp
         </button>

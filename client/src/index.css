@@ -1,36 +1,27 @@
 @import "tailwindcss";
 
-/* Global dark theme with custom palette (reverted) */
 :root {
 	color-scheme: dark;
 	scroll-behavior: smooth;
-	--color-bg: #1B262C;
-	--color-section: #0F4C75;
-	--color-accent: #3282B8;
-	--color-light: #BBE1FA;
+	--color-bg: #09090b;
+	--color-section: #18181b;
+	--color-accent: #27272a;
+	--color-light: #f4f4f5;
 }
 
 html,
 body,
 #root {
-height: 100%;
+	height: 100%;
 }
 
-/* Dark background with light text */
-body {
-background-color: var(--color-bg);
-color: var(--color-light);
--webkit-font-smoothing: antialiased;
--moz-osx-font-smoothing: grayscale;
-}
-
-a {
-color: var(--color-light);
-transition: color 0.2s;
-}
-
-a:hover {
-color: #ffffff;
+@layer base {
+	body {
+		background-color: var(--color-bg);
+		color: var(--color-light);
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
 }
 
 /* Focus rings */

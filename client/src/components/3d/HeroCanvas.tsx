@@ -274,14 +274,15 @@ export default function HeroCanvas() {
             <div className="mt-8 flex flex-wrap items-center gap-3 pointer-events-auto">
               <Link
                 to="/quote"
-                className="inline-flex items-center justify-center rounded bg-zinc-100 hover:bg-white px-5 py-2.5 text-xs sm:text-sm font-medium text-zinc-950 transition"
+                style={{ color: '#09090b' }}
+                className="inline-flex items-center justify-center rounded bg-zinc-100 hover:bg-white px-5 py-2.5 text-xs sm:text-sm font-semibold text-zinc-950 hover:text-black transition shadow-sm"
               >
                 Instant Quote
               </Link>
 
               <Link
                 to="/shop"
-                className="inline-flex items-center justify-center rounded border border-zinc-800 bg-zinc-900/60 hover:border-zinc-700 hover:bg-zinc-900 px-5 py-2.5 text-xs sm:text-sm font-medium text-zinc-300 transition"
+                className="inline-flex items-center justify-center rounded border border-zinc-800 bg-zinc-900/60 hover:border-zinc-700 hover:bg-zinc-900 px-5 py-2.5 text-xs sm:text-sm font-medium text-zinc-300 hover:text-white transition"
               >
                 Browse Shop
               </Link>
