@@ -8,19 +8,19 @@ type Product = {
 const DEFAULT_PRODUCTS: Product[] = [
   {
     name: "Print on Demand - FDM",
-    img: `${import.meta.env.BASE_URL}images/FDM_print.jpg`,
+    img: `${import.meta.env.BASE_URL}images/FDM%20printer.jpg`,
     desc: "High-quality FDM 3D printing services for functional prototypes, custom parts, and mechanical components.",
     badges: ["Fast Turnaround", "Multiple Materials", "Custom Colors"],
   },
   {
     name: "Print on Demand - SLA",
-    img: `${import.meta.env.BASE_URL}images/resin_print.jpg`,
+    img: `${import.meta.env.BASE_URL}images/SLA%20printer.jpg`,
     desc: "Precision resin printing for highly detailed figurines, miniatures, and intricate models with smooth surface finish.",
     badges: ["High Detail", "Smooth Finish", "Multiple Resins"],
   },
   {
     name: "Amboss Electronics",
-    img: `${import.meta.env.BASE_URL}images/electronics.jpg`,
+    img: `${import.meta.env.BASE_URL}images/Project-Board.png`,
     desc: "Electronics for enthusiasts and students. Arduino boards, sensors, and development kits for your projects.",
     badges: ["Coming Soon", "For Students", "Maker Friendly"],
   },

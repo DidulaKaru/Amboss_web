@@ -38,70 +38,52 @@ const IconDesign = () => (
 
 const DEFAULT_ITEMS: Service[] = [
   {
-    title: "3D Design & CAD",
-    desc: "Turn sketches, rough ideas, or physical samples into functional 3D digital models ready for manufacturing.",
+    title: "3D CAD & Mechanical Design",
+    desc: "Convert sketches, dimensioned drawings, or broken parts into manufacturing-ready 3D CAD models.",
     icon: <IconDesign />,
   },
   {
-    title: "3D Printing & Prototyping",
-    desc: "Fast turnaround for single prototypes and small batches. High-precision parts built for testing, assembly, or end-use.",
+    title: "Additive Manufacturing",
+    desc: "FDM and resin 3D printing for rapid iteration, functional prototypes, and low-volume production.",
     icon: <IconBolt />,
   },
   {
-    title: "Mold Making & Casting",
-    desc: "Custom silicone molds and gypsum casting for architectural objects, artistic pieces, and batch duplications without expensive tooling.",
+    title: "Molding & Casting",
+    desc: "Silicone tooling and resin casting for batch duplication and specialized materials without hard tooling costs.",
     icon: <IconBatch />,
   },
 ];
 
 function Services({
   id = "services",
-  kicker = "OUR SERVICES",
-  title = "From initial sketch to finished product",
-  subtitle = "Full-cycle design and fabrication tailored to your timeline, material needs, and budget.",
+  kicker = "Capabilities",
+  title = "Design to Production",
+  subtitle = "Engineering design, rapid prototyping, and additive manufacturing.",
   items = DEFAULT_ITEMS,
   className = "",
 }: ServicesProps) {
   return (
-    <section id={id} className={`py-16 md:py-20 ${className}`}>
+    <section id={id} className={`py-16 bg-zinc-950 border-t border-zinc-800/80 ${className}`}>
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Heading */}
-        <div className="space-y-3">
-          <p className="text-xs uppercase tracking-[0.2em] text-amboss-light/70">{kicker}</p>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white">{title}</h2>
-          <p className="text-sm md:text-base text-amboss-light/70 max-w-3xl">{subtitle}</p>
+        <div className="space-y-2">
+          <p className="text-[11px] uppercase tracking-wider font-mono text-zinc-400">{kicker}</p>
+          <h2 className="text-2xl sm:text-3xl font-medium tracking-tight text-zinc-100">{title}</h2>
+          <p className="text-xs sm:text-sm text-zinc-400 max-w-2xl">{subtitle}</p>
         </div>
 
         {/* Cards */}
-        <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {items.map((s) => (
             <article
               key={s.title}
-              className="group relative overflow-hidden rounded-2xl border border-amboss-accent/30
-                         bg-gradient-to-b from-amboss-section/50 to-amboss-bg/50
-                         p-6 md:p-7 shadow-[inset_0_1px_0_rgba(255,255,255,.05)]
-                         hover:border-amboss-light/50 transition"
+              className="rounded-lg border border-zinc-800 bg-zinc-900/40 p-6 hover:border-zinc-700 transition"
             >
-              <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-white/5 p-3 text-zinc-200 group-hover:text-white">
+              <div className="mb-4 inline-flex items-center justify-center rounded border border-zinc-800 bg-zinc-900 p-2 text-zinc-400">
                 {s.icon}
               </div>
-              <h3 className="text-lg md:text-xl font-semibold text-white">{s.title}</h3>
-              <p className="mt-2 text-sm text-amboss-light/70">{s.desc}</p>
-
-              {/* subtle hover glow */}
-              <div
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition"
-                style={{
-                  background:
-                    "radial-gradient(600px circle at var(--x,50%) var(--y,50%), rgba(50,130,184,.12), transparent 40%)",
-                }}
-                onMouseMove={(e) => {
-                  const el = e.currentTarget as HTMLDivElement;
-                  const r = el.getBoundingClientRect();
-                  el.style.setProperty("--x", `${e.clientX - r.left}px`);
-                  el.style.setProperty("--y", `${e.clientY - r.top}px`);
-                }}
-              />
+              <h3 className="text-sm font-medium text-zinc-200">{s.title}</h3>
+              <p className="mt-2 text-xs text-zinc-400 leading-relaxed">{s.desc}</p>
             </article>
           ))}
         </div>

@@ -1,29 +1,49 @@
 export default function AboutUs() {
-    return (
-      <div className="min-h-screen bg-amboss-bg">
-        <section className="py-12 md:py-16 px-4 sm:px-6 lg:px-8 border-b border-amboss-accent/20 bg-zinc-900/40">
-          <div className="max-w-6xl mx-auto">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white">About Us</h1>
-            <p className="text-amboss-light mt-3">Learn more about Amboss and our journey.</p>
-          </div>
-        </section>
+  return (
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto space-y-10">
+        {/* Header */}
+        <div className="space-y-2 border-b border-zinc-800/80 pb-6">
+          <p className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
+            About Amboss
+          </p>
+          <h1 className="text-2xl sm:text-3xl font-medium tracking-tight text-zinc-100">
+            Design & Additive Manufacturing
+          </h1>
+          <p className="text-xs sm:text-sm text-zinc-400">
+            Based in Galle, Sri Lanka.
+          </p>
+        </div>
 
-        <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">How We Started</h2>
-            <div className="prose prose-lg prose-invert max-w-none">
-              <p className="text-amboss-light text-lg leading-relaxed mb-6">
-                Amboss began with a simple idea: bring precision engineering and accessible manufacturing together to help ideas become products. Starting as a small workshop, we focused on solving real-world problems through practical design, rapid prototyping, and a relentless attention to detail.
-              </p>
-              <p className="text-amboss-light text-lg leading-relaxed mb-6">
-                Over time, our capabilities grew—so did our ambition. Today, we collaborate across disciplines, deliver quality at speed, and continue to refine our craft. We collaborate with different engineering fields and other disciplines to deliver comprehensive solutions that meet the unique needs of each project.
-              </p>
-              <p className="text-amboss-light text-lg leading-relaxed">
-                Our journey reflects the values we stand for: reliability, innovation, and hands-on problem solving.
-              </p>
-            </div>
+        {/* Narrative */}
+        <div className="space-y-6 text-xs sm:text-sm text-zinc-300 leading-relaxed">
+          <p>
+            Amboss is an engineering and rapid manufacturing studio originating at the University of Ruhuna Faculty of Engineering. We assist students, researchers, and commercial clients in turning CAD geometry into physical prototypes.
+          </p>
+          <p>
+            Our workshop operates enclosed coreXY FDM machines (Creality K2 Plus, Elegoo Centauri Carbon, Bambu Lab A1) and high-resolution SLA resin printers. We print with engineering materials including PLA+, PETG, ABS, TPU, carbon fiber blends, and tough photopolymers.
+          </p>
+          <p>
+            Every order is reviewed for printability, layer adhesion, and orientation to ensure functional reliability.
+          </p>
+        </div>
+
+        {/* Studio Specs */}
+        <div className="pt-6 border-t border-zinc-800/80 grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono text-xs">
+          <div className="p-4 rounded border border-zinc-800 bg-zinc-900/40 space-y-1">
+            <span className="text-zinc-500 text-[10px] uppercase">Location</span>
+            <p className="text-zinc-200">Galle, Sri Lanka</p>
           </div>
-        </section>
+          <div className="p-4 rounded border border-zinc-800 bg-zinc-900/40 space-y-1">
+            <span className="text-zinc-500 text-[10px] uppercase">Enclosure Volume</span>
+            <p className="text-zinc-200">Up to 350×350×350 mm</p>
+          </div>
+          <div className="p-4 rounded border border-zinc-800 bg-zinc-900/40 space-y-1">
+            <span className="text-zinc-500 text-[10px] uppercase">Turnaround</span>
+            <p className="text-zinc-200">24–48 hours</p>
+          </div>
+        </div>
       </div>
-    );
+    </div>
+  )
 }

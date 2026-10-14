@@ -46,9 +46,9 @@ const DEFAULT_ITEMS: Capability[] = [
 
 function Capabilities({
   id = "capabilities",
-  kicker = "Our 3D printing capabilities",
-  title = "Industrial-grade printers. Repeatable results.",
-  subtitle = "Process-controlled machines with calibration logs, tuned material profiles, and documented QA.",
+  kicker = "Equipment",
+  title = "Machine Specifications",
+  subtitle = "Calibrated build envelopes and material capabilities for FDM and SLA fabrication.",
   items = DEFAULT_ITEMS,
   className = "",
   columns = 2,
@@ -57,58 +57,44 @@ function Capabilities({
     columns === 3 ? "md:grid-cols-3" : columns === 1 ? "md:grid-cols-1" : "md:grid-cols-2";
 
   return (
-    <section id={id} className={`py-16 md:py-20 ${className}`}>
+    <section id={id} className={`py-16 bg-zinc-950 border-t border-zinc-800/80 ${className}`}>
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Heading */}
-        <div className="space-y-3">
-          <p className="text-xs uppercase tracking-[0.2em] text-amboss-light/70">{kicker}</p>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white">{title}</h2>
-          <p className="text-sm md:text-base text-amboss-light/70 max-w-3xl">{subtitle}</p>
+        <div className="space-y-2">
+          <p className="text-[11px] uppercase tracking-wider font-mono text-zinc-400">{kicker}</p>
+          <h2 className="text-2xl sm:text-3xl font-medium tracking-tight text-zinc-100">{title}</h2>
+          <p className="text-xs sm:text-sm text-zinc-400 max-w-2xl">{subtitle}</p>
         </div>
 
         {/* Cards */}
-        <div className={`mt-8 grid gap-6 sm:gap-7 ${gridCols}`}>
+        <div className={`mt-8 grid gap-4 ${gridCols}`}>
           {items.map((c) => (
             <article
               key={c.name}
-              className="group overflow-hidden rounded-2xl border border-amboss-accent/30 bg-amboss-section/30"
+              className="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900/30 hover:border-zinc-700 transition"
             >
-              <div className="relative h-64 bg-amboss-bg">
+              <div className="relative h-60 bg-zinc-900">
                 <img
                   src={c.img}
                   alt={c.name}
                   className="absolute inset-0 h-full w-full object-cover"
-                  style={{ filter: "drop-shadow(0 0 22px rgba(50, 130, 184, 0.35))" }}
                   loading="lazy"
                   decoding="async"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-amboss-bg/85 via-amboss-bg/30 to-transparent" />
-                <div
-                  className="absolute inset-0 pointer-events-none opacity-0 transition group-hover:opacity-100"
-                  style={{
-                    background:
-                      "radial-gradient(600px circle at var(--x,50%) var(--y,50%), rgba(50, 130, 184, 0.15), transparent 40%)",
-                  }}
-                  onMouseMove={(e) => {
-                    const el = e.currentTarget as HTMLDivElement;
-                    const r = el.getBoundingClientRect();
-                    el.style.setProperty("--x", `${e.clientX - r.left}px`);
-                    el.style.setProperty("--y", `${e.clientY - r.top}px`);
-                  }}
-                />
-                <div className="absolute bottom-4 left-4 right-4">
-                  <h3 className="text-white text-xl font-semibold">{c.name}</h3>
+                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
+                <div className="absolute bottom-3 left-4 right-4">
+                  <h3 className="text-zinc-100 text-base font-medium">{c.name}</h3>
                 </div>
               </div>
 
-              <div className="p-6">
-                <p className="text-sm text-amboss-light">{c.desc}</p>
+              <div className="p-5 space-y-4">
+                <p className="text-xs text-zinc-400 leading-relaxed">{c.desc}</p>
                 {c.specs && c.specs.length > 0 && (
-                  <ul className="mt-4 flex flex-wrap gap-2">
+                  <ul className="flex flex-wrap gap-1.5">
                     {c.specs.map((s, i) => (
                       <li
                         key={i}
-                        className="rounded-full border border-amboss-accent/30 bg-white/5 px-3 py-1 text-xs text-amboss-light/80"
+                        className="rounded border border-zinc-800 bg-zinc-900/80 px-2.5 py-1 text-[11px] font-mono text-zinc-400"
                       >
                         {s}
                       </li>

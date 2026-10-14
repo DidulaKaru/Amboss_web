@@ -33,14 +33,14 @@ This document tracks execution status across all development phases. Update this
 ---
 
 ## Phase 3: Instant STL Quotation Engine
-- [ ] **Task 3.1:** Implement STL parsing and tetrahedral volume algorithm in `stlVolumeWorker.ts`.
-- [ ] **Task 3.2:** Write unit tests for volume and bounding box calculation with a standard $20\text{mm}$ calibration cube.
-- [ ] **Task 3.3:** Build drag-and-drop file upload zone with interactive Three.js 3D part preview.
-- [ ] **Task 3.4:** Build material, infill, and layer height quotation form with dynamic LKR price computation.
-- [ ] **Task 3.5:** Connect quotation summary to direct WhatsApp checkout payload generation.
+- [x] **Task 3.1:** Implement STL parsing and tetrahedral volume algorithm in `stlVolumeWorker.ts`.
+- [x] **Task 3.2:** Write unit tests for volume and bounding box calculation with a standard $20\text{mm}$ calibration cube.
+- [x] **Task 3.3:** Build drag-and-drop file upload zone with interactive Three.js 3D part preview.
+- [x] **Task 3.4:** Build material, infill, and layer height quotation form with dynamic LKR price computation.
+- [x] **Task 3.5:** Connect quotation summary to direct WhatsApp checkout payload generation with prominent disclaimer.
 
 *Verification Notes:*
-> _Pending execution._
+> Client-side STL parser implemented using Divergence Theorem for signed tetrahedral volume and cross products for surface area. Verified with automated Vitest unit tests against a standard 20mm calibration cube ($8000\,\text{mm}^3 / 8.0\,\text{cm}^3$, $2400\,\text{mm}^2 / 24.0\,\text{cm}^2$, $20\times 20\times 20\,\text{mm}$). Built Three.js `PartViewer` with OrbitControls, grid, wireframe, and dynamic material coloring. Integrated `QuoteForm` with materials matrix (PLA, PLA+, PETG, ABS, TPU, PA12-CF, Standard/Tough Resin), infill density slider, layer quality options, build envelope printer routing, and WhatsApp checkout payload generation with prominent estimation disclaimer. Clean production build verified.
 
 ---
 

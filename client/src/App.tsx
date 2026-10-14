@@ -5,6 +5,7 @@ import Projects from './pages/Projects/projects'
 import News from './pages/news/news'
 import AboutUs from './pages/AboutUs/aboutUs'
 import Shop from './pages/shop/Shop'
+import QuotePage from './features/quote/QuotePage'
 import { CartProvider } from './context/CartContext'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Seo from './components/seo'
@@ -82,6 +83,17 @@ function RouteSeo() {
     )
   }
 
+  if (pathname === '/quote') {
+    return (
+      <Seo
+        title="Instant 3D Print Quote | AMBOSS"
+        description="Upload your STL CAD model for instant volumetric mass estimation, material selection, and itemized 3D printing quotation in LKR."
+        path="/quote"
+        keywords="instant 3d quote sri lanka, stl quote galle, 3d printing cost calculator, amboss instant quote"
+      />
+    )
+  }
+
   return (
     <Seo
       title="AMBOSS | 3D Printing Services in Sri Lanka"
@@ -101,6 +113,7 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/quote" element={<QuotePage />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/news" element={<News />} />
           <Route path="/about-us" element={<AboutUs />} />

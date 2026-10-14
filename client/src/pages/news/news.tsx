@@ -40,17 +40,14 @@ export function NewsCarousel({ onLearnMore }: NewsCarouselProps) {
 
           <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-8 md:p-12 lg:p-16">
             <div className="max-w-6xl mx-auto">
-              <h2 className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-4">{item.title}</h2>
-              <p className="text-sm sm:text-lg md:text-xl text-gray-200 max-w-3xl mb-4">{item.summary}</p>
+              <h2 className="text-xl sm:text-2xl md:text-4xl font-medium text-white mb-3">{item.title}</h2>
+              <p className="text-xs sm:text-sm md:text-base text-zinc-300 max-w-2xl mb-4 leading-relaxed">{item.summary}</p>
               <button
                 onClick={() => onLearnMore(item.anchorId)}
-                className="inline-flex items-center gap-2 text-white bg-amboss-accent hover:bg-amboss-accent/80 px-4 py-2 rounded"
+                className="inline-flex items-center gap-2 text-zinc-950 bg-zinc-100 hover:bg-white px-4 py-2 rounded text-xs font-medium transition cursor-pointer"
                 aria-label={`Learn more about ${item.title}`}
               >
-                Learn more
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                Learn more →
               </button>
             </div>
           </div>
@@ -59,29 +56,29 @@ export function NewsCarousel({ onLearnMore }: NewsCarouselProps) {
 
       <button
         onClick={goToPrevious}
-        className="hidden sm:flex absolute left-3 md:left-6 top-1/2 -translate-y-1/2 z-20 pointer-events-auto bg-black/35 hover:bg-black/50 border border-white/30 text-white p-2.5 md:p-3 rounded-full transition"
+        className="hidden sm:flex absolute left-3 md:left-6 top-1/2 -translate-y-1/2 z-20 pointer-events-auto bg-zinc-950/60 hover:bg-zinc-900 border border-zinc-800 text-zinc-300 p-2 rounded transition"
         aria-label="Previous slide"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
         </svg>
       </button>
       <button
         onClick={goToNext}
-        className="hidden sm:flex absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-20 pointer-events-auto bg-black/35 hover:bg-black/50 border border-white/30 text-white p-2.5 md:p-3 rounded-full transition"
+        className="hidden sm:flex absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-20 pointer-events-auto bg-zinc-950/60 hover:bg-zinc-900 border border-zinc-800 text-zinc-300 p-2 rounded transition"
         aria-label="Next slide"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
         </svg>
       </button>
 
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
         {newsItems.map((_, index) => (
           <button
             key={index}
             onClick={() => goToSlide(index)}
-            className={`w-3 h-3 rounded-full transition-all ${index === currentSlide ? "bg-white w-8" : "bg-white/50 hover:bg-white/75"}`}
+            className={`h-1.5 rounded-full transition-all ${index === currentSlide ? "bg-white w-6" : "bg-white/40 w-2 hover:bg-white/60"}`}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}
@@ -110,40 +107,35 @@ export default function News() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-amboss-bg">
-      <section className="py-16 md:py-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-10">News</h2>
-          <div className="grid grid-cols-1 gap-8">
-            {newsItems.map((item) => (
-              <article
-                key={item.id}
-                id={item.anchorId}
-                className="relative rounded-xl border border-amboss-accent/40 bg-zinc-900/50 p-6 md:p-8 shadow-[0_0_24px_rgba(37,99,235,0.35)] scroll-mt-20"
-              >
-                <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start">
-                  <img
-                    src={item.imageUrl}
-                    alt={item.title}
-                    className="w-full md:w-72 h-48 md:h-48 object-cover rounded-lg"
-                  />
-                  <div className="flex-1">
-                    <h3 className="text-2xl md:text-3xl font-semibold text-white mb-3">{item.title}</h3>
-                    <p className="text-amboss-light text-base md:text-lg leading-relaxed mb-4">{item.content}</p>
-                    <a
-                      href={`#${item.anchorId}`}
-                      className="sr-only"
-                      aria-label={`Permalink to ${item.title}`}
-                    >
-                      Permalink
-                    </a>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto space-y-8">
+        <div className="space-y-1">
+          <p className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">Updates</p>
+          <h1 className="text-2xl sm:text-3xl font-medium tracking-tight text-zinc-100">News & Releases</h1>
         </div>
-      </section>
+
+        <div className="grid grid-cols-1 gap-4">
+          {newsItems.map((item) => (
+            <article
+              key={item.id}
+              id={item.anchorId}
+              className="rounded border border-zinc-800 bg-zinc-900/30 p-5 sm:p-6 hover:border-zinc-700 transition scroll-mt-20"
+            >
+              <div className="flex flex-col sm:flex-row gap-5 items-start">
+                <img
+                  src={item.imageUrl}
+                  alt={item.title}
+                  className="w-full sm:w-60 h-40 object-cover rounded bg-zinc-950"
+                />
+                <div className="flex-1 space-y-2">
+                  <h3 className="text-base sm:text-lg font-medium text-zinc-100">{item.title}</h3>
+                  <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">{item.content}</p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

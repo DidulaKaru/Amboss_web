@@ -60,22 +60,22 @@ export default function Footer({
   ],
 }: FooterProps) {
   return (
-    <footer id="footer" className="mt-16 border-t border-amboss-accent/30 bg-amboss-bg">
+    <footer id="footer" className="mt-16 border-t border-zinc-800/80 bg-zinc-950">
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid gap-10 md:grid-cols-3">
-          <div className="space-y-4">
+          <div className="space-y-3">
             <a href="#home" className="inline-flex items-center gap-3">
               <img
                 src={`${import.meta.env.BASE_URL}images/amboss-logo.png`}
-                alt="Amboss logo"
-                className="h-8 w-auto"
+                alt="Amboss"
+                className="h-7 w-auto"
                 loading="lazy"
               />
             </a>
-            <p className="text-sm text-amboss-light/60 max-w-sm">
-              Shaping your future with precise, reliable 3D printingfrom rapid prototyping to small-batch production.
+            <p className="text-xs text-zinc-400 max-w-sm leading-relaxed">
+              3D printing and rapid prototyping for functional parts, fixtures, and small-batch production.
             </p>
-            <div className="flex items-center gap-3 pt-1">
+            <div className="flex items-center gap-2 pt-2">
               {socials.map((s) => (
                 <a
                   key={s.label}
@@ -83,7 +83,7 @@ export default function Footer({
                   aria-label={s.label}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-amboss-accent/30 bg-amboss-section/30 text-amboss-light/80 hover:text-white hover:border-amboss-light/50 transition"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded border border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:text-white hover:border-zinc-700 transition"
                 >
                   {s.icon}
                 </a>
@@ -91,11 +91,11 @@ export default function Footer({
             </div>
           </div>
           <div>
-            <h4 className="text-sm font-medium text-white">Quick links</h4>
-            <ul className="mt-3 space-y-2">
+            <h4 className="text-xs font-mono uppercase tracking-wider text-zinc-400">Navigation</h4>
+            <ul className="mt-3 space-y-2 text-xs">
               {links.map((l) => (
                 <li key={l.href}>
-                  <a href={l.href} className="text-sm text-amboss-light/80 hover:text-white transition">
+                  <a href={l.href} className="text-zinc-400 hover:text-white transition">
                     {l.label}
                   </a>
                 </li>
@@ -103,17 +103,17 @@ export default function Footer({
             </ul>
           </div>
           <div className="space-y-3">
-            <h4 className="text-sm font-medium text-white">Contact</h4>
-            <div className="flex items-start gap-3 text-sm text-amboss-light/80">
-              <span className="mt-0.5 text-amboss-light/60"><IconMail /></span>
+            <h4 className="text-xs font-mono uppercase tracking-wider text-zinc-400">Contact</h4>
+            <div className="flex items-start gap-2.5 text-xs text-zinc-400">
+              <span className="mt-0.5 text-zinc-500"><IconMail /></span>
               <a href={`mailto:${email}`} className="hover:text-white break-all">{email}</a>
             </div>
-            <div className="flex items-start gap-3 text-sm text-amboss-light/80">
-              <span className="mt-0.5 text-amboss-light/60"><IconPhone /></span>
+            <div className="flex items-start gap-2.5 text-xs text-zinc-400">
+              <span className="mt-0.5 text-zinc-500"><IconPhone /></span>
               <a href={`https://wa.me/${phone.replace(/[^\d]/g, "")}`} target="_blank" rel="noopener noreferrer" className="hover:text-white">{phone}</a>
             </div>
-            <div className="flex items-start gap-3 text-sm text-amboss-light/80">
-              <span className="mt-0.5 text-amboss-light/60"><IconMap /></span>
+            <div className="flex items-start gap-2.5 text-xs text-zinc-400">
+              <span className="mt-0.5 text-zinc-500"><IconMap /></span>
               <p className="whitespace-pre-line">
                 {addressLines.join("\n")}
               </p>
@@ -121,11 +121,11 @@ export default function Footer({
           </div>
         </div>
       </div>
-      <div className="border-t border-amboss-accent/30">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8 py-4 text-xs text-amboss-light/60">
-          <p> {new Date().getFullYear()} {company}. All rights reserved.</p>
+      <div className="border-t border-zinc-800/80">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8 py-4 text-[11px] text-zinc-500 font-mono">
+          <p>© {new Date().getFullYear()} {company}. All rights reserved.</p>
           <div className="flex items-center gap-4">
-            <a href="#home" className="hover:text-white">Back to top</a>
+            <a href="#home" className="hover:text-zinc-300">Back to top</a>
           </div>
         </div>
       </div>

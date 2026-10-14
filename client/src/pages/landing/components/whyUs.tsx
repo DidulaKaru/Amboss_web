@@ -11,27 +11,27 @@ const DEFAULT_ITEMS: string[] = [];
 
 function WhyUs({
   id = "why-us",
-  kicker = "Why choose us",
-  title = "Quality, speed, and real manufacturing support",
-  subtitle = "We obsess over reliability—process-controlled printing, tuned profiles, and proactive feedback so your parts work the first time.",
+  kicker = "Quality & Process",
+  title = "Engineering Support",
+  subtitle = "Calibrated print profiles, verified tolerances, and direct design-for-additive-manufacturing feedback on every job.",
   items = DEFAULT_ITEMS,
   className = "",
 }: WhyUsProps) {
   return (
-    <section id={id} className={`py-16 md:py-20 ${className}`}>
+    <section id={id} className={`py-16 bg-zinc-950 border-t border-zinc-800/80 ${className}`}>
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Heading */}
-        <div className="space-y-3">
+        <div className="space-y-2">
           {kicker && (
-            <p className="text-xs uppercase tracking-[0.2em] text-amboss-light/70">
+            <p className="text-[11px] uppercase tracking-wider font-mono text-zinc-400">
               {kicker}
             </p>
           )}
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white">
+          <h2 className="text-2xl sm:text-3xl font-medium tracking-tight text-zinc-100">
             {title}
           </h2>
           {subtitle && (
-            <p className="text-sm md:text-base text-amboss-light/70 max-w-3xl">
+            <p className="text-xs sm:text-sm text-zinc-400 max-w-2xl leading-relaxed">
               {subtitle}
             </p>
           )}

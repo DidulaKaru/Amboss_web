@@ -6,7 +6,6 @@ import Lenis from 'lenis'
 import { Link } from 'react-router-dom'
 import { MorphShader } from './shaders/MorphShader'
 import { createMechanicalGeometry } from './geometry/createMechanicalGeometry'
-import { SITE } from '../../config/site'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -19,22 +18,22 @@ interface StageInfo {
 
 const STAGES: StageInfo[] = [
   {
-    number: '',
-    badge: 'Ideation & Schematics',
-    title: 'Engineering Blueprint',
-    subtitle: 'Precision vector tolerances, CAD wireframe geometry, and dimensional validation.',
+    number: '01',
+    badge: 'Design & CAD',
+    title: 'Parametric CAD Modeling',
+    subtitle: 'Functional 3D design and engineering files ready for fabrication.',
   },
   {
-    number: '',
-    badge: 'Digital Prototyping',
-    title: 'SolidWorks/ Blender',
-    subtitle: 'Bringing your idea to the digital realm',
+    number: '02',
+    badge: 'Validation',
+    title: 'Digital Prototyping',
+    subtitle: 'Tolerances, fit checks, and rapid mechanical iteration.',
   },
   {
-    number: '',
-    badge: 'Additive Manufacturing',
-    title: 'Industrial 3D Printing',
-    subtitle: 'High-temp PA12-CF carbon fiber and resin manufacturing on Creality K2 Plus & Bambu Labs.',
+    number: '03',
+    badge: 'Fabrication',
+    title: 'Additive Manufacturing',
+    subtitle: 'FDM and resin production on calibrated industrial and desktop machines.',
   },
 ]
 
@@ -42,7 +41,6 @@ export default function HeroCanvas() {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [activeStage, setActiveStage] = useState(0)
-  const [scrollPct, setScrollPct] = useState(0)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -116,9 +114,9 @@ export default function HeroCanvas() {
     scene.add(mesh)
 
     // Engineering grid helper in background
-    const grid = new THREE.GridHelper(10, 20, 0x00d2ff, 0x0f4c75)
+    const grid = new THREE.GridHelper(10, 20, 0x3f3f46, 0x27272a)
     grid.position.y = -1.3
-    grid.material.opacity = 0.25
+    grid.material.opacity = 0.2
     grid.material.transparent = true
     scene.add(grid)
 
@@ -143,7 +141,6 @@ export default function HeroCanvas() {
       onUpdate: (self) => {
         const progress = self.progress
         shaderUniforms.uProgress.value = progress
-        setScrollPct(Math.round(progress * 100))
 
         // Rotate mesh through 360 deg during the 300vh scroll scrub
         mesh.rotation.y = -0.4 + progress * Math.PI * 2.2
@@ -221,25 +218,20 @@ export default function HeroCanvas() {
     <div
       id="hero-scroll-track"
       ref={containerRef}
-      className="relative w-full h-[300vh] bg-gradient-to-b from-[#0A121A] via-[#101A24] to-[#1B262C]"
+      className="relative w-full h-[300vh] bg-zinc-950"
     >
       {/* Pinned Viewport Container */}
       <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-between pointer-events-none select-none">
-        {/* Background Ambient Glows & Engineering Blueprint Grid */}
+        {/* Subtle monochrome blueprint grid overlay */}
         <div className="absolute inset-0 pointer-events-none -z-10 overflow-hidden">
-          {/* Blueprint subtle grid overlay */}
           <div
-            className="absolute inset-0 opacity-[0.07]"
+            className="absolute inset-0 opacity-[0.03]"
             style={{
               backgroundImage:
-                'linear-gradient(to right, #00D2FF 1px, transparent 1px), linear-gradient(to bottom, #00D2FF 1px, transparent 1px)',
-              backgroundSize: '48px 48px',
+                'linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px)',
+              backgroundSize: '40px 40px',
             }}
           />
-          {/* Cyan glow top-left */}
-          <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-[#00D2FF]/10 blur-3xl" />
-          {/* Navy accent glow bottom-right */}
-          <div className="absolute -bottom-32 -right-32 w-[32rem] h-[32rem] rounded-full bg-[#0F4C75]/25 blur-3xl" />
         </div>
 
         {/* WebGL 3D Canvas */}
@@ -249,53 +241,49 @@ export default function HeroCanvas() {
           className="absolute inset-0 w-full h-full pointer-events-auto"
         />
 
-        {/* Top Header / Branding Indicator */}
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex items-center justify-between">
+        {/* Top Header / Indicator */}
+        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="hidden sm:inline-block text-xs font-mono text-zinc-400">
-              Scrub to transform model
+            <span className="hidden sm:inline-block text-[11px] font-mono text-zinc-500 uppercase tracking-wider">
+              Scroll to explore process
             </span>
           </div>
         </div>
 
-        {/* Center / Hero Overlay Content */}
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col justify-center pointer-events-none">
-          <div className="max-w-2xl backdrop-blur-[2px]">
-            {/* Dynamic Stage Pill */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase bg-[#00D2FF]/15 border border-[#00D2FF]/40 text-[#BBE1FA] shadow-lg mb-4">
+        {/* Center / Hero Content */}
+        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col justify-center pointer-events-none">
+          <div className="max-w-xl">
+            {/* Minimal Stage Badge */}
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-[11px] font-mono text-zinc-400 mb-4">
               <span>{STAGES[activeStage].number}</span>
-              <span className="w-1 h-1 rounded-full bg-cyan-400" />
+              <span className="text-zinc-600">/</span>
               <span>{STAGES[activeStage].badge}</span>
             </div>
 
             {/* Dynamic Stage Main Title */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white leading-tight drop-shadow-md">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight text-zinc-100 leading-tight">
               {STAGES[activeStage].title}
             </h1>
 
             {/* Subtitle description */}
-            <p className="mt-4 text-base sm:text-lg text-zinc-300 max-w-xl leading-relaxed drop-shadow">
+            <p className="mt-3 text-sm sm:text-base text-zinc-400 max-w-md leading-relaxed">
               {STAGES[activeStage].subtitle}
             </p>
 
-            {/* CTAs (pointer-events-auto so clickable) */}
-            <div className="mt-8 flex flex-wrap items-center gap-4 pointer-events-auto">
-              <a
-                href={`https://wa.me/${SITE.phone.replace(/[^\d]/g, '')}?text=${encodeURIComponent(
-                  'Hello Amboss! I would like to get an instant quote for a 3D printing project.'
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-xl bg-cyan-500 px-6 py-3.5 text-sm sm:text-base font-semibold text-zinc-950 shadow-lg shadow-cyan-500/25 transition-all hover:bg-cyan-400 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-zinc-950"
+            {/* Minimalist CTAs */}
+            <div className="mt-8 flex flex-wrap items-center gap-3 pointer-events-auto">
+              <Link
+                to="/quote"
+                className="inline-flex items-center justify-center rounded bg-zinc-100 hover:bg-white px-5 py-2.5 text-xs sm:text-sm font-medium text-zinc-950 transition"
               >
-                Instant WhatsApp Quote
-              </a>
+                Instant Quote
+              </Link>
 
               <Link
                 to="/shop"
-                className="inline-flex items-center justify-center rounded-xl border border-zinc-700 bg-zinc-900/80 px-6 py-3.5 text-sm sm:text-base font-semibold text-white shadow-md backdrop-blur transition-all hover:border-cyan-400 hover:bg-zinc-800"
+                className="inline-flex items-center justify-center rounded border border-zinc-800 bg-zinc-900/60 hover:border-zinc-700 hover:bg-zinc-900 px-5 py-2.5 text-xs sm:text-sm font-medium text-zinc-300 transition"
               >
-                Explore Maker Shop
+                Browse Shop
               </Link>
             </div>
           </div>

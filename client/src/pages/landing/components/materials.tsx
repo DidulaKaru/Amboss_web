@@ -34,10 +34,10 @@ function Pill({
   children,
   onClick,
 }: React.PropsWithChildren<{ onClick?: () => void }>): React.ReactElement {
-  const pillClass = `rounded-xl border border-amboss-accent/30 bg-white/[0.04]
-                  px-4 py-3 text-center text-sm text-zinc-200
-                  hover:border-amboss-light/50 hover:bg-amboss-section/30 transition
-                  focus:outline-none focus:ring-2 focus:ring-red-600/40`;
+  const pillClass = `rounded border border-zinc-800 bg-zinc-900/40
+                  px-3 py-2 text-center text-xs font-mono text-zinc-300
+                  hover:border-zinc-700 hover:text-white hover:bg-zinc-900/80 transition
+                  focus:outline-none`;
 
   if (onClick) {
     return (
@@ -53,39 +53,39 @@ function Pill({
 function Materials({
   id = "materials",
   kicker = "Materials",
-  title = "From everyday filaments to engineering-grade resins",
-  subtitle = "Choose the right material for strength, heat resistance, flexibility, or surface finish.",
+  title = "Available Materials",
+  subtitle = "Engineering filaments and photopolymer resins for functional parts and prototypes.",
   groups = DEFAULT_GROUPS,
   className = "",
   onSelect,
 }: MaterialsProps) {
   return (
-    <section id={id} className={`py-16 md:py-20 ${className}`}>
+    <section id={id} className={`py-16 bg-zinc-950 border-t border-zinc-800/80 ${className}`}>
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Heading */}
-        <div className="space-y-3">
-          <p className="text-xs uppercase tracking-[0.2em] text-amboss-light/70">
+        <div className="space-y-2">
+          <p className="text-[11px] uppercase tracking-wider font-mono text-zinc-400">
             {kicker}
           </p>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white">
+          <h2 className="text-2xl sm:text-3xl font-medium tracking-tight text-zinc-100">
             {title}
           </h2>
-          <p className="text-sm md:text-base text-amboss-light/70 max-w-3xl">
+          <p className="text-xs sm:text-sm text-zinc-400 max-w-2xl">
             {subtitle}
           </p>
         </div>
 
         {/* Groups */}
-        <div className="mt-8 space-y-10">
+        <div className="mt-8 space-y-8">
           {Object.entries(groups).map(([key, list]) => {
             if (!list || list.length === 0) return null;
             const label = LABELS[key] ?? key.replace(/^[a-z]/, (m) => m.toUpperCase());
             return (
               <div key={key}>
-                <p className="mb-3 inline-flex items-center rounded-full bg-white/5 px-3 py-1 text-xs font-medium text-white/80 ring-1 ring-white/10">
+                <p className="mb-2.5 text-[11px] font-mono uppercase tracking-wider text-zinc-400">
                   {label}
                 </p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
                   {list.map((m) => (
                     <Pill
                       key={`${key}:${m}`}

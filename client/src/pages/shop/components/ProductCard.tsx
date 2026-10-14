@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import type { Product } from '../../../types/shop'
 import { useCart } from '../../../context/useCart'
+import { getAssetUrl } from '../../../utils/assets'
 
 interface ProductCardProps {
   product: Product
@@ -28,44 +29,56 @@ export default function ProductCard({ product }: ProductCardProps) {
   const isOutOfStock = product.stock === 0
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-lg border-2 border-amboss-accent/30 bg-amboss-dark hover:border-amboss-accent/60 transition-all duration-300">
+    <div className="flex flex-col overflow-hidden rounded border border-zinc-800 bg-zinc-900/30 hover:border-zinc-700 transition">
       {/* Image Container */}
-      <div className="aspect-square overflow-hidden bg-amboss-dark/50">
+      <div className="aspect-square overflow-hidden bg-zinc-950 relative">
         <img
-          src={product.image_url}
+          src={getAssetUrl(product.image_url)}
           alt={product.name}
-          className="h-full w-full object-cover hover:scale-105 transition-transform duration-300"
+          onError={(e) => {
+            e.currentTarget.src = getAssetUrl('images/amboss-logo.png')
+          }}
+          className="h-full w-full object-cover"
         />
+        {isOutOfStock && (
+          <span className="absolute top-2 right-2 px-2 py-0.5 rounded bg-zinc-900/90 border border-zinc-800 text-[10px] font-mono text-zinc-400">
+            Out of stock
+          </span>
+        )}
       </div>
 
       {/* Content */}
-      <div className="flex flex-1 flex-col p-4">
-        <h3 className="text-lg font-semibold text-white mb-2">{product.name}</h3>
-        <p className="text-sm text-amboss-light mb-4 flex-grow">{product.description}</p>
+      <div className="flex flex-1 flex-col p-3.5 space-y-3">
+        <div>
+          <h3 className="text-xs font-medium text-zinc-200 line-clamp-1">{product.name}</h3>
+          <p className="text-[11px] text-zinc-400 mt-1 line-clamp-2 leading-relaxed">{product.description}</p>
+        </div>
 
         {/* Price */}
-        <div className="mb-4">
-          <p className="text-2xl font-bold text-amboss-accent">
-            Rs {product.price.toLocaleString()}
+        <div className="pt-1">
+          <p className="text-sm font-mono font-medium text-zinc-100">
+            Rs {product.price.toLocaleString()} LKR
           </p>
         </div>
 
         {/* Quantity & Button */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 pt-1 mt-auto">
           {!isOutOfStock && (
-            <div className="flex items-center gap-2 border border-amboss-accent/30 rounded px-2">
+            <div className="flex items-center border border-zinc-800 rounded bg-zinc-900/60 px-1.5">
               <button
+                type="button"
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="py-1 px-2 text-amboss-accent hover:text-white transition"
+                className="py-1 px-1.5 text-xs text-zinc-400 hover:text-white transition"
               >
                 −
               </button>
-              <span className="w-8 text-center text-white">{quantity}</span>
+              <span className="w-5 text-center text-xs font-mono text-zinc-200">{quantity}</span>
               <button
+                type="button"
                 onClick={() =>
                   setQuantity(Math.min(product.stock, quantity + 1))
                 }
-                className="py-1 px-2 text-amboss-accent hover:text-white transition"
+                className="py-1 px-1.5 text-xs text-zinc-400 hover:text-white transition"
               >
                 +
               </button>
@@ -73,24 +86,21 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
 
           <button
+            type="button"
             onClick={handleAddToCart}
             disabled={isOutOfStock}
-            aria-pressed={added}
-            className={`flex-1 rounded py-2 px-4 font-medium transition-flex ${
+            className={`flex-1 rounded py-1.5 px-3 text-xs font-medium transition cursor-pointer ${
               isOutOfStock
-                ? 'bg-amboss-dark/50 text-amboss-light/50 cursor-not-allowed border border-amboss-accent/20'
-                : 'bg-amboss-accent text-amboss-dark hover:bg-amboss-accent/90'
-            } ${added ? 'btn-add-animate' : ''}`}
+                ? 'bg-zinc-900 text-zinc-500 cursor-not-allowed border border-zinc-800'
+                : added
+                ? 'bg-zinc-800 text-zinc-100 border border-zinc-700'
+                : 'bg-zinc-100 text-zinc-950 hover:bg-white'
+            }`}
           >
             {isOutOfStock ? (
-              'Out of Stock'
+              'Unavailable'
             ) : added ? (
-              <span className="added-badge">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-                  <path d="M20 6L9 17l-5-5" stroke="#0F172A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                Added
-              </span>
+              'Added'
             ) : (
               'Add to Cart'
             )}

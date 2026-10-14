@@ -1,141 +1,148 @@
+import { getAssetUrl } from '../../utils/assets'
+
 export default function Projects() {
   return (
-    <main className="min-h-screen bg-zinc-950 text-white">
-      <section className="relative w-full min-h-[70vh] md:min-h-[80vh]">
+    <main className="min-h-screen bg-zinc-950 text-zinc-100">
+      {/* Featured Project */}
+      <section className="relative w-full min-h-[60vh] md:min-h-[70vh] flex flex-col justify-end">
         <img
-          src={`${import.meta.env.BASE_URL}images/pawsthetics.jpeg`}
-          alt="Pawsthetics by AMBOSS team with dogs"
+          src={getAssetUrl('images/pawsthetics.jpeg')}
+          alt="Pawsthetics prosthetic project"
+          onError={(e) => {
+            e.currentTarget.src = getAssetUrl('images/amboss-logo.png')
+          }}
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent" />
 
-        <div className="absolute inset-0 z-10 flex flex-col justify-end">
-          <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 pb-8 sm:px-6 md:px-12 md:pb-12">
-            <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.18em] text-[#BBE1FA]">
-              Featured Project
-            </p>
-            <div className="inline-flex items-center rounded-lg">
-              <img
-                src={`${import.meta.env.BASE_URL}images/by%20amboss.png`}
-                alt="Pawsthetics by AMBOSS"
-                className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto drop-shadow-[0_2px_8px_rgba(50,130,184,0.35)]"
-                loading="eager"
-              />
-            </div>
-            <p className="max-w-3xl text-base sm:text-lg text-zinc-100">
-              This Project aims to utilize the power and versatility of 3D Printing to enrich the lives of disabled
-              animals in the country. The provided model was designed and fabricated for Daniel, a puppy currently in the
-              care of Animal SOS, Ahangama.
-            </p>
-            <div className="flex gap-4">
-              <a
-                href="https://pawsthetics.lk/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-full bg-[#3282B8] px-5 py-2.5 sm:px-6 sm:py-3 text-sm sm:text-base font-semibold text-white transition hover:bg-[#0F4C75] focus:outline-none focus:ring-2 focus:ring-[#3282B8] focus:ring-offset-2 focus:ring-offset-zinc-950"
-              >
-                Visit pawsthetics.lk
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto flex max-w-5xl flex-col gap-6 px-6 py-12 md:px-12">
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-6 shadow-lg">
-          <h2 className="text-2xl font-semibold">Why This Matters</h2>
-          <p className="mt-3 text-base text-zinc-300">
-            Every paw matters. By pairing engineering with compassion, Pawsthetics helps animals regain mobility and
-            independence. Daniel&apos;s custom prosthetic is one example of how 3D printing can rapidly prototype, test, and
-            deliver life-changing support to animals in need.
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pb-10 sm:px-6 lg:px-8 space-y-4">
+          <p className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
+            Featured Case Study
           </p>
+          <div className="inline-flex items-center">
+            <img
+              src={getAssetUrl('images/by amboss.png')}
+              alt="Pawsthetics by Amboss"
+              onError={(e) => {
+                e.currentTarget.src = getAssetUrl('images/pawsthetics_by_amboss.png')
+              }}
+              className="h-10 sm:h-12 w-auto"
+              loading="eager"
+            />
+          </div>
+          <p className="max-w-2xl text-xs sm:text-sm text-zinc-300 leading-relaxed">
+            Custom additive prosthetic design and fabrication for disabled animals in Sri Lanka, prototyped in collaboration with Animal SOS, Ahangama.
+          </p>
+          <div>
+            <a
+              href="https://pawsthetics.lk/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center rounded bg-zinc-100 hover:bg-white px-4 py-2 text-xs font-medium text-zinc-950 transition"
+            >
+              Visit pawsthetics.lk →
+            </a>
+          </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 md:px-12">
-        <h2 className="mb-8 text-center text-3xl font-bold md:text-4xl">Other Projects</h2>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-          <div className="group overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition hover:border-[#3282B8] hover:shadow-xl hover:shadow-[#3282B8]/10">
-            <div className="aspect-[4/5] w-full overflow-hidden bg-zinc-800">
+      {/* Projects Grid */}
+      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 space-y-8 border-t border-zinc-800/80">
+        <div className="space-y-1">
+          <p className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
+            Portfolio
+          </p>
+          <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-zinc-100">
+            Engineering Projects
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="overflow-hidden rounded border border-zinc-800 bg-zinc-900/30 hover:border-zinc-700 transition flex flex-col">
+            <div className="aspect-[4/3] w-full overflow-hidden bg-zinc-950">
               <img
-                src={`${import.meta.env.BASE_URL}images/pure%20mechanical%20arm.jpg`}
-                alt="Body-powered mechanical prosthetic arm"
-                className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                src={getAssetUrl('images/pure mechanical arm.jpg')}
+                alt="Mechanical prosthetic arm"
+                onError={(e) => {
+                  e.currentTarget.src = getAssetUrl('images/amboss-logo.png')
+                }}
+                className="h-full w-full object-cover"
               />
             </div>
-            <div className="p-6">
-              <h3 className="mb-3 text-xl font-semibold text-[#BBE1FA]">
-                3D-Printed Mechanical Prosthetic Arms
+            <div className="p-4 flex-1 flex flex-col justify-between space-y-2">
+              <h3 className="text-xs font-medium text-zinc-200">
+                Body-Powered Mechanical Arm
               </h3>
-              <p className="text-sm leading-relaxed text-zinc-300">
-                Our body-powered prosthetics leverage additive manufacturing to deliver lightweight, robust solutions at a 
-                fraction of traditional costs. Each arm is engineered with simple yet reliable mechanisms and tailored to 
-                individual anatomies, democratizing access to functional mobility aids across diverse communities.
+              <p className="text-[11px] text-zinc-400 leading-relaxed">
+                Cost-effective body-powered upper limb prosthesis tailored to individual anatomy using high-strength FDM filaments.
               </p>
             </div>
           </div>
 
-          <div className="group overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition hover:border-[#3282B8] hover:shadow-xl hover:shadow-[#3282B8]/10">
-            <div className="aspect-[4/5] w-full overflow-hidden bg-zinc-800">
+          <div className="overflow-hidden rounded border border-zinc-800 bg-zinc-900/30 hover:border-zinc-700 transition flex flex-col">
+            <div className="aspect-[4/3] w-full overflow-hidden bg-zinc-950">
               <img
-                src={`${import.meta.env.BASE_URL}images/set-gestured-arm.jpg`}
-                alt="Gesture-controlled prosthetic arm"
-                className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                src={getAssetUrl('images/set-gestured-arm.jpg')}
+                alt="Gesture-controlled arm"
+                onError={(e) => {
+                  e.currentTarget.src = getAssetUrl('images/amboss-logo.png')
+                }}
+                className="h-full w-full object-cover"
               />
             </div>
-            <div className="p-6">
-              <h3 className="mb-3 text-xl font-semibold text-[#BBE1FA]">
-                Gesture-Programmable Prosthetic System
+            <div className="p-4 flex-1 flex flex-col justify-between space-y-2">
+              <h3 className="text-xs font-medium text-zinc-200">
+                Gesture-Programmable System
               </h3>
-              <p className="text-sm leading-relaxed text-zinc-300">
-                A breakthrough in user-programmable prosthetics that empowers wearers to map custom gestures to specific 
-                finger movements. Through an elegant interface of button patterns and servo-driven actuators, users achieve 
-                natural, fluid interactions with everyday objects.
+              <p className="text-[11px] text-zinc-400 leading-relaxed">
+                Servo-actuated prosthetic mechanism allowing wearers to map repeatable grip patterns to tactile input triggers.
               </p>
             </div>
           </div>
 
-          <div className="group overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition hover:border-[#3282B8] hover:shadow-xl hover:shadow-[#3282B8]/10">
-            <div className="aspect-[4/5] w-full overflow-hidden bg-zinc-800">
+          <div className="overflow-hidden rounded border border-zinc-800 bg-zinc-900/30 hover:border-zinc-700 transition flex flex-col">
+            <div className="aspect-[4/3] w-full overflow-hidden bg-zinc-950">
               <img
-                src={`${import.meta.env.BASE_URL}images/Myoelectric%20arm.jpg`}
-                alt="Myoelectric prosthetic arm with EMG sensors"
-                className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                src={getAssetUrl('images/Myoelectric arm.jpg')}
+                alt="Myoelectric prosthesis"
+                onError={(e) => {
+                  e.currentTarget.src = getAssetUrl('images/amboss-logo.png')
+                }}
+                className="h-full w-full object-cover"
               />
             </div>
-            <div className="p-6">
-              <h3 className="mb-3 text-xl font-semibold text-[#BBE1FA]">
-                Bio-Sensing Myoelectric Prosthesis
+            <div className="p-4 flex-1 flex flex-col justify-between space-y-2">
+              <h3 className="text-xs font-medium text-zinc-200">
+                Myoelectric Arm Prosthesis
               </h3>
-              <p className="text-sm leading-relaxed text-zinc-300">
-                Harnessing electromyographic signals directly from residual muscle tissue, this biomimetic arm translates 
-                neural intent into coordinated digital movement. Our miniaturized control system merges biological impulses 
-                with robotic actuation, pushing the boundaries of intuitive human-machine integration.
+              <p className="text-[11px] text-zinc-400 leading-relaxed">
+                EMG-driven robotic prosthesis converting residual muscle signals into articulated finger actuation.
               </p>
             </div>
           </div>
 
-          <div className="group overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/40 transition hover:border-[#3282B8] hover:shadow-xl hover:shadow-[#3282B8]/10">
-            <div className="aspect-[4/5] w-full overflow-hidden bg-zinc-800">
+          <div className="overflow-hidden rounded border border-zinc-800 bg-zinc-900/30 hover:border-zinc-700 transition flex flex-col">
+            <div className="aspect-[4/3] w-full overflow-hidden bg-zinc-950">
               <img
-                src={`${import.meta.env.BASE_URL}images/vein%20finder.jpg`}
-                alt="Nightingale vein visualization device"
-                className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
+                src={getAssetUrl('images/vein finder.jpg')}
+                alt="Nightingale vein monitor"
+                onError={(e) => {
+                  e.currentTarget.src = getAssetUrl('images/amboss-logo.png')
+                }}
+                className="h-full w-full object-cover"
               />
             </div>
-            <div className="p-6">
-              <h3 className="mb-3 text-xl font-semibold text-[#BBE1FA]">
-                The Nightingale Vital Monitor
+            <div className="p-4 flex-1 flex flex-col justify-between space-y-2">
+              <h3 className="text-xs font-medium text-zinc-200">
+                Nightingale Vein Monitor
               </h3>
-              <p className="text-sm leading-relaxed text-zinc-300">
-                An at-home diagnostic tool combining near-infrared vein mapping with continuous vital sign tracking. Designed 
-                for patients requiring frequent blood pressure monitoring, it provides non-invasive real-time insights, 
-                reducing clinic dependency while maintaining clinical-grade accuracy.
+              <p className="text-[11px] text-zinc-400 leading-relaxed">
+                Near-infrared vein mapping and vital tracking device housed in custom SLA resin 3D-printed enclosure.
               </p>
             </div>
           </div>
         </div>
       </section>
     </main>
-  );
+  )
 }
