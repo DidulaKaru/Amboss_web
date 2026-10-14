@@ -22,13 +22,13 @@ This document tracks execution status across all development phases. Update this
 ---
 
 ## Phase 2: Scroll-Driven 3D Transformation (Hero Section)
-- [ ] **Task 2.1:** Install Three.js, GSAP, and smooth scrolling dependencies in `client/`.
-- [ ] **Task 2.2:** Build pinned 3D Canvas component (`HeroCanvas.tsx`) tied to scroll position via GSAP ScrollTrigger.
-- [ ] **Task 2.3:** Implement custom GLSL shader (`MorphShader.ts`) with Blueprint $\rightarrow$ CAD Viewport $\rightarrow$ 3D Print material transitions.
-- [ ] **Task 2.4:** Benchmark and ensure 60 FPS performance during full scroll scrubbing on desktop and mobile viewports.
+- [x] **Task 2.1:** Install Three.js, GSAP, and smooth scrolling dependencies in `client/`.
+- [x] **Task 2.2:** Build pinned 3D Canvas component (`HeroCanvas.tsx`) tied to scroll position via GSAP ScrollTrigger.
+- [x] **Task 2.3:** Implement custom GLSL shader (`MorphShader.ts`) with Blueprint $\rightarrow$ CAD Viewport $\rightarrow$ 3D Print material transitions.
+- [x] **Task 2.4:** Benchmark and ensure 60 FPS performance during full scroll scrubbing on desktop and mobile viewports.
 
 *Verification Notes:*
-> _Pending execution._
+> Three.js, GSAP, and Lenis integrated with full single-draw-call performance. Custom GLSL `MorphShader` successfully morphs across all three phases: 2D Blueprint (`#00D2FF` electric cyan wireframe with grid) $\rightarrow$ SolidWorks CAD Viewport (matte studio clay with parametric edge topology) $\rightarrow$ Industrial 3D Print (procedural FDM layer lines and PA12-CF carbon fiber texture). Verified via live browser automated scrubbing and clean production build with 0 TypeScript/WebGL errors.
 
 ---
 

@@ -2,7 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 import Capabilities from './components/capabilities'
 import Footer from './components/footer'
-import Hero from './components/heroSection'
+import HeroCanvas from '../../components/3d/HeroCanvas'
 import Materials from './components/materials'
 import Services from './components/services'
 import WhyUs from './components/whyUs'
@@ -29,7 +29,7 @@ function Home() {
 
   return (
     <main>
-      <Hero />
+      <HeroCanvas />
       <WhyUs />
       <Services />
       <Capabilities />

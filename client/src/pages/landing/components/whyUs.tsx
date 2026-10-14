@@ -13,7 +13,7 @@ function WhyUs({
   id = "why-us",
   kicker = "Why choose us",
   title = "Quality, speed, and real manufacturing support",
-  subtitle = "We obsess over reliability—process-controlled printing, tuned profiles, and proactive DFM feedback so your parts work the first time.",
+  subtitle = "We obsess over reliability—process-controlled printing, tuned profiles, and proactive feedback so your parts work the first time.",
   items = DEFAULT_ITEMS,
   className = "",
 }: WhyUsProps) {
@@ -39,21 +39,21 @@ function WhyUs({
 
         {/* Larger stat cards */}
         {items.length > 0 && (
-        <ul className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6">
-          {items.map((label) => (
-            <li
-              key={label}
-              className="min-h-[90px] md:min-h-[110px]
+          <ul className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6">
+            {items.map((label) => (
+              <li
+                key={label}
+                className="min-h-[90px] md:min-h-[110px]
                          flex items-center justify-center text-center
                          rounded-2xl border border-amboss-accent/30 bg-amboss-section/30
                          px-6 py-5 md:px-8 md:py-7
                          text-base md:text-lg font-medium text-zinc-200
                          shadow-[inset_0_1px_0_rgba(255,255,255,.06)]"
-            >
-              {label}
-            </li>
-          ))}
-        </ul>
+              >
+                {label}
+              </li>
+            ))}
+          </ul>
         )}
       </div>
     </section>
