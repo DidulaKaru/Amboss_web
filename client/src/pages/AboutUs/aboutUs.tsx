@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 export default function AboutUs() {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 py-12 px-4 sm:px-6 lg:px-8">
@@ -42,6 +44,18 @@ export default function AboutUs() {
             <span className="text-zinc-500 text-[10px] uppercase">Turnaround</span>
             <p className="text-zinc-200">24–48 hours</p>
           </div>
+        </div>
+
+        {/* Colophon & Discreet System Access */}
+        <div className="pt-10 border-t border-zinc-900 flex justify-between items-center text-[10px] font-mono text-zinc-600">
+          <span>AMBOSS Engineering & Manufacturing · Southern Province</span>
+          <Link
+            to="/admin/login"
+            className="text-zinc-600 hover:text-zinc-400 transition"
+            title="System Terminal"
+          >
+            SYS / CTRL
+          </Link>
         </div>
       </div>
     </div>

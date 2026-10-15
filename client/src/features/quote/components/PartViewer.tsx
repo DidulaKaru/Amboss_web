@@ -42,7 +42,6 @@ export default function PartViewer({
     const controls = new OrbitControls(camera, renderer.domElement)
     controls.enableDamping = true
     controls.dampingFactor = 0.05
-    controls.autoRotate = autoRotate
     controls.autoRotateSpeed = 1.5
     controlsRef.current = controls
 

@@ -9,6 +9,9 @@ const envSchema = z.object({
   DATABASE_URL: z.string().default('postgresql://postgres:postgres@localhost:5432/amboss'),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   CORS_ORIGIN: z.string().default('*'),
+  ADMIN_USERNAME: z.string().default('admin'),
+  ADMIN_PASSWORD_HASH: z.string().default('$2b$10$yShZVCy0Wx.eGfJcwo5OEelZaa.GbkcB9xhYbITiXS4FNcRTOjj6e'),
+  JWT_SECRET: z.string().default('amboss-industrial-jwt-secret-key-super-secure'),
 })
 
 export type Env = z.infer<typeof envSchema>

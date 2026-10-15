@@ -95,4 +95,29 @@ describe('Quote Calculation API', () => {
     expect(response.json().success).toBe(false)
     await app.close()
   })
+
+  it('enforces minimum print price of 250 LKR', async () => {
+    const app = await buildApp()
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/v1/quote/calculate',
+      payload: {
+        fileName: 'tiny_pin.stl',
+        volumeCm3: 0.1,
+        surfaceAreaCm2: 0.6,
+        dimensions: { x: 2, y: 2, z: 5 },
+        materialSlug: 'pla-plus',
+        infillPct: 20,
+        layerHeightMm: 0.20,
+        quantity: 1,
+      },
+    })
+
+    expect(response.statusCode).toBe(200)
+    const json = response.json()
+    expect(json.success).toBe(true)
+    expect(json.pricing.unitPriceLkr).toBeGreaterThanOrEqual(250)
+    expect(json.pricing.totalPriceLkr).toBeGreaterThanOrEqual(250)
+    await app.close()
+  })
 })

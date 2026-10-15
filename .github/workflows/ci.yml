@@ -15,13 +15,13 @@ on:
       - '.github/workflows/**'
 
 jobs:
-  client:
-    name: Client checks & build
+  validate:
+    name: Lint, Unit Tests & Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js
+      - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -30,8 +30,33 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
+      - name: Run Linter
         run: npm run lint --if-present
 
-      - name: Build
+      - name: Run Vitest Suites (Client & Server)
+        run: npm test
+
+      - name: Compile Production Build
         run: npm run build
+
+  e2e:
+    name: Playwright E2E Tests
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx --workspace=client playwright install --with-deps chromium
+
+      - name: Run Playwright Tests
+        run: npm run test:e2e

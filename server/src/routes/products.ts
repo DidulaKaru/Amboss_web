@@ -1,14 +1,37 @@
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb, schema } from '../db/index.js'
 import { INITIAL_PRODUCTS } from '../db/seedData.js'
-import { eq } from 'drizzle-orm'
+import { eq, or } from 'drizzle-orm'
 import { z } from 'zod'
+import { verifyAdmin } from '../middleware/auth.js'
 
 const querySchema = z.object({
   category: z.string().optional(),
 })
 
+const createProductSchema = z.object({
+  sku: z.string().min(2, 'SKU is required'),
+  name: z.string().min(2, 'Product name is required'),
+  category: z.string().min(2, 'Category is required'),
+  description: z.string().default(''),
+  priceLkr: z.coerce.number().min(0, 'Price must be positive'),
+  stockQuantity: z.coerce.number().int().min(0, 'Stock must be 0 or more').default(0),
+  imageUrl: z.string().default('images/amboss-logo.png'),
+  isActive: z.boolean().default(true),
+})
+
+const updateProductSchema = z.object({
+  name: z.string().optional(),
+  category: z.string().optional(),
+  description: z.string().optional(),
+  priceLkr: z.coerce.number().min(0).optional(),
+  stockQuantity: z.coerce.number().int().min(0).optional(),
+  imageUrl: z.string().optional(),
+  isActive: z.boolean().optional(),
+})
+
 export const productsRoutes: FastifyPluginAsync = async (fastify) => {
+  // Public: List products
   fastify.get('/api/v1/products', async (request) => {
     const parseResult = querySchema.safeParse(request.query)
     const category = parseResult.success ? parseResult.data.category : undefined
@@ -16,7 +39,7 @@ export const productsRoutes: FastifyPluginAsync = async (fastify) => {
     const db = getDb()
     if (db) {
       try {
-        let query = db.select().from(schema.products).where(eq(schema.products.isActive, true))
+        const query = db.select().from(schema.products).where(eq(schema.products.isActive, true))
         const rows = await query
         if (rows && rows.length > 0) {
           const filtered = category ? rows.filter((r) => r.category === category) : rows
@@ -38,6 +61,7 @@ export const productsRoutes: FastifyPluginAsync = async (fastify) => {
     }
   })
 
+  // Public: Single product by SKU
   fastify.get('/api/v1/products/:sku', async (request, reply) => {
     const { sku } = request.params as { sku: string }
 
@@ -63,5 +87,158 @@ export const productsRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     return { success: true, data: item }
+  })
+
+  // Admin Protected: Create product
+  fastify.post('/api/v1/products', { preHandler: [verifyAdmin] }, async (request, reply) => {
+    const parseResult = createProductSchema.safeParse(request.body)
+    if (!parseResult.success) {
+      return reply.code(400).send({
+        success: false,
+        error: 'Validation failed',
+        details: parseResult.error.errors,
+      })
+    }
+
+    const newProd = parseResult.data
+    const db = getDb()
+
+    if (db) {
+      try {
+        const inserted = await db
+          .insert(schema.products)
+          .values({
+            sku: newProd.sku,
+            name: newProd.name,
+            category: newProd.category,
+            description: newProd.description,
+            priceLkr: newProd.priceLkr.toFixed(2),
+            stockQuantity: newProd.stockQuantity,
+            imageUrl: newProd.imageUrl,
+            isActive: newProd.isActive,
+          })
+          .returning()
+
+        return reply.code(201).send({
+          success: true,
+          data: inserted[0],
+        })
+      } catch (err: unknown) {
+        request.log.error({ err }, 'Error inserting product')
+        return reply.code(500).send({ success: false, error: 'Failed to create product in database' })
+      }
+    }
+
+    // In-memory fallback
+    const fallbackItem = {
+      sku: newProd.sku,
+      name: newProd.name,
+      category: newProd.category,
+      description: newProd.description,
+      priceLkr: newProd.priceLkr.toFixed(2),
+      stockQuantity: newProd.stockQuantity,
+      imageUrl: newProd.imageUrl,
+      isActive: newProd.isActive,
+    }
+    INITIAL_PRODUCTS.push(fallbackItem)
+
+    return reply.code(201).send({
+      success: true,
+      data: fallbackItem,
+    })
+  })
+
+  // Admin Protected: Update product by SKU or ID
+  fastify.put('/api/v1/products/:id', { preHandler: [verifyAdmin] }, async (request, reply) => {
+    const { id } = request.params as { id: string }
+    const parseResult = updateProductSchema.safeParse(request.body)
+    if (!parseResult.success) {
+      return reply.code(400).send({
+        success: false,
+        error: 'Validation failed',
+        details: parseResult.error.errors,
+      })
+    }
+
+    const updates = parseResult.data
+    const db = getDb()
+
+    if (db) {
+      try {
+        const updateValues: Record<string, any> = {}
+        if (updates.name !== undefined) updateValues.name = updates.name
+        if (updates.category !== undefined) updateValues.category = updates.category
+        if (updates.description !== undefined) updateValues.description = updates.description
+        if (updates.priceLkr !== undefined) updateValues.priceLkr = updates.priceLkr.toFixed(2)
+        if (updates.stockQuantity !== undefined) updateValues.stockQuantity = updates.stockQuantity
+        if (updates.imageUrl !== undefined) updateValues.imageUrl = updates.imageUrl
+        if (updates.isActive !== undefined) updateValues.isActive = updates.isActive
+
+        const updated = await db
+          .update(schema.products)
+          .set(updateValues)
+          .where(or(eq(schema.products.sku, id), eq(schema.products.id, id)))
+          .returning()
+
+        if (!updated || updated.length === 0) {
+          return reply.code(404).send({ success: false, error: 'Product not found' })
+        }
+
+        return { success: true, data: updated[0] }
+      } catch (err: unknown) {
+        request.log.error({ err }, 'Error updating product')
+        return reply.code(500).send({ success: false, error: 'Failed to update product' })
+      }
+    }
+
+    // In-memory fallback
+    const itemIndex = INITIAL_PRODUCTS.findIndex((p) => p.sku === id)
+    if (itemIndex === -1) {
+      return reply.code(404).send({ success: false, error: 'Product not found' })
+    }
+
+    const item = INITIAL_PRODUCTS[itemIndex]
+    if (updates.name !== undefined) item.name = updates.name
+    if (updates.category !== undefined) item.category = updates.category
+    if (updates.description !== undefined) item.description = updates.description
+    if (updates.priceLkr !== undefined) item.priceLkr = updates.priceLkr.toFixed(2)
+    if (updates.stockQuantity !== undefined) item.stockQuantity = updates.stockQuantity
+    if (updates.imageUrl !== undefined) item.imageUrl = updates.imageUrl
+    if (updates.isActive !== undefined) item.isActive = updates.isActive
+
+    return { success: true, data: item }
+  })
+
+  // Admin Protected: Delete product by SKU or ID
+  fastify.delete('/api/v1/products/:id', { preHandler: [verifyAdmin] }, async (request, reply) => {
+    const { id } = request.params as { id: string }
+    const db = getDb()
+
+    if (db) {
+      try {
+        const deleted = await db
+          .delete(schema.products)
+          .where(or(eq(schema.products.sku, id), eq(schema.products.id, id)))
+          .returning()
+
+        if (!deleted || deleted.length === 0) {
+          return reply.code(404).send({ success: false, error: 'Product not found' })
+        }
+
+        return { success: true, message: 'Product deleted successfully', data: deleted[0] }
+      } catch (err: unknown) {
+        request.log.error({ err }, 'Error deleting product')
+        return reply.code(500).send({ success: false, error: 'Failed to delete product' })
+      }
+    }
+
+    // In-memory fallback
+    const itemIndex = INITIAL_PRODUCTS.findIndex((p) => p.sku === id)
+    if (itemIndex === -1) {
+      return reply.code(404).send({ success: false, error: 'Product not found' })
+    }
+
+    const removed = INITIAL_PRODUCTS.splice(itemIndex, 1)[0]
+    return { success: true, message: 'Product deleted successfully', data: removed }
   })
 }

@@ -298,17 +298,62 @@ In `server/package.json`:
 ### Step 6.3: End-to-End Testing (Playwright)
 Install Playwright in `client/`:
 ```bash
-npx playwright install
+npx playwright install --with-deps chromium
 ```
-* `quote-flow.spec.ts`: Simulates a user landing on the home page, scrolling through the 3D hero, uploading a calibration STL, selecting PETG at $20\%$ infill, and verifying the instant LKR price is computed.
-* `shop-checkout.spec.ts`: Simulates browsing an ESP32 board, adding it to cart, and confirming the generated WhatsApp order message contains correct item details and pricing.
+* `hero-scroll.spec.ts`: Validates 3D canvas viewport rendering, navbar links, and initial scroll-triggered states.
+* `quote-flow.spec.ts`: Simulates navigating to the instant quote page, verifying STL dropzone upload, selecting material parameters, minimum print threshold validation (250 LKR), and WhatsApp quotation formatting.
+* `shop-checkout.spec.ts`: Tests browsing maker hardware, selecting variant dropdowns (LED colors, Jumper Cable pinouts), verifying discrete "In stock" indicators without raw stock exposure, adding items to cart, and confirming free pickup and courier fee logic.
+* `admin-cms.spec.ts`: Tests the discreet colophon `SYS / CTRL` link from About Us, authentication rejection on invalid credentials, successful login to Admin Dashboard, table display of real-time inventory, and secure logout.
 
 ---
 
-## Execution Protocol for Antigravity
+## Phase 7: Single-Owner Admin CMS & Catalog Operations
 
-When executing tasks:
-1. Always consult `PROGRESS.md` before starting a task to determine current status.
-2. Execute one atomic task at a time.
-3. Run corresponding automated tests to verify the task is complete.
-4. Mark the task as `[x]` in `PROGRESS.md`, add notes or verification logs, and halt for user confirmation before proceeding to the next step.
+### Objectives
+* Provide an air-gapped, zero-DB-overhead administrative control panel for Amboss catalog and inventory management.
+* Implement environment-driven bcrypt password verification (`ADMIN_PASSWORD_HASH`) and secure HttpOnly JWT session cookies (`amboss_admin_token`).
+* Provide discreet public discovery via a low-contrast `SYS / CTRL` link in the About Us colophon.
+* Implement high-speed inline stock adjustments and full product mutation capabilities (create, edit, delete).
+
+### 7.1 Server Authentication & Fastify JWT
+* Middleware: `server/src/middleware/auth.ts` verifies incoming JWT tokens from either the `amboss_admin_token` HttpOnly cookie or the `Authorization: Bearer <token>` header.
+* Endpoints:
+  - `POST /api/v1/admin/login`: Compares bcrypt hash and issues a 24-hour JWT token.
+  - `POST /api/v1/admin/logout`: Clears the HttpOnly cookie.
+  - `GET /api/v1/admin/me`: Returns the verified operator identity.
+  - `POST /api/v1/products`, `PUT /api/v1/products/:id`, `DELETE /api/v1/products/:id`: Protected mutation endpoints.
+
+### 7.2 Client Admin Interface
+* `AdminRoute.tsx`: Guarded route protecting `/admin`, redirecting unauthenticated traffic to `/admin/login`.
+* `AdminLogin.tsx`: Monospace industrial terminal login.
+* `AdminDashboard.tsx`:
+  - Real-time catalog metrics: Total SKUs, In Stock, Low Stock (<10), Depleted.
+  - Fast inline stock adjusters (`−`, numerical input, `+`) with live API synchronization.
+  - Modal workflows for creating and editing products.
+  - Deletion dialog with safety confirmation.
+
+---
+
+## Architectural Principles: Modularity & Single Source of Truth (SSOT)
+
+To prevent code duplication, configuration drift, and business logic divergence across the monorepo, every shared business value must have exactly one source of truth:
+
+1. **Logistics & Delivery Policies:**
+   - **Client:** `client/src/config/logistics.ts` defines `MINIMUM_PRINT_PRICE_LKR` (250), `LOGISTICS_CONFIG` (pickup locations, courier rates, Galle local delivery rules), `calculateCourierFee()`, and `calculateShopDeliveryFee()`.
+   - **Server:** `server/src/config/logistics.ts` mirrors these exact rules for order validation and WhatsApp payload generation.
+2. **Contact & Company Identity:**
+   - `client/src/config/site.ts` defines official WhatsApp phone (`+94779902796`), email, social media links, and physical workshop coordinates in Galle.
+3. **Materials Master Catalog:**
+   - Client definitions in `client/src/features/quote/types.ts` and server seed data in `server/src/db/seedData.ts` define identical material densities and base manufacturing rates.
+4. **Design Philosophy:**
+   - `client/DESIGN_PHILOSOPHY.md` serves as the absolute authority on visual style: zero emojis anywhere on the platform, Dieter Rams / Teenage Engineering / Linear inspired subtractive minimalism, high-contrast dark neutrals, and 1.5px monochrome SVG icons.
+
+---
+
+## Execution Protocol
+
+When updating the codebase:
+1. Always consult `progress_tracker.md` to confirm milestone status.
+2. Ensure any new business constant is placed in the designated config module (SSOT).
+3. Run all automated test suites (`npm test`, `npm run test:e2e`) and linters (`npm run lint`) before committing.
+4. Maintain documentation integrity across all folder-level README files.

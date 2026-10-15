@@ -6,7 +6,11 @@ import News from './pages/news/news'
 import AboutUs from './pages/AboutUs/aboutUs'
 import Shop from './pages/shop/Shop'
 import QuotePage from './features/quote/QuotePage'
-import { CartProvider } from './context/CartContext'
+import { CartProvider } from './features/shop/cartContext'
+import { AdminAuthProvider } from './features/admin/AdminAuthContext'
+import AdminRoute from './features/admin/AdminRoute'
+import AdminLogin from './features/admin/AdminLogin'
+import AdminDashboard from './features/admin/AdminDashboard'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Seo from './components/seo'
 import { SITE } from './config/site'
@@ -38,6 +42,16 @@ const localBusinessSchema = {
 
 function RouteSeo() {
   const { pathname } = useLocation()
+
+  if (pathname.startsWith('/admin')) {
+    return (
+      <Seo
+        title="Terminal Access | AMBOSS SYS.CTRL"
+        description="Amboss catalog and inventory management terminal."
+        path={pathname}
+      />
+    )
+  }
 
   if (pathname === '/projects') {
     return (
@@ -106,21 +120,35 @@ function RouteSeo() {
 }
 
 function App() {
+  const { pathname } = useLocation()
+  const isAdminRoute = pathname.startsWith('/admin')
+
   return (
-    <CartProvider>
-      <div className="smooth-transitions">
-        <RouteSeo />
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/quote" element={<QuotePage />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/news" element={<News />} />
-          <Route path="/about-us" element={<AboutUs />} />
-          <Route path="/shop" element={<Shop />} />
-        </Routes>
-      </div>
-    </CartProvider>
+    <AdminAuthProvider>
+      <CartProvider>
+        <div className="smooth-transitions">
+          <RouteSeo />
+          {!isAdminRoute && <Navbar />}
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/quote" element={<QuotePage />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/news" element={<News />} />
+            <Route path="/about-us" element={<AboutUs />} />
+            <Route path="/shop" element={<Shop />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
+              }
+            />
+          </Routes>
+        </div>
+      </CartProvider>
+    </AdminAuthProvider>
   )
 }
 

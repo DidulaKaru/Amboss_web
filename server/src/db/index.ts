@@ -7,6 +7,9 @@ let client: postgres.Sql | null = null
 let dbInstance: ReturnType<typeof drizzle<typeof schema>> | null = null
 
 export function getDb() {
+  if (env.NODE_ENV === 'test' && !process.env.TEST_DB_URL) {
+    return null
+  }
   if (!dbInstance) {
     try {
       client = postgres(env.DATABASE_URL, {

@@ -1,6 +1,8 @@
 import Fastify, { type FastifyInstance, type FastifyServerOptions, type FastifyError } from 'fastify'
 import cors from '@fastify/cors'
 import helmet from '@fastify/helmet'
+import cookie from '@fastify/cookie'
+import jwt from '@fastify/jwt'
 import { env } from './config/env.js'
 import { healthRoutes } from './routes/health.js'
 import { materialsRoutes } from './routes/materials.js'
@@ -8,6 +10,7 @@ import { machinesRoutes } from './routes/machines.js'
 import { productsRoutes } from './routes/products.js'
 import { quoteRoutes } from './routes/quote.js'
 import { ordersRoutes } from './routes/orders.js'
+import { adminRoutes } from './routes/admin.js'
 
 export async function buildApp(opts: FastifyServerOptions = {}): Promise<FastifyInstance> {
   const app = Fastify({
@@ -20,9 +23,16 @@ export async function buildApp(opts: FastifyServerOptions = {}): Promise<Fastify
     contentSecurityPolicy: false,
   })
 
+  await app.register(cookie)
+
+  await app.register(jwt, {
+    secret: env.JWT_SECRET,
+  })
+
   await app.register(cors, {
     origin: env.CORS_ORIGIN === '*' ? true : env.CORS_ORIGIN.split(','),
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true,
   })
 
   // Register API Routes
@@ -32,6 +42,7 @@ export async function buildApp(opts: FastifyServerOptions = {}): Promise<Fastify
   await app.register(productsRoutes)
   await app.register(quoteRoutes)
   await app.register(ordersRoutes)
+  await app.register(adminRoutes)
 
   // 404 Handler
   app.setNotFoundHandler((request, reply) => {
