@@ -9,6 +9,7 @@ type SeoProps = {
   path: string
   keywords?: string
   image?: string
+  noindex?: boolean
   jsonLd?: Record<string, unknown>
 }
 
@@ -22,14 +23,14 @@ const upsertMeta = (selector: string, attribute: 'name' | 'property', content: s
   element.setAttribute('content', content)
 }
 
-export default function Seo({ title, description, path, keywords, image = DEFAULT_IMAGE, jsonLd }: SeoProps) {
+export default function Seo({ title, description, path, keywords, image = DEFAULT_IMAGE, noindex = false, jsonLd }: SeoProps) {
   useEffect(() => {
     const absoluteUrl = new URL(path, SITE_URL).toString()
 
     document.title = title
 
     upsertMeta('description', 'name', description)
-    upsertMeta('robots', 'name', 'index, follow')
+    upsertMeta('robots', 'name', noindex ? 'noindex, nofollow' : 'index, follow')
     if (keywords) {
       upsertMeta('keywords', 'name', keywords)
     }

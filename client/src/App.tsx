@@ -40,6 +40,32 @@ const localBusinessSchema = {
   ],
 }
 
+const quoteServiceSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: 'Instant 3D Printing Quotation & Manufacturing',
+  provider: {
+    '@type': 'LocalBusiness',
+    name: SITE.company,
+    url: SITE.url,
+  },
+  serviceType: '3D Printing & Rapid Prototyping',
+  areaServed: ['Sri Lanka', 'Galle'],
+  description: 'Instant volumetric calculation and LKR quotation for custom 3D printing and rapid prototyping.',
+}
+
+const shopSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Store',
+  name: 'AMBOSS Maker Electronics Store',
+  url: `${SITE.url}/shop`,
+  description: 'Maker hardware, microcontrollers, sensors, and prototyping accessories in Sri Lanka.',
+  parentOrganization: {
+    '@type': 'LocalBusiness',
+    name: SITE.company,
+  },
+}
+
 function RouteSeo() {
   const { pathname } = useLocation()
 
@@ -49,6 +75,7 @@ function RouteSeo() {
         title="Terminal Access | AMBOSS SYS.CTRL"
         description="Amboss catalog and inventory management terminal."
         path={pathname}
+        noindex
       />
     )
   }
@@ -93,6 +120,7 @@ function RouteSeo() {
         description="Buy electronics components and prototyping supplies in Sri Lanka — Arduino, ESP32, sensors, breadboards, solder and more with local delivery to Galle."
         path="/shop"
         keywords="electronics components sri lanka, electronics components galle, arduino uno sri lanka, esp32 sri lanka, ultrasonic sensor hc-sr04, mpu6050 galle, breadboard jumper cables, solder wire sri lanka, prototyping supplies galle, maker electronics shop"
+        jsonLd={shopSchema}
       />
     )
   }
@@ -104,6 +132,7 @@ function RouteSeo() {
         description="Upload your STL CAD model for instant volumetric mass estimation, material selection, and itemized 3D printing quotation in LKR."
         path="/quote"
         keywords="instant 3d quote sri lanka, stl quote galle, 3d printing cost calculator, amboss instant quote"
+        jsonLd={quoteServiceSchema}
       />
     )
   }
