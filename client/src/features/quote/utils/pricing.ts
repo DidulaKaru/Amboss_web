@@ -62,7 +62,7 @@ export function calculateQuote(
     boundingBox.dimensions.z
   )
 
-  let recommendedMachine = 'Bambu Lab A1 (256×256×256 mm)'
+  let recommendedMachine: string
   let isOversized = false
 
   if (material.type === 'SLA') {

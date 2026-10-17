@@ -65,7 +65,7 @@ export default function Seo({ title, description, path, keywords, image = DEFAUL
       script.text = JSON.stringify(jsonLd)
       document.head.appendChild(script)
     }
-  }, [title, description, path, keywords, image, jsonLd])
+  }, [title, description, path, keywords, image, jsonLd, noindex])
 
   return null
 }

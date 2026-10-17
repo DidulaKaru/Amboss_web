@@ -5,6 +5,15 @@ import { groupProducts } from './groupProducts'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
 
+function determineCategory(name: string): string {
+  const n = name.toLowerCase()
+  if (n.includes('arduino') || n.includes('esp32')) return 'microcontrollers'
+  if (n.includes('sensor') || n.includes('potentiometer') || n.includes('gy-521')) return 'sensors'
+  if (n.includes('servo') || n.includes('motor') || n.includes('driver')) return 'actuators'
+  if (n.includes('breadboard') || n.includes('jumper') || n.includes('oled')) return 'prototyping'
+  return 'accessories'
+}
+
 export function useProducts() {
   const [rawProducts, setRawProducts] = useState<Product[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -83,16 +92,6 @@ interface RawProductApiItem {
   useEffect(() => {
     fetchProducts()
   }, [fetchProducts])
-
-  // Helper to categorize legacy items if missing category
-  function determineCategory(name: string): string {
-    const n = name.toLowerCase()
-    if (n.includes('arduino') || n.includes('esp32')) return 'microcontrollers'
-    if (n.includes('sensor') || n.includes('potentiometer') || n.includes('gy-521')) return 'sensors'
-    if (n.includes('servo') || n.includes('motor') || n.includes('driver')) return 'actuators'
-    if (n.includes('breadboard') || n.includes('jumper') || n.includes('oled')) return 'prototyping'
-    return 'accessories'
-  }
 
   // Grouped products with variant support (LEDs and Jumper Cables)
   const groupedProducts = useMemo(() => groupProducts(rawProducts), [rawProducts])
