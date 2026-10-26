@@ -10,38 +10,53 @@ import type { STLParseResult } from '../src/features/quote/utils/stlParser'
 describe('Instant 3D Print Quote Pricing Engine', () => {
   // Standard 20mm calibration cube
   const mockCube20mm: STLParseResult = {
+    triangleCount: 12,
+    volumeMm3: 8000.0,
     volumeCm3: 8.0,
+    surfaceAreaMm2: 2400.0,
     surfaceAreaCm2: 24.0,
     boundingBox: {
       min: { x: -10, y: -10, z: 0 },
       max: { x: 10, y: 10, z: 20 },
       dimensions: { x: 20, y: 20, z: 20 },
     },
-    triangleCount: 12,
+    positions: new Float32Array(0),
+    isAscii: false,
+    isManifoldEstimate: true,
   }
 
   // Tiny 5mm calibration chip (raw cost will be under 250 LKR)
   const mockTinyChip: STLParseResult = {
+    triangleCount: 12,
+    volumeMm3: 125.0,
     volumeCm3: 0.125,
+    surfaceAreaMm2: 150.0,
     surfaceAreaCm2: 1.5,
     boundingBox: {
       min: { x: 0, y: 0, z: 0 },
       max: { x: 5, y: 5, z: 5 },
       dimensions: { x: 5, y: 5, z: 5 },
     },
-    triangleCount: 12,
+    positions: new Float32Array(0),
+    isAscii: false,
+    isManifoldEstimate: true,
   }
 
   // Large part (exceeds small printer build volumes)
   const mockLargeEnclosure: STLParseResult = {
+    triangleCount: 5000,
+    volumeMm3: 650000.0,
     volumeCm3: 650.0,
+    surfaceAreaMm2: 120000.0,
     surfaceAreaCm2: 1200.0,
     boundingBox: {
       min: { x: 0, y: 0, z: 0 },
       max: { x: 300, y: 300, z: 280 },
       dimensions: { x: 300, y: 300, z: 280 },
     },
-    triangleCount: 5000,
+    positions: new Float32Array(0),
+    isAscii: false,
+    isManifoldEstimate: true,
   }
 
   const pla = MATERIALS.find((m) => m.id === 'pla-plus')!

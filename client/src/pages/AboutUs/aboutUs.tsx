@@ -48,7 +48,7 @@ export default function AboutUs() {
 
         {/* Colophon & Discreet System Access */}
         <div className="pt-10 border-t border-zinc-900 flex justify-between items-center text-[10px] font-mono text-zinc-600">
-          <span>AMBOSS Engineering & Manufacturing · Southern Province</span>
+          <span>AMBOSS Engineering & Manufacturing</span>
           <Link
             to="/admin/login"
             className="text-zinc-600 hover:text-zinc-400 transition"

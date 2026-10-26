@@ -53,6 +53,8 @@ export default function Products({
                 <img
                   src={p.img}
                   alt={p.name}
+                  width={640}
+                  height={360}
                   className="absolute inset-0 h-full w-full object-cover"
                   loading="lazy"
                   decoding="async"

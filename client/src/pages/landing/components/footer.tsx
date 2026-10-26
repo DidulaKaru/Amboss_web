@@ -69,6 +69,8 @@ export default function Footer({
                 src={`${import.meta.env.BASE_URL}images/amboss-logo.png`}
                 alt="Amboss"
                 className="h-7 w-auto"
+                width={140}
+                height={28}
                 loading="lazy"
               />
             </a>

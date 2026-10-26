@@ -29,7 +29,7 @@ test.describe('Admin CMS & Discreet System Gateway Flow', () => {
 
     await page.route('**/api/v1/admin/login', async (route) => {
       const postData = route.request().postDataJSON()
-      if (postData?.username === 'admin' && postData?.password === 'amboss2026') {
+      if (postData?.username === 'Dory' && postData?.password === 'poplintu7577') {
         isLoggedIn = true
         await route.fulfill({
           status: 200,
@@ -37,7 +37,7 @@ test.describe('Admin CMS & Discreet System Gateway Flow', () => {
           body: JSON.stringify({
             success: true,
             token: 'mock_jwt_token',
-            user: { username: 'admin', role: 'admin' },
+            user: { username: 'Dory', role: 'admin' },
           }),
         })
       } else {
@@ -104,13 +104,13 @@ test.describe('Admin CMS & Discreet System Gateway Flow', () => {
     await expect(page.getByText(/ACCESS DENIED/i)).toBeVisible()
 
     // 4. Test valid authentication
-    await page.fill('#admin-username', 'admin')
-    await page.fill('#admin-password', 'amboss2026')
+    await page.fill('#admin-username', 'Dory')
+    await page.fill('#admin-password', 'poplintu7577')
     await page.click('button[type="submit"]')
 
     // 5. Verify redirection to Admin Dashboard
     await expect(page).toHaveURL(/\/admin/)
-    await expect(page.getByText(/OPERATOR: admin/i)).toBeVisible()
+    await expect(page.getByText(/OPERATOR: Dory/i)).toBeVisible()
     await expect(page.getByRole('button', { name: /NEW PRODUCT/i })).toBeVisible()
     await expect(page.getByRole('table')).toBeVisible()
 

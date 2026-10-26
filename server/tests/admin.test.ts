@@ -69,8 +69,8 @@ describe('Admin Authentication & CMS API', () => {
       method: 'POST',
       url: '/api/v1/admin/login',
       payload: {
-        username: 'admin',
-        password: 'amboss2026',
+        username: 'Dory',
+        password: 'poplintu7577',
       },
     })
 
@@ -78,7 +78,7 @@ describe('Admin Authentication & CMS API', () => {
     const jsonLogin = resLogin.json()
     expect(jsonLogin.success).toBe(true)
     expect(jsonLogin.token).toBeDefined()
-    expect(jsonLogin.user.username).toBe('admin')
+    expect(jsonLogin.user.username).toBe('Dory')
 
     // Verify Set-Cookie header contains amboss_admin_token and HttpOnly
     const cookieHeader = resLogin.headers['set-cookie'] as string
@@ -97,7 +97,7 @@ describe('Admin Authentication & CMS API', () => {
       headers: authHeaders,
     })
     expect(resMe.statusCode).toBe(200)
-    expect(resMe.json().user.username).toBe('admin')
+    expect(resMe.json().user.username).toBe('Dory')
 
     // 3. Create Product
     const testSku = 'TEST-NEW-SENSOR-001'

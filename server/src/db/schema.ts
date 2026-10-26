@@ -73,6 +73,19 @@ export const quotes = pgTable('quotes', {
   createdAt: timestamp('created_at', { mode: 'string' }).defaultNow().notNull(),
 })
 
+export const portfolioItems = pgTable('portfolio_items', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  title: varchar('title', { length: 255 }).notNull(),
+  category: varchar('category', { length: 50 }).default('general'),
+  material: varchar('material', { length: 100 }),
+  imageUrl: text('image_url').notNull(),
+  aspectRatio: varchar('aspect_ratio', { length: 20 }).default('auto'),
+  description: text('description'),
+  displayOrder: integer('display_order').default(0),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at', { mode: 'string' }).defaultNow(),
+})
+
 export type Material = typeof materials.$inferSelect
 export type NewMaterial = typeof materials.$inferInsert
 export type Machine = typeof machines.$inferSelect
@@ -81,3 +94,5 @@ export type Product = typeof products.$inferSelect
 export type NewProduct = typeof products.$inferInsert
 export type Quote = typeof quotes.$inferSelect
 export type NewQuote = typeof quotes.$inferInsert
+export type PortfolioItem = typeof portfolioItems.$inferSelect
+export type NewPortfolioItem = typeof portfolioItems.$inferInsert

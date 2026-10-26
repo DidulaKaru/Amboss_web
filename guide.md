@@ -10,22 +10,24 @@ This guide outlines the phased re-engineering of the Amboss Industries platform.
 amboss-monorepo/
 ├── client/                     # Vite + React (TypeScript) + TailwindCSS
 │   ├── src/
-│   │   ├── components/3d/      # Three.js / R3F Canvas & GLSL shaders
+│   │   ├── components/3d/      # Three.js Canvas (performance.now() timer) & GLSL shaders
+│   │   ├── features/admin/     # Admin CMS (Catalog Operations + Portfolio Gallery)
 │   │   ├── features/quote/     # STL upload, Web Worker, 3D preview, quote form
 │   │   ├── features/shop/      # Maker shop catalog, cart, WhatsApp checkout
-│   │   ├── features/projects/  # Showcase (Pawsthetics, Rextro, etc.)
+│   │   ├── pages/Projects/     # Dynamic portfolio masonry grid, lightbox, Pawsthetics case study
 │   │   └── workers/            # STL binary volume parser Web Worker
-│   └── tests/                  # Vitest + React Testing Library + Playwright E2E
+│   ├── tests/                  # Vitest unit & integration tests
+│   └── e2e/                    # Playwright E2E test suites (hero, quote, shop, admin, portfolio)
 ├── server/                     # Fastify + TypeScript + Drizzle ORM
 │   ├── src/
-│   │   ├── db/                 # PostgreSQL schema, relations, migrations
-│   │   ├── modules/materials/  # Filament & resin pricing formulas
-│   │   ├── modules/products/   # Electronics catalog, categories, stock tracking
-│   │   └── modules/quotes/     # Deterministic pricing engine & validation
-│   └── tests/                  # Vitest API unit & integration tests
-├── GUIDE.md                    # Master execution roadmap (this document)
-├── PROGRESS.md                 # Live progress tracking file
-└── package.json                # Monorepo root with npm/pnpm workspace scripts
+│   │   ├── db/                 # PostgreSQL schema (materials, machines, products, quotes, portfolio_items)
+│   │   ├── routes/             # Fastify REST endpoints (materials, machines, products, quotes, orders, portfolio, admin)
+│   │   ├── middleware/         # Admin JWT & HttpOnly cookie authentication
+│   │   └── services/           # Deterministic quote pricing & WhatsApp payload generator
+│   └── tests/                  # Vitest API integration test suites (admin, materials, products, orders, portfolio, quote, health)
+├── guide.md                    # Master re-engineering and development architecture guide (this document)
+├── PROGRESS.md                 # Live milestone and task progress tracker
+└── package.json                # Monorepo root with npm workspace orchestration
 ```
 
 ---
@@ -304,13 +306,19 @@ npx playwright install --with-deps chromium
 * `quote-flow.spec.ts`: Simulates navigating to the instant quote page, verifying STL dropzone upload, selecting material parameters, minimum print threshold validation (250 LKR), and WhatsApp quotation formatting.
 * `shop-checkout.spec.ts`: Tests browsing maker hardware, selecting variant dropdowns (LED colors, Jumper Cable pinouts), verifying discrete "In stock" indicators without raw stock exposure, adding items to cart, and confirming free pickup and courier fee logic.
 * `admin-cms.spec.ts`: Tests the discreet colophon `SYS / CTRL` link from About Us, authentication rejection on invalid credentials, successful login to Admin Dashboard, table display of real-time inventory, and secure logout.
+* `portfolio.spec.ts`: Validates dynamic photo grid rendering without rigid aspect ratios, lightbox modal inspection with ESC listeners, `/news` demolition and graceful redirect to `/projects`, and the Admin CMS portfolio management tab.
+
+#### Test Execution & Verification Status:
+* **Vitest Suite:** **42/42 passing tests** (21 Client tests + 21 Server tests across 12 test suites).
+* **Playwright Suite:** **7/7 passing tests** across desktop and mobile viewports.
+* **Build & Quality:** `npm run build` and `npm run lint` execute with 0 errors.
 
 ---
 
 ## Phase 7: Single-Owner Admin CMS & Catalog Operations
 
 ### Objectives
-* Provide an air-gapped, zero-DB-overhead administrative control panel for Amboss catalog and inventory management.
+* Provide an air-gapped, zero-DB-overhead administrative control panel for Amboss catalog and portfolio management.
 * Implement environment-driven bcrypt password verification (`ADMIN_PASSWORD_HASH`) and secure HttpOnly JWT session cookies (`amboss_admin_token`).
 * Provide discreet public discovery via a low-contrast `SYS / CTRL` link in the About Us colophon.
 * Implement high-speed inline stock adjustments and full product mutation capabilities (create, edit, delete).
@@ -327,10 +335,89 @@ npx playwright install --with-deps chromium
 * `AdminRoute.tsx`: Guarded route protecting `/admin`, redirecting unauthenticated traffic to `/admin/login`.
 * `AdminLogin.tsx`: Monospace industrial terminal login.
 * `AdminDashboard.tsx`:
+  - Dual-view switcher tabs: `[ Products & Stock ]` and `[ Portfolio Gallery ]`.
   - Real-time catalog metrics: Total SKUs, In Stock, Low Stock (<10), Depleted.
   - Fast inline stock adjusters (`−`, numerical input, `+`) with live API synchronization.
-  - Modal workflows for creating and editing products.
+  - Modal workflows for creating and editing catalog products.
   - Deletion dialog with safety confirmation.
+
+---
+
+## Phase 8: News Subsystem Demolition & Dynamic Portfolio Grid (`/projects`)
+
+### Objectives
+* Demolish the obsolete News page (`/news`), homepage news carousel, and all related navigation links.
+* Transform the `/projects` page into a dynamic, responsive showcase gallery powered by backend persistence while preserving the Pawsthetics hero case study.
+* Add database backing and management endpoints for portfolio items.
+
+### 8.1 News Subsystem Demolition
+* Header navigation (`navbar.tsx`): Removed "News" link.
+* Footer navigation (`footer.tsx`): Removed "News" link.
+* Router (`App.tsx`): Demolished `/news` route and removed obsolete component imports (`News.tsx`, `NewsCarousel.tsx`, `news/data.ts`). Added clean redirect from `/news` to `/projects`.
+* Sitemap (`sitemap.xml`): Removed `/news` entry.
+
+### 8.2 Relational Portfolio Schema & Fastify Endpoints
+* Table `portfolio_items` (`server/src/db/schema.ts`):
+  * `id`: UUID (Primary Key)
+  * `title`: string (not null)
+  * `category`: string (optional, defaults to `'general'`)
+  * `material`: string (optional, material specification)
+  * `imageUrl`: string (not null, asset path or remote URL)
+  * `aspectRatio`: string (optional, defaults to `'auto'`)
+  * `description`: text (optional)
+  * `displayOrder`: integer (optional, defaults to 0)
+  * `isActive`: boolean (defaults to `true`)
+  * `createdAt`: timestamp
+* REST Endpoints (`server/src/routes/portfolioRoutes.ts`):
+  * `GET /api/v1/portfolio`: Public endpoint returning active portfolio items with in-memory fallback.
+  * `GET /api/v1/portfolio/:id`: Public single item retrieval.
+  * `POST /api/v1/portfolio`: Admin only (`verifyAdmin`), Zod-validated creation.
+  * `PUT /api/v1/portfolio/:id`: Admin only (`verifyAdmin`), partial item update.
+  * `DELETE /api/v1/portfolio/:id`: Admin only (`verifyAdmin`), item removal.
+
+### 8.3 Dynamic Portfolio Grid & Inspection Lightbox (`client/src/pages/Projects/`)
+* Preserved "Featured Case Study: Pawsthetics by AMBOSS" hero section intact.
+* Built `PortfolioGrid.tsx` with resilient API fetching and static fallback.
+* Rendered items in responsive CSS column masonry (`columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4`).
+* Built full-viewport Lightbox modal for inspecting print layer details, material specs, and functional applications with `[ESC]` key listeners.
+
+---
+
+## Phase 8.6: Dynamic Photo Grid Simplification & Performance/CLS Optimization
+
+### Objectives
+* Simplify the portfolio subsystem by removing category and display order constraints.
+* Enable fluid natural photo sizing without forced aspect-ratio crops.
+* Resolve browser inspection warnings regarding deprecated Three.js modules and lazy-loaded image layout shifts.
+
+### 8.6.1 Subsystem Simplification
+* **Public Gallery ([PortfolioGrid.tsx](file:///c:/Users/didul/Documents/GitHub/Amboss_web/client/src/pages/Projects/components/PortfolioGrid.tsx)):**
+  * Removed category filter pills (`All`, `FDM & CF`, `Resin SLA`, `Prosthetics`, `Molding & CAD`).
+  * Removed category badge overlays on cards.
+  * Removed category header tags in the inspection lightbox.
+* **Admin CMS ([AdminDashboard.tsx](file:///c:/Users/didul/Documents/GitHub/Amboss_web/client/src/features/admin/AdminDashboard.tsx)):**
+  * **Add/Edit Modal:** Removed `Category`, `Aspect Ratio`, and `Display Order` inputs. Streamlined to: Project Title, Material Specification, Image Asset URL, Description, and Visibility toggle.
+  * **Table & Toolbar:** Removed category filter buttons; removed `Order`, `Category`, and `Ratio` columns. Retained: `Artifact / Visual`, `Material Specification`, `Status` (Active toggle), and `Actions` (Edit, Delete).
+  * **Metrics:** Simplified to `Total Projects`, `Active in Gallery`, `With Material Specs`, and `Hidden / Inactive`.
+* **Dynamic Natural Sizing:**
+  * Removed rigid aspect-ratio locks (`aspect-[3/4]`, `aspect-square`, `aspect-[16/10]`).
+  * Applied `w-full h-auto block object-cover` within CSS column masonry, allowing photos to scale to their natural proportions.
+
+### 8.6.2 Browser Inspection Warnings Resolution
+* **THREE.Clock Deprecation Fix:**
+  * In `client/src/components/3d/HeroCanvas.tsx`, replaced deprecated `THREE.Clock` with high-resolution `performance.now()`, eliminating `THREE.Clock: This module has been deprecated. Please use THREE.Timer instead` console warnings.
+* **Cumulative Layout Shift (CLS) Elimination:**
+  * Added explicit `width` and `height` attributes and aspect-ratio styling across all images in the application to prevent 0x0 initial bounding boxes before image load:
+    * `navbar.tsx`: `width={140} height={28}` (removed lazy-loading on sticky header logo).
+    * `heroSection.tsx`: `width={1920} height={1080}`.
+    * `footer.tsx`: `width={140} height={28}`.
+    * `capabilities.tsx`: `width={600} height={400}`.
+    * `products.tsx`: `width={640} height={360}`.
+    * `projects.tsx`: `width={1920} height={1080}` for hero, `width={200} height={48}` for logo.
+    * `PortfolioGrid.tsx`: `width={800} height={600}` on cards, `width={1200} height={900}` on lightbox.
+    * `ProductCard.tsx`: `width={400} height={400}`.
+    * `Cart.tsx`: `width={56} height={56}`.
+    * `AdminDashboard.tsx`: `width={32} height={32}` for products, `width={48} height={48}` for portfolio.
 
 ---
 
@@ -353,7 +440,7 @@ To prevent code duplication, configuration drift, and business logic divergence 
 ## Execution Protocol
 
 When updating the codebase:
-1. Always consult `progress_tracker.md` to confirm milestone status.
+1. Always consult `PROGRESS.md` to confirm milestone status.
 2. Ensure any new business constant is placed in the designated config module (SSOT).
 3. Run all automated test suites (`npm test`, `npm run test:e2e`) and linters (`npm run lint`) before committing.
 4. Maintain documentation integrity across all folder-level README files.

@@ -148,3 +148,69 @@ Provide an air-gapped, zero-DB-overhead administrative control panel for Amboss 
     - `server/src/routes/README.md`
     - `server/src/services/README.md`
     - `server/tests/README.md`
+
+---
+
+## Phase 8: News Subsystem Demolition & Dynamic Portfolio Grid (`/projects`)
+- [x] **Task 8.1: News Subsystem Demolition:**
+  - Removed "News" from header navigation (`Navbar.tsx`) and sitemap (`sitemap.xml`).
+  - Removed obsolete `/news` route and components (`News.tsx`, `NewsCarousel.tsx`, `news/data.ts`).
+  - Configured graceful redirect from `/news` to `/projects` in `App.tsx`.
+- [x] **Task 8.2: Backend Database Schema & Portfolio Endpoints:**
+  - Designed `portfolio_items` table in Drizzle schema with UUID, category, material, imageUrl, aspectRatio, displayOrder, and active status.
+  - Migrated core projects into seed dataset (`seedData.ts` & `seed.ts`): Nightingale Vein Monitor, Falcon 9 Pen, Rextro Souvenirs, and Mechanical Arm.
+  - Implemented RESTful Fastify endpoints in `portfolioRoutes.ts`:
+    - `GET /api/v1/portfolio`: Public endpoint returning active items ordered by `displayOrder` with category filtering and offline fallback.
+    - `POST /api/v1/portfolio`: Admin only (`verifyAdmin`), Zod-validated creation.
+    - `PUT /api/v1/portfolio/:id`: Admin only (`verifyAdmin`), item updates.
+    - `DELETE /api/v1/portfolio/:id`: Admin only (`verifyAdmin`), item removal.
+  - Created server integration test suite `server/tests/portfolio.test.ts` (4/4 tests passing).
+- [x] **Task 8.3: Admin CMS Portfolio Management Tab:**
+  - Added view switcher tab in `AdminDashboard.tsx`: `[ Products & Stock ]` | `[ Portfolio Gallery ]`.
+  - Built high-density table showcasing project thumbnails, categories, material specifications, aspect ratios, display order, and active indicators.
+  - Implemented item creation and edit modal with full property editing.
+  - Added quick "Toggle Active" and "Delete" controls with safety confirmation modal.
+- [x] **Task 8.4: Dynamic Portfolio Section on `/projects`:**
+  - Preserved "Featured Case Study: Pawsthetics by AMBOSS" hero section completely intact.
+  - Built `PortfolioGrid.tsx` with resilient API fetching and static fallback.
+  - Implemented minimalist horizontal category filter pills (`All`, `FDM & CF`, `Resin SLA`, `Prosthetics`, `Molding & CAD`).
+  - Implemented responsive CSS column masonry (`columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4`).
+  - Strict compliance with `DESIGN_PHILOSOPHY.md` (zero emojis, hairline borders, monospace hover overlays with part name and material).
+  - Built click-to-open lightbox modal for inspecting print layer details with keyboard escape listener.
+- [x] **Task 8.5: Verification & Testing:**
+  - Unit & Integration: **42/42 tests passing** (Vitest across client and server).
+  - Playwright E2E: **7/7 tests passing** (`hero-scroll.spec.ts`, `quote-flow.spec.ts`, `shop-checkout.spec.ts`, `admin-cms.spec.ts`, `portfolio.spec.ts`) validating `/projects` masonry grid, filter pills, lightbox modal, `/news` demolition and navigation redirect, and Admin CMS portfolio management tab.
+  - Production Build & Linter: `npm run lint` and `npm run build` pass with 0 errors.
+
+---
+
+## Phase 8.6: Portfolio Simplification & Performance/CLS Warnings Resolution
+- [x] **Task 8.6.1: Portfolio Subsystem Simplification:**
+  - **Category & Display Order Demolition:**
+    - Public View (`PortfolioGrid.tsx`): Removed category filter pills (`All`, `FDM & CF`, `Resin SLA`, `Prosthetics`, `Molding & CAD`), category badges on cards, and category headers in inspection lightbox.
+    - Admin CMS (`AdminDashboard.tsx`): Removed category dropdowns, display order inputs, aspect ratio dropdowns, category filter toolbar, and table columns (`Order`, `Category`, `Ratio`). Simplified metrics to `Total Projects`, `Active in Gallery`, `With Material Specs`, and `Hidden / Inactive`.
+    - Server Schemas (`portfolioRoutes.ts`, `schema.ts`): Made `category`, `aspectRatio`, and `displayOrder` optional with defaults (`general`, `auto`, `0`).
+  - **Dynamic Natural Photo Sizing:**
+    - Removed rigid aspect-ratio locks (`aspect-square`, `aspect-[3/4]`, `aspect-[16/10]`).
+    - Photos now adjust dynamically and fluidly to their intrinsic dimensions using CSS masonry (`columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4`) and `w-full h-auto block object-cover`.
+- [x] **Task 8.6.2: Browser Inspection Warnings Resolution:**
+  - **THREE.Clock Deprecation Fix:**
+    - Replaced deprecated `THREE.Clock` with high-resolution `performance.now()` in `client/src/components/3d/HeroCanvas.tsx`, eliminating runtime console deprecation warnings (`THREE.Clock: This module has been deprecated. Please use THREE.Timer instead`).
+  - **Lazy-Loaded Image Dimensions (CLS Elimination):**
+    - Added explicit `width` and `height` attributes and aspect ratio styling across all image elements:
+      - `client/src/components/navbar.tsx` (removed lazy-loading on above-the-fold logo, added explicit dimensions `width={140} height={28}`).
+      - `client/src/pages/landing/components/heroSection.tsx` (`width={1920} height={1080}`).
+      - `client/src/pages/landing/components/footer.tsx` (`width={140} height={28}`).
+      - `client/src/pages/landing/components/capabilities.tsx` (`width={600} height={400}`).
+      - `client/src/pages/Products/products.tsx` (`width={640} height={360}`).
+      - `client/src/pages/Projects/projects.tsx` (`width={1920} height={1080}` for hero, `width={200} height={48}` for logo).
+      - `client/src/pages/Projects/components/PortfolioGrid.tsx` (`width={800} height={600}` on cards, `width={1200} height={900}` on lightbox).
+      - `client/src/features/shop/components/ProductCard.tsx` (`width={400} height={400}`).
+      - `client/src/features/shop/components/Cart.tsx` (`width={56} height={56}`).
+      - `client/src/features/admin/AdminDashboard.tsx` (`width={32} height={32}` for products, `width={48} height={48}` for portfolio).
+    - Prevents 0x0 initial bounding box allocation and eliminates Cumulative Layout Shift (CLS).
+- [x] **Task 8.6.3: Final Validation & Test Suite Execution:**
+  - Vitest Unit & Integration: **42/42 tests passing** (21 Client tests + 21 Server tests across 12 test suites).
+  - Playwright E2E: **7/7 tests passing** across all browser suites.
+  - Production Build: `npm run build` cleanly compiled client and server with 0 errors.
+  - Linter: `npm run lint` clean with 0 errors.

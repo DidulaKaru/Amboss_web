@@ -165,12 +165,12 @@ export default function HeroCanvas() {
 
     // 6. Animation Loop (60 FPS)
     let animationFrameId: number
-    const clock = new THREE.Clock()
+    const startTime = performance.now()
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate)
 
-      const elapsedTime = clock.getElapsedTime()
+      const elapsedTime = (performance.now() - startTime) * 0.001
       shaderUniforms.uTime.value = elapsedTime
 
       // Smooth mouse follow interpolation

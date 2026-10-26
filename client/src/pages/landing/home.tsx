@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 import Capabilities from './components/capabilities'
 import Footer from './components/footer'
@@ -6,15 +6,9 @@ import HeroCanvas from '../../components/3d/HeroCanvas'
 import Materials from './components/materials'
 import Services from './components/services'
 import WhyUs from './components/whyUs'
-import { NewsCarousel } from '../news/news'
 
 function Home() {
-  const navigate = useNavigate()
   const location = useLocation()
-
-  const handleNewsLearnMore = (anchorId: string) => {
-    navigate(`/news#${anchorId}`)
-  }
 
   // Scroll to hash when this page mounts or when the hash changes
   useEffect(() => {
@@ -34,7 +28,6 @@ function Home() {
       <Services />
       <Capabilities />
       <Materials />
-      <NewsCarousel onLearnMore={handleNewsLearnMore} />
       <Footer />
     </main>
   )

@@ -11,6 +11,7 @@ import { productsRoutes } from './routes/products.js'
 import { quoteRoutes } from './routes/quote.js'
 import { ordersRoutes } from './routes/orders.js'
 import { adminRoutes } from './routes/admin.js'
+import { portfolioRoutes } from './routes/portfolioRoutes.js'
 
 export async function buildApp(opts: FastifyServerOptions = {}): Promise<FastifyInstance> {
   const app = Fastify({
@@ -43,6 +44,7 @@ export async function buildApp(opts: FastifyServerOptions = {}): Promise<Fastify
   await app.register(quoteRoutes)
   await app.register(ordersRoutes)
   await app.register(adminRoutes)
+  await app.register(portfolioRoutes)
 
   // 404 Handler
   app.setNotFoundHandler((request, reply) => {

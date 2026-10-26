@@ -31,6 +31,8 @@ export default function Hero({
         <img
           src={bgSrc}
           alt=""
+          width={1920}
+          height={1080}
           className="h-[68vh] w-full object-cover object-center opacity-60"
           loading="eager"
           decoding="async"

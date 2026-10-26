@@ -2,7 +2,6 @@ import './App.css'
 import Navbar from './components/navbar'
 import Home from './pages/landing/home'
 import Projects from './pages/Projects/projects'
-import News from './pages/news/news'
 import AboutUs from './pages/AboutUs/aboutUs'
 import Shop from './pages/shop/Shop'
 import QuotePage from './features/quote/QuotePage'
@@ -11,7 +10,7 @@ import { AdminAuthProvider } from './features/admin/AdminAuthContext'
 import AdminRoute from './features/admin/AdminRoute'
 import AdminLogin from './features/admin/AdminLogin'
 import AdminDashboard from './features/admin/AdminDashboard'
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Seo from './components/seo'
 import { SITE } from './config/site'
 
@@ -91,17 +90,6 @@ function RouteSeo() {
     )
   }
 
-  if (pathname === '/news') {
-    return (
-      <Seo
-        title="News | AMBOSS"
-        description="Read AMBOSS updates on exhibitions, product launches, and manufacturing initiatives in Sri Lanka."
-        path="/news"
-        keywords="amboss news, 3d printing sri lanka updates, engineering news galle"
-      />
-    )
-  }
-
   if (pathname === '/about-us') {
     return (
       <Seo
@@ -162,7 +150,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/quote" element={<QuotePage />} />
             <Route path="/projects" element={<Projects />} />
-            <Route path="/news" element={<News />} />
+            <Route path="/news" element={<Navigate to="/projects" replace />} />
             <Route path="/about-us" element={<AboutUs />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/admin/login" element={<AdminLogin />} />

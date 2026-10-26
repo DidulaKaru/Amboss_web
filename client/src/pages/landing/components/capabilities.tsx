@@ -78,6 +78,8 @@ function Capabilities({
                   src={c.img}
                   alt={c.name}
                   className="absolute inset-0 h-full w-full object-cover"
+                  width={600}
+                  height={400}
                   loading="lazy"
                   decoding="async"
                 />

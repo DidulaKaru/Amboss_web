@@ -121,6 +121,8 @@ export default function Cart({ isOpen, onClose }: CartProps) {
                     <img
                       src={getAssetUrl(item.image_url)}
                       alt={item.name}
+                      width={56}
+                      height={56}
                       onError={(e) => {
                         e.currentTarget.src = getAssetUrl('images/amboss-logo.png')
                       }}

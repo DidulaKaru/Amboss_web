@@ -1,11 +1,11 @@
 import { getDb, schema } from './index.js'
-import { INITIAL_MATERIALS, INITIAL_MACHINES, INITIAL_PRODUCTS } from './seedData.js'
+import { INITIAL_MATERIALS, INITIAL_MACHINES, INITIAL_PRODUCTS, INITIAL_PORTFOLIO_ITEMS } from './seedData.js'
 
 export async function seedDatabase() {
   const db = getDb()
   if (!db) {
     console.warn('Database connection unavailable, skipping seed.')
-    return { materials: 0, machines: 0, products: 0 }
+    return { materials: 0, machines: 0, products: 0, portfolio: 0 }
   }
 
   console.log('Seeding Amboss database...')
@@ -52,13 +52,28 @@ export async function seedDatabase() {
     }
   }
 
+  // Seed Portfolio Items
+  let seededPortfolio = 0
+  for (const item of INITIAL_PORTFOLIO_ITEMS) {
+    try {
+      await db
+        .insert(schema.portfolioItems)
+        .values(item)
+        .onConflictDoNothing({ target: schema.portfolioItems.id })
+      seededPortfolio++
+    } catch (e) {
+      console.warn(`Could not seed portfolio item ${item.title}:`, e)
+    }
+  }
+
   console.log(
-    `Database seed completed: ${seededMaterials} materials, ${seededMachines} machines, ${seededProducts} products.`
+    `Database seed completed: ${seededMaterials} materials, ${seededMachines} machines, ${seededProducts} products, ${seededPortfolio} portfolio items.`
   )
   return {
     materials: seededMaterials,
     machines: seededMachines,
     products: seededProducts,
+    portfolio: seededPortfolio,
   }
 }
 

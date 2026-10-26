@@ -9,7 +9,6 @@ const MAIN_NAV_ITEMS: NavItem[] = [
   { label: "Instant Quote", href: "/quote" },
   { label: "Shop", href: "/shop" },
   { label: "Projects", href: "/projects" },
-  { label: "News", href: "/news" },
   { label: "About Us", href: "/about-us" },
 ];
 
@@ -39,7 +38,8 @@ export default function Navbar() {
               src={`${import.meta.env.BASE_URL}images/amboss-logo.png`}
               alt="Amboss"
               className="h-7 w-auto"
-              loading="lazy"
+              width={140}
+              height={28}
             />
           </Link>
 

@@ -13,10 +13,9 @@ pages/
 │   └── home.tsx             # Master assembly for landing page
 ├── AboutUs/                 # About Amboss, university origin, manufacturing capacity (/about-us)
 │   └── aboutUs.tsx          # Contains the discreet 'SYS / CTRL' link in the colophon footer
-├── news/                    # Updates, exhibition reports, press coverage (/news)
-│   └── news.tsx             # News grid with dates and tags
 ├── Projects/                # Engineering portfolio showcase (/projects)
-│   └── projects.tsx         # Showcase cards (Pawsthetics, Rextro, industrial jigs)
+│   ├── components/          # Filterable portfolio grid & lightbox
+│   └── projects.tsx         # Case study hero + dynamic portfolio grid
 ├── shop/                    # Maker Store entry point (/shop)
 │   └── Shop.tsx             # Wraps features/shop/ShopPage.tsx
 └── README.md                # This documentation
@@ -32,7 +31,6 @@ pages/
 | `/quote` | `features/quote/QuotePage.tsx` | Instant 3D STL volumetric quotation engine |
 | `/shop` | `features/shop/ShopPage.tsx` | Electronics catalog, variant dropdowns, smart cart |
 | `/projects` | `pages/Projects/projects.tsx` | Engineering portfolio and case studies |
-| `/news` | `pages/news/news.tsx` | Company milestones, announcements, events |
 | `/about-us` | `pages/AboutUs/aboutUs.tsx` | Studio origins, university affiliation, and discreet `SYS / CTRL` colophon link |
 | `/admin/login` | `features/admin/AdminLogin.tsx` | SYS.CTRL authentication terminal |
 | `/admin` | `features/admin/AdminDashboard.tsx` | SYS.CTRL catalog and inventory control |

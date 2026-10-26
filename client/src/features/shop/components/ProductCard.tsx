@@ -78,6 +78,8 @@ export default function ProductCard({ product }: ProductCardProps) {
         <img
           src={getAssetUrl(activeImage)}
           alt={activeName}
+          width={400}
+          height={400}
           loading="lazy"
           onError={(e) => {
             e.currentTarget.src = getAssetUrl('images/amboss-logo.png')
