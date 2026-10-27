@@ -45,8 +45,25 @@ export async function buildApp(opts: FastifyServerOptions = {}): Promise<Fastify
     secret: env.JWT_SECRET,
   })
 
+  // Parse CORS origins from environment into a clean, trimmed array
+  const allowedOrigins = (() => {
+    if (env.CORS_ORIGIN === '*') {
+      return true
+    }
+    const defaults = ['http://localhost:5173', 'https://amboss.lk', 'https://www.amboss.lk']
+    if (env.CORS_ORIGIN) {
+      const parsed = env.CORS_ORIGIN.split(',')
+        .map((origin) => origin.trim())
+        .filter(Boolean)
+      if (parsed.length > 0) {
+        return Array.from(new Set([...defaults, ...parsed]))
+      }
+    }
+    return defaults
+  })()
+
   await app.register(cors, {
-    origin: env.CORS_ORIGIN === '*' ? true : env.CORS_ORIGIN.split(','),
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
   })

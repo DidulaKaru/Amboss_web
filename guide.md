@@ -24,6 +24,8 @@ amboss-monorepo/
 │   │   ├── routes/             # Fastify REST endpoints (materials, machines, products, quotes, orders, portfolio, admin)
 │   │   ├── middleware/         # Admin JWT & HttpOnly cookie authentication
 │   │   └── services/           # Deterministic quote pricing & WhatsApp payload generator
+│   ├── drizzle/                # PostgreSQL migration SQL files
+│   ├── Dockerfile              # Multi-stage production container build
 │   └── tests/                  # Vitest API integration test suites (admin, materials, products, orders, portfolio, quote, health)
 ├── guide.md                    # Master re-engineering and development architecture guide (this document)
 ├── PROGRESS.md                 # Live milestone and task progress tracker
@@ -418,6 +420,69 @@ npx playwright install --with-deps chromium
     * `ProductCard.tsx`: `width={400} height={400}`.
     * `Cart.tsx`: `width={56} height={56}`.
     * `AdminDashboard.tsx`: `width={32} height={32}` for products, `width={48} height={48}` for portfolio.
+
+---
+
+## Phase 8.7: Admin Deletion Bug Resolution & Login UX Streamlining
+
+### Objectives
+* Diagnose and resolve `400 Bad Request` errors during product and portfolio item deletions in the Admin CMS.
+* Eliminate empty body parsing failures in Fastify without sacrificing schema validation.
+* Streamline user-facing inputs on the administrative login screen.
+
+### 8.7.1 Deletion 400 Bad Request Root Cause Resolution
+* **Client Request Headers ([AdminDashboard.tsx](file:///c:/Users/didul/Documents/GitHub/Amboss_web/client/src/features/admin/AdminDashboard.tsx)):**
+  * Updated `getAuthHeaders(includeContentType = true)` helper.
+  * In `handleDeleteConfirm` and `handleDeletePortfolioConfirm`, pass `getAuthHeaders(false)` so body-less `DELETE` calls do not send `Content-Type: application/json`.
+* **Fastify Content-Type Parser ([app.ts](file:///c:/Users/didul/Documents/GitHub/Amboss_web/server/src/app.ts)):**
+  * Registered custom `application/json` content-type parser treating empty or whitespace-only bodies as `undefined` instead of throwing `FST_ERR_CTP_EMPTY_JSON_BODY` (400 Bad Request).
+* **Automated Regression Tests:**
+  * Added regression test cases in `client/tests/adminAuth.test.ts`, `server/tests/admin.test.ts`, and `server/tests/portfolio.test.ts` verifying that `DELETE` requests succeed with or without `Content-Type` headers.
+
+### 8.7.2 Admin Login UX Streamlining
+* In `client/src/features/admin/AdminLogin.tsx`, removed decorative badges and simplified field labels to:
+  * Username (`#admin-username`)
+  * Password (`#admin-password`)
+  * Submit button ("ENTER")
+
+---
+
+## Phase 9: Production Deployment Architecture & Zero-Cost Cloud Infrastructure
+
+### Objectives
+* Configure the monorepo for production deployment across a $0 budget architecture.
+* Guarantee 100% SPA routing reliability on edge hosting.
+* Generate versioned SQL migrations for Neon PostgreSQL.
+* Containerize the Fastify backend for Koyeb or Fly.io.
+
+### 9.1 Zero-Cost Target Architecture
+* **Frontend:** **Cloudflare Pages** (unlimited bandwidth, 500 builds/month, custom domain `amboss.lk`, global edge CDN).
+* **Backend:** **Koyeb** (1 Nano Web Service with 512 MB RAM, Singapore `sin` region, native Docker support, auto HTTPS).
+* **Database:** **Neon Serverless Postgres** (0.5 GB storage, autoscaling compute, Singapore `ap-southeast-1` region, pooled connection).
+* **Media Assets:** **Cloudflare Pages `public/images/`** with **Cloudflare R2** (10 GB free, zero egress fees) for dynamic uploads.
+
+### 9.2 Cloudflare Pages SPA Routing
+* Created `client/public/_redirects`:
+  ```
+  /*    /index.html   200
+  ```
+* Ensures that client-side routes (`/shop`, `/projects`, `/quote`, `/about-us`, `/admin`) return HTTP 200 OK on page refreshes rather than 404 errors.
+
+### 9.3 Neon PostgreSQL Schema Migrations
+* Updated `server/drizzle.config.ts` to use `dotenv/config` and `process.env.DATABASE_URL`.
+* Generated initial PostgreSQL migration `server/drizzle/0000_little_greymalkin.sql` containing all 5 database tables (`materials`, `machines`, `products`, `quotes`, `portfolio_items`).
+* Executable via:
+  ```bash
+  npx drizzle-kit migrate
+  npm run db:seed
+  ```
+
+### 9.4 Backend Containerization
+* Created production multi-stage `server/Dockerfile`:
+  * **Stage 1 (Builder):** Compiles TypeScript source to `dist/` using `node:20-alpine`.
+  * **Stage 2 (Runner):** Installs production dependencies only (`npm ci --omit=dev`), runs as unprivileged `node` user, and listens on `0.0.0.0:4000`. Image size ~150 MB.
+* Created `server/.dockerignore` to keep builds minimal.
+* Created `client/.env.example` and `server/.env.example` documenting all production environment variables.
 
 ---
 

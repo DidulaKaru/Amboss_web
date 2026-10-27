@@ -47,6 +47,18 @@ This directory houses the Fastify REST route plugins organized by business domai
 - `GET /api/v1/admin/me` *(Admin Guarded)*
   - Returns the verified operator identity.
 
+### 7. Portfolio Gallery (`portfolioRoutes.ts`)
+- `GET /api/v1/portfolio`
+  - Returns active portfolio items ordered by display order with offline dataset fallback.
+- `GET /api/v1/portfolio/:id`
+  - Returns a single portfolio record by UUID.
+- `POST /api/v1/portfolio` *(Admin Guarded)*
+  - Creates a new portfolio item.
+- `PUT /api/v1/portfolio/:id` *(Admin Guarded)*
+  - Updates portfolio record properties (title, material, imageUrl, description, active status).
+- `DELETE /api/v1/portfolio/:id` *(Admin Guarded)*
+  - Deletes a portfolio record by UUID.
+
 ---
 
 ## Route Protection & Middleware

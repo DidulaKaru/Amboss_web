@@ -6,19 +6,25 @@ import * as schema from './schema.js'
 let client: postgres.Sql | null = null
 let dbInstance: ReturnType<typeof drizzle<typeof schema>> | null = null
 
-export function getDb() {
+export function getDb(customUrl?: string) {
   if (env.NODE_ENV === 'test' && !process.env.TEST_DB_URL) {
     return null
   }
-  if (!dbInstance) {
+  const urlToUse = customUrl || env.DATABASE_URL
+  if (!dbInstance || customUrl) {
     try {
-      client = postgres(env.DATABASE_URL, {
+      const sqlClient = postgres(urlToUse, {
         max: 10,
         idle_timeout: 20,
         connect_timeout: 5,
         onnotice: () => {},
       })
-      dbInstance = drizzle(client, { schema })
+      const instance = drizzle(sqlClient, { schema })
+      if (!customUrl) {
+        client = sqlClient
+        dbInstance = instance
+      }
+      return instance
     } catch (err) {
       console.warn('PostgreSQL client init failed, running in fallback mode:', err)
       return null

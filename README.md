@@ -26,14 +26,16 @@ Amboss_web/
 ├── server/                          # Fastify 5 + TypeScript + Drizzle ORM
 │   ├── src/
 │   │   ├── config/                  # Server environment & logistics SSOT
-│   │   ├── db/                      # Schema, SQLite/PostgreSQL connection, seeds
+│   │   ├── db/                      # Schema, PostgreSQL connection, seeds, migrations
 │   │   ├── middleware/              # Fastify JWT & HttpOnly cookie auth guards
-│   │   ├── routes/                  # REST API v1 (health, materials, products, quote, orders, admin)
+│   │   ├── routes/                  # REST API v1 (health, materials, products, quote, orders, portfolio, admin)
 │   │   └── services/                # Pure business logic (pricing engine, logistics)
+│   ├── drizzle/                     # Versioned PostgreSQL migration SQL files
+│   ├── Dockerfile                   # Multi-stage production container build
 │   └── tests/                       # Fastify integration test suites via .inject()
 ├── .github/workflows/ci.yml         # GitHub Actions CI (Lint, Vitest, Build, Playwright)
 ├── guide.md                         # Master engineering roadmap & technical architecture
-├── progress_tracker.md              # Live development milestone tracker
+├── PROGRESS.md                      # Live development milestone tracker
 └── package.json                     # Monorepo root workspace orchestration
 ```
 
@@ -60,14 +62,52 @@ Amboss_web/
 
 4. **Single-Owner Admin CMS (`/admin`):**
    - Discreet access via low-contrast `SYS / CTRL` link in the About Us colophon.
-   - Environment-driven bcrypt authentication (`ADMIN_PASSWORD_HASH`) with HttpOnly JWT session cookies (`amboss_admin_token`).
-   - Real-time catalog manager with inline stock controls (`−`, input, `+`) synchronized with SQLite database.
-   - Full CRUD product mutation capabilities protected by `verifyAdmin` middleware.
+   - Environment-driven bcrypt authentication (`ADMIN_PASSWORD_HASH`) with HttpOnly JWT session cookies (`amboss_admin_token`) and Bearer header fallback.
+   - Dual-tab industrial control center:
+     - `[ Products & Stock ]`: Real-time catalog manager with inline stock controls (`−`, input, `+`) synchronized with PostgreSQL.
+     - `[ Portfolio Gallery ]`: Project gallery manager with live visibility toggle, material specification, and CRUD modals.
+   - Full CRUD product and portfolio mutation capabilities protected by `verifyAdmin` middleware.
 
-5. **Visual Discipline & Design Philosophy:**
+5. **Dynamic Portfolio Gallery (`/projects`):**
+   - Fluid responsive CSS column masonry gallery adjusting naturally to photo aspect ratios without rigid cropping.
+   - Full-viewport modal lightbox for inspecting print layer details, materials, and functional engineering applications with keyboard `Escape` dismissal.
+   - Offline fallback guarantees uninterrupted display if backend or database is suspended.
+
+6. **Visual Discipline & Design Philosophy:**
    - Strict compliance with `client/DESIGN_PHILOSOPHY.md`.
    - **Zero Emojis Policy:** Emojis are forbidden across all interfaces, buttons, banners, and payloads.
    - Industrial aesthetics inspired by Dieter Rams, Teenage Engineering, and Linear (deep zinc carbon palettes, monochrome SVG icons, monospace numbers).
+
+---
+
+## Zero-Cost Production Deployment Architecture
+
+```
+[ Cloudflare Pages ] (Frontend: amboss.lk)
+         │  Free Edge Hosting, Unlimited Bandwidth & CDN
+         ▼
+[ Koyeb ] (Backend: Fastify API on Singapore region)
+         │  Free Eco Nano Container (512 MB RAM, Auto HTTPS)
+         ▼
+[ Neon Serverless Postgres ] (Database on Singapore region)
+         │  Free 0.5 GB Storage, Autoscaling Compute
+         ▼
+[ Cloudflare Pages public/images/ + Cloudflare R2 ] (Photos)
+            Zero Egress Fee Asset Delivery
+```
+
+- **Frontend on Cloudflare Pages:**
+  - Build command: `npm run build`
+  - Output directory: `dist`
+  - SPA routing guaranteed via `client/public/_redirects` (`/* /index.html 200`).
+  - Set `VITE_API_URL` to your backend URL (e.g. `https://api.amboss.lk` or `https://<app>.koyeb.app`).
+- **Backend on Koyeb:**
+  - Build with `server/Dockerfile` or native buildpack.
+  - Set `DATABASE_URL` to your Neon pooled connection string (`?sslmode=require`).
+  - Set `CORS_ORIGIN=https://amboss.lk,https://www.amboss.lk`.
+- **Database on Neon:**
+  - Run initial migrations: `npx drizzle-kit migrate`
+  - Seed initial catalog: `npm run db:seed`
 
 ---
 
@@ -109,10 +149,10 @@ All suites run locally and via GitHub Actions CI (`.github/workflows/ci.yml`):
 # 1. Run ESLint across all workspaces
 npm run lint
 
-# 2. Run Vitest Unit & Integration Suites (38 tests)
+# 2. Run Vitest Unit & Integration Suites (43 tests)
 npm test
 
-# 3. Run Playwright End-to-End Tests (4 specs across Chromium)
+# 3. Run Playwright End-to-End Tests (7 specs across Chromium)
 npm run test:e2e
 
 # 4. Compile Production Builds (Client Vite bundle + Server tsc)
@@ -124,8 +164,9 @@ npm run build
 ## Documentation Index
 
 - [Master Engineering Roadmap (`guide.md`)](file:///c:/Users/didul/Documents/GitHub/Amboss_web/guide.md)
-- [Live Progress Milestone Tracker (`progress_tracker.md`)](file:///c:/Users/didul/Documents/GitHub/Amboss_web/progress_tracker.md)
+- [Live Progress Milestone Tracker (`PROGRESS.md`)](file:///c:/Users/didul/Documents/GitHub/Amboss_web/PROGRESS.md)
 - [Amboss Design Philosophy (`client/DESIGN_PHILOSOPHY.md`)](file:///c:/Users/didul/Documents/GitHub/Amboss_web/client/DESIGN_PHILOSOPHY.md)
+- [Client Application Guide (`client/README.md`)](file:///c:/Users/didul/Documents/GitHub/Amboss_web/client/README.md)
 - [Client Quote Feature (`client/src/features/quote/README.md`)](file:///c:/Users/didul/Documents/GitHub/Amboss_web/client/src/features/quote/README.md)
 - [Client Shop Feature (`client/src/features/shop/README.md`)](file:///c:/Users/didul/Documents/GitHub/Amboss_web/client/src/features/shop/README.md)
 - [Client Admin Feature (`client/src/features/admin/README.md`)](file:///c:/Users/didul/Documents/GitHub/Amboss_web/client/src/features/admin/README.md)

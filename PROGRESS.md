@@ -214,3 +214,38 @@ Provide an air-gapped, zero-DB-overhead administrative control panel for Amboss 
   - Playwright E2E: **7/7 tests passing** across all browser suites.
   - Production Build: `npm run build` cleanly compiled client and server with 0 errors.
   - Linter: `npm run lint` clean with 0 errors.
+
+---
+
+## Phase 8.7: Admin Deletion 400 Bad Request Resolution & Login UX Streamlining
+- [x] **Task 8.7.1: Deletion 400 Bad Request Root Cause Resolution:**
+  - Diagnosed `FST_ERR_CTP_EMPTY_JSON_BODY` (400 Bad Request) on deleting products and portfolio items.
+  - Updated `getAuthHeaders(includeContentType)` in `AdminDashboard.tsx` to omit `Content-Type: application/json` for body-less `DELETE` calls.
+  - Implemented custom content-type parser in Fastify (`server/src/app.ts`) ensuring empty JSON bodies are parsed safely as `undefined` rather than rejecting requests with 400 Bad Request.
+  - Added regression test suites in `client/tests/adminAuth.test.ts`, `server/tests/admin.test.ts`, and `server/tests/portfolio.test.ts`.
+- [x] **Task 8.7.2: Admin Login Form Polish:**
+  - Streamlined input labels in `client/src/features/admin/AdminLogin.tsx` ("Username", "Password", "ENTER") removing decorative badges while maintaining strict subtractive minimalist aesthetics.
+
+---
+
+## Phase 9: Production Deployment Architecture & Zero-Cost Cloud Infrastructure
+- [x] **Task 9.1: Target Architecture Alignment (Zero-Cost Plan):**
+  - **Frontend:** Cloudflare Pages (Free global edge CDN, custom domain `amboss.lk`, automated Git deployments).
+  - **Backend API:** Koyeb (Free Eco Nano container, Singapore `sin` region, automatic SSL).
+  - **Database:** Neon Serverless Postgres (Free 0.5 GB storage, autoscaling compute, Singapore `ap-southeast-1` region).
+  - **Media / Assets:** Cloudflare Pages `public/images/` with Cloudflare R2 (10 GB free, 0 egress fees) for dynamic uploads.
+- [x] **Task 9.2: Cloudflare Pages SPA Routing (`_redirects`):**
+  - Created `client/public/_redirects` (`/* /index.html 200`) so direct page visits and refreshes on `/shop`, `/projects`, `/about-us`, `/quote`, and `/admin` return HTTP 200 OK without 404 errors.
+- [x] **Task 9.3: Neon Database Migration Pipeline:**
+  - Updated `server/drizzle.config.ts` to use `dotenv/config` and `process.env.DATABASE_URL`.
+  - Generated initial PostgreSQL schema migration in `server/drizzle/0000_little_greymalkin.sql` containing all 5 tables (`materials`, `machines`, `products`, `quotes`, `portfolio_items`).
+- [x] **Task 9.4: Containerization for Koyeb / Fly.io:**
+  - Created production multi-stage `server/Dockerfile` using Node 20 Alpine and unprivileged `node` user (~150MB image size).
+  - Created `server/.dockerignore` excluding local test artifacts, node_modules, and git caches.
+- [x] **Task 9.5: Environment Templates & Verification:**
+  - Created `client/.env.example` and updated `server/.env.example` with documented production parameters.
+- [x] **Task 9.6: Pre-Flight Production Trap Resolution:**
+  - **Trap 1 (CORS Origin Parsing):** Refactored `@fastify/cors` in `server/src/app.ts` to parse comma-separated `CORS_ORIGIN` strings into clean, trimmed arrays and merged with production defaults (`https://amboss.lk`, `https://www.amboss.lk`, `http://localhost:5173`) while maintaining `credentials: true`.
+  - **Trap 2 (Cross-Origin Cookie Blocking):** Configured `server/src/routes/admin.ts` with `sameSite: isProd ? 'none' : 'lax'` and `secure: isProd` for both `setCookie` and `clearCookie` to prevent modern browsers from blocking admin cookies across `amboss.lk` $\rightarrow$ `*.koyeb.app`. Retained client-side `Authorization: Bearer <token>` fallback in `AdminAuthContext.tsx` and `AdminDashboard.tsx`.
+  - **Trap 3 (Neon Migration Advisory Locks):** Separated pooled runtime connections from direct migration connections via `DATABASE_URL_DIRECT` in `drizzle.config.ts`, `env.ts`, `db/index.ts`, and `db/seed.ts` preventing PgBouncer lock errors during `drizzle-kit migrate` and `drizzle-kit push`.
+  - **Test Execution & Build:** **45/45 tests passing** across monorepo (22 client + 23 server). Full production builds compile with 0 errors.

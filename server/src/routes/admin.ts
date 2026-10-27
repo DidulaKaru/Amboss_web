@@ -77,13 +77,15 @@ export const adminRoutes: FastifyPluginAsync = async (fastify) => {
       { expiresIn: '24h' }
     )
 
-    // Set HttpOnly cookie with strict CSRF protection
+    const isProd = env.NODE_ENV === 'production'
+
+    // Set HttpOnly cookie ('none' + secure: true in production to prevent cross-origin blocking on raw koyeb.app)
     reply.setCookie('amboss_admin_token', token, {
       path: '/',
       httpOnly: true,
-      secure: env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 86400, // 24 hours in seconds
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
+      maxAge: 43200, // 12 hours in seconds
     })
 
     return {
@@ -98,8 +100,11 @@ export const adminRoutes: FastifyPluginAsync = async (fastify) => {
 
   // Logout Endpoint
   fastify.post('/api/v1/admin/logout', async (request, reply) => {
+    const isProd = env.NODE_ENV === 'production'
     reply.clearCookie('amboss_admin_token', {
       path: '/',
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
     })
     return {
       success: true,

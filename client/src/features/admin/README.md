@@ -14,13 +14,14 @@ This module provides an air-gapped, zero-DB-overhead administration gateway (`SY
 2. **Session & Security Management:**
    - Communicates with Fastify server via HttpOnly cookie `amboss_admin_token` and `Authorization: Bearer <token>` fallback header.
    - Guarded via `AdminRoute.tsx`, which automatically redirects unauthorized users to `/admin/login`.
-3. **Live Inventory Table & Real-Time Sync:**
+3. **Live Inventory Control (`[ Products & Stock ]` Tab):**
    - Lists all catalog items with SKU, specifications, category, price (LKR), and stock.
    - Quick inline stock modifiers (`−`, numeric input, `+`) that save immediately to the backend (`PUT /api/v1/products/:id`) with debounce and visual saving indicators.
-4. **Product Mutations:**
-   - "NEW PRODUCT" modal to register new SKUs (`POST /api/v1/products`).
-   - "EDIT" modal to update product names, descriptions, categories, prices, or images (`PUT /api/v1/products/:id`).
-   - "DELETE" confirmation modal to safely remove discontinued products (`DELETE /api/v1/products/:id`).
+   - Product creation, edit, and delete modals using `getAuthHeaders(false)` on body-less DELETE calls.
+4. **Portfolio Gallery Control (`[ Portfolio Gallery ]` Tab):**
+   - Lists all portfolio projects with thumbnail preview, title, material specifications, and active status.
+   - Real-time "Toggle Status" action updating public gallery visibility instantly (`PUT /api/v1/portfolio/:id`).
+   - Add, edit, and delete modals for managing gallery artifacts.
 
 ---
 
@@ -30,7 +31,7 @@ This module provides an air-gapped, zero-DB-overhead administration gateway (`SY
 admin/
 ├── AdminAuthContext.tsx     # Session provider (checks /api/v1/admin/me on mount, login, logout)
 ├── adminAuthInternal.ts     # Internal createContext instance
-├── AdminDashboard.tsx       # Industrial inventory table, inline stock controls, CRUD modals
+├── AdminDashboard.tsx       # Industrial inventory table, portfolio gallery manager, inline controls, CRUD modals
 ├── AdminLogin.tsx           # Monospace terminal login interface
 ├── AdminRoute.tsx           # Route guard component wrapping protected pages
 ├── types.ts                 # AdminUser and AdminAuthContextType definitions
@@ -52,8 +53,13 @@ admin/
   - `POST /api/v1/products`
   - `PUT /api/v1/products/:id`
   - `DELETE /api/v1/products/:id`
+- **Portfolio Mutation Endpoints:**
+  - `GET /api/v1/portfolio`
+  - `POST /api/v1/portfolio`
+  - `PUT /api/v1/portfolio/:id`
+  - `DELETE /api/v1/portfolio/:id`
 - **Default Operator Credentials:**
-  Configured in `server/.env.example` / `server/src/config/env.ts` (`ADMIN_USERNAME=admin`, default password `amboss2026`).
+  Configured in `server/.env.example` / `server/src/config/env.ts` (`ADMIN_USERNAME=Dory`).
 
 ---
 

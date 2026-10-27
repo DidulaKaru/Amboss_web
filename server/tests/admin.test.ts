@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { buildApp } from '../src/app.js'
+import { env } from '../src/config/env.js'
 
 describe('Admin Authentication & CMS API', () => {
   it('rejects unauthenticated product mutations with 401 Unauthorized', async () => {
@@ -151,5 +152,64 @@ describe('Admin Authentication & CMS API', () => {
     expect(resLogout.json().success).toBe(true)
 
     await app.close()
+  })
+
+  it('correctly handles CORS preflight OPTIONS and credentials from allowed origins', async () => {
+    const app = await buildApp()
+
+    // Test preflight OPTIONS request from production frontend origin
+    const resOptions = await app.inject({
+      method: 'OPTIONS',
+      url: '/api/v1/products',
+      headers: {
+        origin: 'https://amboss.lk',
+        'access-control-request-method': 'POST',
+        'access-control-request-headers': 'authorization,content-type',
+      },
+    })
+
+    expect(resOptions.statusCode).toBe(204)
+    expect(resOptions.headers['access-control-allow-origin']).toBe('https://amboss.lk')
+    expect(resOptions.headers['access-control-allow-credentials']).toBe('true')
+    expect(resOptions.headers['access-control-allow-methods']).toContain('POST')
+
+    await app.close()
+  })
+
+  it('sets SameSite=None and Secure on admin cookie when in production mode for cross-origin deployments', async () => {
+    const originalEnv = env.NODE_ENV
+    ;(env as any).NODE_ENV = 'production'
+
+    try {
+      const app = await buildApp()
+      const resLogin = await app.inject({
+        method: 'POST',
+        url: '/api/v1/admin/login',
+        payload: {
+          username: 'Dory',
+          password: 'poplintu7577',
+        },
+      })
+
+      expect(resLogin.statusCode).toBe(200)
+      const cookieHeader = resLogin.headers['set-cookie'] as string
+      expect(cookieHeader).toBeDefined()
+      expect(cookieHeader.toLowerCase()).toContain('samesite=none')
+      expect(cookieHeader.toLowerCase()).toContain('secure')
+
+      // Also verify logout preserves matching clearCookie flags
+      const resLogout = await app.inject({
+        method: 'POST',
+        url: '/api/v1/admin/logout',
+      })
+      expect(resLogout.statusCode).toBe(200)
+      const clearCookieHeader = resLogout.headers['set-cookie'] as string
+      expect(clearCookieHeader.toLowerCase()).toContain('samesite=none')
+      expect(clearCookieHeader.toLowerCase()).toContain('secure')
+
+      await app.close()
+    } finally {
+      ;(env as any).NODE_ENV = originalEnv
+    }
   })
 })

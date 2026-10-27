@@ -1,8 +1,9 @@
 import { getDb, schema } from './index.js'
 import { INITIAL_MATERIALS, INITIAL_MACHINES, INITIAL_PRODUCTS, INITIAL_PORTFOLIO_ITEMS } from './seedData.js'
 
-export async function seedDatabase() {
-  const db = getDb()
+export async function seedDatabase(customUrl?: string) {
+  const targetUrl = customUrl || process.env.DATABASE_URL_DIRECT || process.env.DATABASE_URL
+  const db = getDb(targetUrl)
   if (!db) {
     console.warn('Database connection unavailable, skipping seed.')
     return { materials: 0, machines: 0, products: 0, portfolio: 0 }
