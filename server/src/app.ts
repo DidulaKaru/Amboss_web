@@ -19,6 +19,21 @@ export async function buildApp(opts: FastifyServerOptions = {}): Promise<Fastify
     ...opts,
   })
 
+  // Handle empty JSON bodies gracefully (prevents FST_ERR_CTP_EMPTY_JSON_BODY on DELETE/GET requests)
+  app.addContentTypeParser('application/json', { parseAs: 'string' }, (_req, body, done) => {
+    const raw = typeof body === 'string' ? body : body ? body.toString('utf-8') : ''
+    if (!raw || raw.trim().length === 0) {
+      done(null, undefined)
+      return
+    }
+    try {
+      done(null, JSON.parse(raw))
+    } catch (err: any) {
+      err.statusCode = 400
+      done(err, undefined)
+    }
+  })
+
   // Security & Middleware
   await app.register(helmet, {
     contentSecurityPolicy: false,

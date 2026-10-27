@@ -132,11 +132,14 @@ describe('Portfolio API', () => {
     expect(resUpdate.json().data.title).toBe('Updated Robotic Gripper Actuator v2')
     expect(resUpdate.json().data.material).toBe('Carbon Fiber Nylon')
 
-    // 3. Delete item
+    // 3. Delete item (with Content-Type to verify Fastify empty body handling)
     const resDelete = await app.inject({
       method: 'DELETE',
       url: `/api/v1/portfolio/${createdId}`,
-      headers: authHeaders,
+      headers: {
+        ...authHeaders,
+        'content-type': 'application/json',
+      },
     })
 
     expect(resDelete.statusCode).toBe(200)

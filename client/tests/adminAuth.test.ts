@@ -81,4 +81,31 @@ describe('Admin Authentication & Inventory Control Suite', () => {
     localStorageMock.removeItem('amboss_admin_token')
     expect(localStorageMock.getItem('amboss_admin_token')).toBeNull()
   })
+
+  it('generates correct auth headers for JSON mutations vs body-less DELETE requests', () => {
+    const sampleToken = 'valid-jwt-token'
+    localStorageMock.setItem('amboss_admin_token', sampleToken)
+
+    const getAuthHeaders = (includeContentType = true): Record<string, string> => {
+      const headers: Record<string, string> = {}
+      if (includeContentType) {
+        headers['Content-Type'] = 'application/json'
+      }
+      const token = localStorageMock.getItem('amboss_admin_token')
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`
+      }
+      return headers
+    }
+
+    // POST / PUT with body
+    const postHeaders = getAuthHeaders(true)
+    expect(postHeaders['Content-Type']).toBe('application/json')
+    expect(postHeaders['Authorization']).toBe(`Bearer ${sampleToken}`)
+
+    // DELETE without body (must not set Content-Type to avoid 400 Bad Request in Fastify)
+    const deleteHeaders = getAuthHeaders(false)
+    expect(deleteHeaders['Content-Type']).toBeUndefined()
+    expect(deleteHeaders['Authorization']).toBe(`Bearer ${sampleToken}`)
+  })
 })

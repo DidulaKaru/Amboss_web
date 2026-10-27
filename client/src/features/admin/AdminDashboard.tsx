@@ -107,9 +107,10 @@ export default function AdminDashboard() {
     }, 3500)
   }
 
-  const getAuthHeaders = (): Record<string, string> => {
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+  const getAuthHeaders = (includeContentType = true): Record<string, string> => {
+    const headers: Record<string, string> = {}
+    if (includeContentType) {
+      headers['Content-Type'] = 'application/json'
     }
     const token = localStorage.getItem('amboss_admin_token')
     if (token) {
@@ -289,7 +290,7 @@ export default function AdminDashboard() {
       const res = await fetch(`${API_BASE}/api/v1/products/${deleteTarget.sku}`, {
         method: 'DELETE',
         credentials: 'include',
-        headers: getAuthHeaders(),
+        headers: getAuthHeaders(false),
       })
 
       if (res.ok) {
@@ -421,7 +422,7 @@ export default function AdminDashboard() {
       const res = await fetch(`${API_BASE}/api/v1/portfolio/${deletePortfolioTarget.id}`, {
         method: 'DELETE',
         credentials: 'include',
-        headers: getAuthHeaders(),
+        headers: getAuthHeaders(false),
       })
       if (res.ok) {
         setPortfolioItems((prev) => prev.filter((p) => p.id !== deletePortfolioTarget.id))

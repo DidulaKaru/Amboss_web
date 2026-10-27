@@ -50,10 +50,6 @@ export default function AdminLogin() {
       <div className="w-full max-w-sm space-y-6">
         {/* Terminal Header */}
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded border border-zinc-800 bg-zinc-900/60 text-[10px] font-mono tracking-widest uppercase text-zinc-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
-            SECURE TERMINAL ACCESS
-          </div>
           <h1 className="text-xl font-mono font-medium tracking-tight text-zinc-100">
             AMBOSS // SYS.CTRL
           </h1>
@@ -85,7 +81,7 @@ export default function AdminLogin() {
                 htmlFor="admin-username"
                 className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400"
               >
-                Terminal ID / Username
+                Username
               </label>
               <input
                 id="admin-username"
@@ -105,7 +101,7 @@ export default function AdminLogin() {
                 htmlFor="admin-password"
                 className="block text-[11px] font-mono uppercase tracking-wider text-zinc-400"
               >
-                Access Key / Password
+                Password
               </label>
               <input
                 id="admin-password"
@@ -130,7 +126,7 @@ export default function AdminLogin() {
                   <span>AUTHENTICATING...</span>
                 </>
               ) : (
-                <span>AUTHENTICATE & ENTER</span>
+                <span>ENTER</span>
               )}
             </button>
           </form>

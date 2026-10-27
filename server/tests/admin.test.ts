@@ -130,11 +130,14 @@ describe('Admin Authentication & CMS API', () => {
     expect(resUpdate.statusCode).toBe(200)
     expect(resUpdate.json().data.stockQuantity).toBe(40)
 
-    // 5. Delete Product
+    // 5. Delete Product (testing with Content-Type header to ensure empty body doesn't trigger 400 Bad Request)
     const resDelete = await app.inject({
       method: 'DELETE',
       url: `/api/v1/products/${testSku}`,
-      headers: authHeaders,
+      headers: {
+        ...authHeaders,
+        'content-type': 'application/json',
+      },
     })
     expect(resDelete.statusCode).toBe(200)
     expect(resDelete.json().success).toBe(true)
