@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useCart } from "../context/useCart";
-import Cart from "../pages/shop/components/Cart";
+import { useCart } from "../features/shop/useCart";
+import Cart from "../features/shop/components/Cart";
 
 type NavItem = { label: string; href: string };
 

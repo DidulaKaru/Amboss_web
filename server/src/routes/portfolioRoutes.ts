@@ -47,10 +47,8 @@ export const portfolioRoutes: FastifyPluginAsync = async (fastify) => {
           .where(eq(schema.portfolioItems.isActive, true))
           .orderBy(asc(schema.portfolioItems.displayOrder))
 
-        if (rows && rows.length > 0) {
-          const filtered = category ? rows.filter((r) => r.category === category) : rows
-          return { success: true, count: filtered.length, data: filtered }
-        }
+        const filtered = category ? rows.filter((r) => r.category === category) : rows
+        return { success: true, count: filtered.length, data: filtered }
       } catch (err) {
         fastify.log.warn({ err }, 'Querying portfolio_items failed, using fallback dataset')
       }
@@ -86,6 +84,7 @@ export const portfolioRoutes: FastifyPluginAsync = async (fastify) => {
         if (rows && rows.length > 0) {
           return { success: true, data: rows[0] }
         }
+        return reply.code(404).send({ success: false, error: 'Portfolio item not found' })
       } catch (err) {
         fastify.log.warn({ err }, `Querying portfolio item ${id} failed`)
       }
@@ -197,6 +196,7 @@ export const portfolioRoutes: FastifyPluginAsync = async (fastify) => {
         if (updated && updated.length > 0) {
           return { success: true, data: updated[0] }
         }
+        return reply.code(404).send({ success: false, error: 'Portfolio item not found' })
       } catch (err: unknown) {
         request.log.warn({ err }, `Error updating portfolio item in database for ${id}, falling back to in-memory dataset`)
       }
@@ -236,6 +236,7 @@ export const portfolioRoutes: FastifyPluginAsync = async (fastify) => {
         if (deleted && deleted.length > 0) {
           return { success: true, message: 'Portfolio item deleted successfully', data: deleted[0] }
         }
+        return reply.code(404).send({ success: false, error: 'Portfolio item not found' })
       } catch (err: unknown) {
         request.log.warn({ err }, `Error deleting portfolio item in database for ${id}, falling back to in-memory dataset`)
       }

@@ -12,9 +12,7 @@ export const materialsRoutes: FastifyPluginAsync = async (fastify) => {
           .select()
           .from(schema.materials)
           .where(eq(schema.materials.isActive, true))
-        if (rows && rows.length > 0) {
-          return { success: true, count: rows.length, data: rows }
-        }
+        return { success: true, count: rows.length, data: rows }
       } catch (err) {
         fastify.log.warn({ err }, 'Querying materials failed, using initial dataset')
       }

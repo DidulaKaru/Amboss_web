@@ -12,9 +12,7 @@ export const machinesRoutes: FastifyPluginAsync = async (fastify) => {
           .select()
           .from(schema.machines)
           .where(eq(schema.machines.isOnline, true))
-        if (rows && rows.length > 0) {
-          return { success: true, count: rows.length, data: rows }
-        }
+        return { success: true, count: rows.length, data: rows }
       } catch (err) {
         fastify.log.warn({ err }, 'Querying machines failed, using initial dataset')
       }

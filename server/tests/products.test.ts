@@ -18,7 +18,7 @@ describe('Products API', () => {
     const skus = json.data.map((p: any) => p.sku)
     expect(skus).toContain('MCU-ESP32-WROOM-32D')
     expect(skus).toContain('MCU-ARDUINO-UNO-R3')
-    expect(skus).toContain('ACT-SG90-SERVO')
+    expect(skus).toContain('SEN-HC-SR04-ULTRASONIC')
 
     await app.close()
   })

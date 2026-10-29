@@ -16,6 +16,7 @@ import { portfolioRoutes } from './routes/portfolioRoutes.js'
 export async function buildApp(opts: FastifyServerOptions = {}): Promise<FastifyInstance> {
   const app = Fastify({
     logger: env.NODE_ENV === 'test' ? false : true,
+    trustProxy: env.NODE_ENV === 'production',
     ...opts,
   })
 
@@ -45,21 +46,22 @@ export async function buildApp(opts: FastifyServerOptions = {}): Promise<Fastify
     secret: env.JWT_SECRET,
   })
 
-  // Parse CORS origins from environment into a clean, trimmed array
+  // Parse CORS origins strictly. Never reflect arbitrary origins with credentials: true.
   const allowedOrigins = (() => {
-    if (env.CORS_ORIGIN === '*') {
-      return true
-    }
-    const defaults = ['http://localhost:5173', 'https://amboss.lk', 'https://www.amboss.lk']
-    if (env.CORS_ORIGIN) {
+    const prodOrigins = ['https://amboss.lk', 'https://www.amboss.lk']
+    const devOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:4000']
+
+    const baseOrigins = env.NODE_ENV === 'production' ? prodOrigins : [...devOrigins, ...prodOrigins]
+
+    if (env.CORS_ORIGIN && env.CORS_ORIGIN !== '*') {
       const parsed = env.CORS_ORIGIN.split(',')
         .map((origin) => origin.trim())
         .filter(Boolean)
       if (parsed.length > 0) {
-        return Array.from(new Set([...defaults, ...parsed]))
+        return Array.from(new Set([...baseOrigins, ...parsed]))
       }
     }
-    return defaults
+    return baseOrigins
   })()
 
   await app.register(cors, {

@@ -43,37 +43,31 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       return false
     }
 
-    let success = true
+    const existing = cartItems.find((item) => item.id === product.id)
+    const currentQty = existing ? existing.quantity : 0
+    if (currentQty + quantity > product.stock) {
+      alert(`Cannot add item. Maximum available stock reached for "${product.name}".`)
+      return false
+    }
+
     setCartItems((prev) => {
-      const existing = prev.find((item) => item.id === product.id)
-      if (existing) {
-        const newTotal = existing.quantity + quantity
-        if (newTotal > product.stock) {
-          alert(`Cannot add item. Maximum available stock reached for "${product.name}".`)
-          success = false
-          return prev
-        }
-        return prev.map((item) =>
-          item.id === product.id ? { ...item, quantity: newTotal } : item
+      const idx = prev.findIndex((item) => item.id === product.id)
+      if (idx !== -1) {
+        return prev.map((item, i) =>
+          i === idx ? { ...item, quantity: item.quantity + quantity } : item
         )
-      } else {
-        if (quantity > product.stock) {
-          alert(`Cannot add item. Maximum available stock reached for "${product.name}".`)
-          success = false
-          return prev
-        }
-        return [
-          ...prev,
-          {
-            ...product,
-            quantity,
-          },
-        ]
       }
+      return [
+        ...prev,
+        {
+          ...product,
+          quantity,
+        },
+      ]
     })
 
-    return success
-  }, [])
+    return true
+  }, [cartItems])
 
   const removeFromCart = useCallback((id: string) => {
     setCartItems((prev) => prev.filter((item) => item.id !== id))
@@ -86,22 +80,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       return true
     }
 
-    let success = true
-    setCartItems((prev) => {
-      const item = prev.find((i) => i.id === id)
-      if (!item) return prev
+    const item = cartItems.find((i) => i.id === id)
+    if (!item) return false
 
-      if (newQuantity > item.stock) {
-        alert('Cannot update quantity. Maximum available stock reached.')
-        success = false
-        return prev
-      }
+    if (newQuantity > item.stock) {
+      alert('Cannot update quantity. Maximum available stock reached.')
+      return false
+    }
 
-      return prev.map((i) => (i.id === id ? { ...i, quantity: newQuantity } : i))
-    })
-
-    return success
-  }, [removeFromCart])
+    setCartItems((prev) =>
+      prev.map((i) => (i.id === id ? { ...i, quantity: newQuantity } : i))
+    )
+    return true
+  }, [cartItems, removeFromCart])
 
   const clearCart = useCallback(() => {
     setCartItems([])
@@ -226,28 +217,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       .map((item) => `- ${item.name} x ${item.quantity} (Rs ${(item.price * item.quantity).toLocaleString()} LKR)`)
       .join('\n')
 
-    const fulfillmentText =
+    const deliveryText =
       deliveryMethod === 'ruhuna_pickup'
-        ? 'Free Pickup: Faculty of Engineering, University of Ruhuna'
+        ? 'University of Ruhuna Pickup (FREE)'
         : deliveryMethod === 'hapugala_pickup'
-        ? 'Free Pickup: Amboss Shop (Hapugala)'
-        : deliveryMethod === 'galle_local'
-        ? 'Local Delivery: Galle Municipal Area'
-        : 'Islandwide Courier (PromptX / Domex)'
+          ? 'Amboss Shop Hapugala Pickup (FREE)'
+          : deliveryMethod === 'galle_local'
+            ? 'Local Delivery: Galle Area'
+            : `Islandwide Courier (Rs ${deliveryFee.toLocaleString()} LKR)`
 
     const message = [
-      'AMBOSS Store Order Request',
-      '--------------------------------',
+      'Hi Amboss, I would like to place an order:',
       ...(customerName ? [`Customer: ${customerName}`] : []),
       itemsList,
-      '--------------------------------',
-      `Subtotal: Rs ${subtotal.toLocaleString()} LKR`,
-      `Fulfillment: ${fulfillmentText}`,
-      `Delivery Fee: ${deliveryFee > 0 ? `Rs ${deliveryFee.toLocaleString()} LKR` : 'FREE'}`,
+      '',
+      `Delivery Method: ${deliveryText}`,
       ...(deliveryAddress ? [`Address / Notes: ${deliveryAddress}`] : []),
       `Total: Rs ${cartTotal.toLocaleString()} LKR`,
-      '',
-      'Please confirm availability and banking/payment instructions.',
     ].join('\n')
 
     const encoded = encodeURIComponent(message)
@@ -261,7 +247,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     deliveryMethod,
     deliveryAddress,
     customerName,
-    subtotal,
     deliveryFee,
     cartTotal,
   ])

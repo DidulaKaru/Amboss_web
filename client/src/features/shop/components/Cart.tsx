@@ -182,7 +182,7 @@ export default function Cart({ isOpen, onClose }: CartProps) {
           {cartItems.length > 0 && (
             <div className="pt-4 border-t border-zinc-800 space-y-3">
               <label className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 block font-medium">
-                Fulfillment Method
+                Delivery Method
               </label>
 
               <div className="space-y-2">
@@ -210,7 +210,7 @@ export default function Cart({ isOpen, onClose }: CartProps) {
                       <span className="text-xs font-mono text-emerald-400 font-medium">FREE</span>
                     </div>
                     <p className="text-[10px] text-zinc-500 mt-0.5 leading-relaxed">
-                      Campus collection at Hapugala. Ready within 24 hours.
+                      Campus pickup at Hapugala.
                     </p>
                   </div>
                 </div>
@@ -234,12 +234,12 @@ export default function Cart({ isOpen, onClose }: CartProps) {
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-baseline">
                       <span className="text-xs font-medium text-zinc-200">
-                        Amboss Shop (Hapugala)
+                        Hapugala Shop
                       </span>
                       <span className="text-xs font-mono text-emerald-400 font-medium">FREE</span>
                     </div>
                     <p className="text-[10px] text-zinc-500 mt-0.5 leading-relaxed">
-                      Direct workshop pickup at Elhenage Watta, Hapugala.
+                      Workshop pickup at Hapugala.
                     </p>
                   </div>
                 </div>
@@ -268,7 +268,7 @@ export default function Cart({ isOpen, onClose }: CartProps) {
                       <span className="text-xs font-mono text-zinc-200 font-medium">Rs 500</span>
                     </div>
                     <p className="text-[10px] text-zinc-500 mt-0.5 leading-relaxed">
-                      PromptX / Domex doorstep delivery across Sri Lanka (flat fee for &lt;1 kg).
+                      Doorstep delivery across Sri Lanka.
                     </p>
                   </div>
                 </div>
@@ -327,9 +327,6 @@ export default function Cart({ isOpen, onClose }: CartProps) {
               </div>
             </div>
 
-            <p className="text-[10px] text-zinc-500 leading-normal">
-              Orders are confirmed directly via Amboss WhatsApp (+94 77 990 2796). Free pickup prepared within 24h.
-            </p>
 
             <div className="flex gap-2 pt-1">
               <button

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import type { DisplayProduct, ProductVariant, Product } from '../types'
+import { useState, useEffect, useMemo } from 'react'
+import type { DisplayProduct, Product } from '../types'
 import { useCart } from '../useCart'
 import { getAssetUrl } from '../../../utils/assets'
 
@@ -8,23 +8,18 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
-    product.variants && product.variants.length > 0 ? product.variants[0] : null
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(
+    product.variants && product.variants.length > 0 ? product.variants[0].id : null
   )
   const [quantity, setQuantity] = useState(1)
   const [added, setAdded] = useState(false)
   const { addToCart, cartItems } = useCart()
 
-  // Keep selected variant in sync if product updates
-  useEffect(() => {
-    if (product.variants && product.variants.length > 0) {
-      if (!selectedVariant || !product.variants.some((v) => v.id === selectedVariant.id)) {
-        setSelectedVariant(product.variants[0])
-      }
-    } else {
-      setSelectedVariant(null)
-    }
-  }, [product.variants, selectedVariant])
+  // Derive selected variant directly without useEffect state syncing
+  const selectedVariant = useMemo(() => {
+    if (!product.variants || product.variants.length === 0) return null
+    return product.variants.find((v) => v.id === selectedVariantId) ?? product.variants[0]
+  }, [product.variants, selectedVariantId])
 
   // Active parameters from either selected variant or standalone product
   const activeId = selectedVariant ? selectedVariant.id : product.id
@@ -71,10 +66,10 @@ export default function ProductCard({ product }: ProductCardProps) {
     <div
       data-testid="product-card"
       data-sku={activeSku}
-      className="flex flex-col rounded border border-zinc-800 bg-zinc-950 p-4 hover:border-zinc-700 transition space-y-3"
+      className="flex flex-col rounded-lg border border-zinc-850/80 bg-zinc-900/30 p-4 hover:border-zinc-700/80 transition space-y-3"
     >
       {/* Product Image: Clean presentation without floating badges */}
-      <div className="aspect-square w-full overflow-hidden rounded bg-zinc-900 border border-zinc-800/80">
+      <div className="aspect-square w-full overflow-hidden rounded bg-zinc-900/60 border border-zinc-800/60">
         <img
           src={getAssetUrl(activeImage)}
           alt={activeName}
@@ -88,16 +83,15 @@ export default function ProductCard({ product }: ProductCardProps) {
         />
       </div>
 
-      {/* Category & SKU metadata strip */}
+      {/* Category metadata strip */}
       <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-zinc-500">
         <span>{product.category || 'Component'}</span>
-        {activeSku && <span className="truncate max-w-[130px]">{activeSku}</span>}
       </div>
 
       {/* Product Name & Description */}
       <div className="space-y-1">
         <h3 className="text-sm font-medium text-zinc-100 line-clamp-1">{product.name}</h3>
-        <p className="text-xs text-zinc-400 line-clamp-2 leading-relaxed">{activeDesc}</p>
+        <p className="text-[11px] text-zinc-400 line-clamp-1 leading-relaxed">{activeDesc}</p>
       </div>
 
       {/* Variant Dropdown: e.g. Color for LEDs, Termination for Jumper Cables */}
@@ -110,11 +104,8 @@ export default function ProductCard({ product }: ProductCardProps) {
             data-testid="variant-select"
             value={selectedVariant?.id}
             onChange={(e) => {
-              const found = product.variants?.find((v) => v.id === e.target.value)
-              if (found) {
-                setSelectedVariant(found)
-                setQuantity(1)
-              }
+              setSelectedVariantId(e.target.value)
+              setQuantity(1)
             }}
             className="w-full bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-200 rounded px-2.5 py-1.5 focus:outline-none focus:border-zinc-600 transition cursor-pointer"
           >

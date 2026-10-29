@@ -37,7 +37,7 @@ export default function QuotePage() {
         worker.terminate()
       }
 
-      worker.postMessage({ buffer }, [buffer])
+      worker.postMessage({ buffer })
     } catch {
       fallbackParse(buffer)
     }
@@ -65,13 +65,13 @@ export default function QuotePage() {
         {/* Minimal Header */}
         <div className="space-y-1.5">
           <p className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
-            Instant Quotation
+            Instant Estimation
           </p>
           <h1 className="text-2xl sm:text-3xl font-medium tracking-tight text-zinc-100">
             3D Print Configurator
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 max-w-xl">
-            Upload an STL file to calculate model volume, material weight, and instant manufacturing cost.
+            Upload an STL file to get an instant cost estimate for your 3D print.
           </p>
         </div>
 
@@ -86,54 +86,25 @@ export default function QuotePage() {
         {stlResult && (
           <div className="space-y-4">
             <div className="flex justify-between items-center text-xs">
-              <span className="font-mono text-zinc-400">
-                Active model: <span className="text-zinc-200">{fileName}</span>
+              <span className="font-mono text-zinc-400 text-[11px] uppercase tracking-wider">
+                Model Preview
               </span>
               <button
                 type="button"
                 onClick={handleReset}
-                className="text-xs font-mono text-zinc-400 hover:text-zinc-200 underline underline-offset-4 transition"
+                className="text-xs font-mono text-zinc-400 hover:text-zinc-200 underline underline-offset-4 transition cursor-pointer"
               >
                 Upload different file
               </button>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-              {/* Left Column: 3D Previewer & Dimensions */}
-              <div className="lg:col-span-7 space-y-4">
+              {/* Left Column: 3D Previewer */}
+              <div className="lg:col-span-7">
                 <PartViewer
                   stlResult={stlResult}
                   fileName={fileName}
                 />
-
-                {/* Geometric Analysis Summary Card */}
-                <div className="p-4 rounded-lg border border-zinc-800/80 bg-zinc-900/30 space-y-2 text-xs font-mono">
-                  <div className="text-[11px] uppercase tracking-wider text-zinc-400 font-medium">
-                    Geometry Specifications
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1 text-zinc-300">
-                    <div>
-                      <span className="text-zinc-500 block text-[10px]">Dimensions</span>
-                      <span className="text-zinc-200">
-                        {stlResult.boundingBox.dimensions.x} × {stlResult.boundingBox.dimensions.y} × {stlResult.boundingBox.dimensions.z} mm
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-zinc-500 block text-[10px]">Net Volume</span>
-                      <span className="text-zinc-200">{stlResult.volumeCm3} cm³</span>
-                    </div>
-                    <div>
-                      <span className="text-zinc-500 block text-[10px]">Surface Area</span>
-                      <span className="text-zinc-200">{stlResult.surfaceAreaCm2} cm²</span>
-                    </div>
-                    <div>
-                      <span className="text-zinc-500 block text-[10px]">Topology</span>
-                      <span className="text-zinc-200">
-                        {stlResult.isManifoldEstimate ? 'Watertight' : 'Mesh warning'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
               </div>
 
               {/* Right Column: Interactive Quotation Form */}
@@ -149,26 +120,11 @@ export default function QuotePage() {
           </div>
         )}
 
-        {/* Minimal Manufacturing Reference Strip */}
-        <div className="pt-8 border-t border-zinc-800/80 grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-zinc-400">
-          <div className="space-y-1">
-            <h3 className="font-medium text-zinc-200">Equipment</h3>
-            <p className="leading-relaxed text-zinc-500">
-              Creality K2 Plus (enclosed, up to 350×350×350 mm), Elegoo Centauri Carbon, Bambu Lab A1 AMS, and Elegoo Saturn 4 Ultra 16K resin.
-            </p>
-          </div>
-          <div className="space-y-1">
-            <h3 className="font-medium text-zinc-200">Turnaround & Delivery</h3>
-            <p className="leading-relaxed text-zinc-500">
-              Typical lead time 24–48 hours. Pickup at University of Ruhuna (Galle) or nationwide courier delivery.
-            </p>
-          </div>
-          <div className="space-y-1">
-            <h3 className="font-medium text-zinc-200">Design Verification</h3>
-            <p className="leading-relaxed text-zinc-500">
-              Every file is verified for wall thickness, overhang angles, and orientation before printing begins.
-            </p>
-          </div>
+        {/* Minimal Reference Strip */}
+        <div className="pt-6 border-t border-zinc-850 flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-zinc-400">
+          <span>Max Single-Piece: 350 × 350 × 350 mm</span>
+          <span>Lead Time: 24–48 Hours</span>
+          <span>Pickup (UoR / Hapugala) or Courier</span>
         </div>
       </div>
     </div>

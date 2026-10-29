@@ -94,7 +94,7 @@ export default function PortfolioGrid() {
         const res = await fetch(`${API_BASE}/api/v1/portfolio`)
         if (!res.ok) throw new Error('Failed to fetch portfolio')
         const json = await res.json()
-        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+        if (json.success && Array.isArray(json.data)) {
           if (isMounted) {
             setItems(json.data)
           }

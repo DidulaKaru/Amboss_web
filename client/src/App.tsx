@@ -3,13 +3,15 @@ import Navbar from './components/navbar'
 import Home from './pages/landing/home'
 import Projects from './pages/Projects/projects'
 import AboutUs from './pages/AboutUs/aboutUs'
-import Shop from './pages/shop/Shop'
-import QuotePage from './features/quote/QuotePage'
+import { lazy, Suspense } from 'react'
 import { CartProvider } from './features/shop/cartContext'
 import { AdminAuthProvider } from './features/admin/AdminAuthContext'
 import AdminRoute from './features/admin/AdminRoute'
-import AdminLogin from './features/admin/AdminLogin'
-import AdminDashboard from './features/admin/AdminDashboard'
+
+const QuotePage = lazy(() => import('./features/quote/QuotePage'))
+const Shop = lazy(() => import('./features/shop/ShopPage'))
+const AdminLogin = lazy(() => import('./features/admin/AdminLogin'))
+const AdminDashboard = lazy(() => import('./features/admin/AdminDashboard'))
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Seo from './components/seo'
 import { SITE } from './config/site'
@@ -146,6 +148,7 @@ function App() {
         <div className="smooth-transitions">
           <RouteSeo />
           {!isAdminRoute && <Navbar />}
+          <Suspense fallback={<div className="min-h-screen bg-zinc-950" />}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/quote" element={<QuotePage />} />
@@ -163,6 +166,7 @@ function App() {
               }
             />
           </Routes>
+          </Suspense>
         </div>
       </CartProvider>
     </AdminAuthProvider>

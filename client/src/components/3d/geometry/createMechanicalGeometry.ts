@@ -87,6 +87,15 @@ export function createMechanicalGeometry(): THREE.BufferGeometry {
 
   // Merge all parts into one single BufferGeometry
   const merged = BufferGeometryUtils.mergeGeometries(normalized, false)
+
+  // Dispose all intermediate geometries to free GPU/JS memory
+  for (const g of geometries) {
+    g.dispose()
+  }
+  for (const n of normalized) {
+    n.dispose()
+  }
+
   if (!merged) {
     // Fallback: return a TorusKnot if merge fails
     const fallback = new THREE.TorusKnotGeometry(1.0, 0.35, 128, 32)

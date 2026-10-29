@@ -1,8 +1,6 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { useProducts } from './useProducts'
 import ProductCard from './components/ProductCard'
-import LogisticsBanner from './components/LogisticsBanner'
 import Cart from './components/Cart'
 import { useCart } from './useCart'
 import type { ProductCategory } from './types'
@@ -33,47 +31,33 @@ export default function ShopPage() {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 py-10 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl space-y-8">
-        {/* Header Strip */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <p className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
-              Maker Hardware Catalog · Sri Lanka
+        {/* Header */}
+        <div className="flex items-end justify-between gap-4">
+          <div className="space-y-1">
+            <h1 className="text-2xl sm:text-3xl font-medium tracking-tight text-zinc-100">
+              Maker Store
+            </h1>
+            <p className="text-xs sm:text-sm text-zinc-400">
+              Hardware components and prototyping supplies.
             </p>
-            <button
-              type="button"
-              onClick={() => setIsCartOpen(true)}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-xs font-mono text-zinc-200 transition cursor-pointer"
-            >
-              <svg className="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-              </svg>
-              <span>Cart</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsCartOpen(true)}
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-xs font-mono text-zinc-200 transition cursor-pointer shrink-0"
+          >
+            <svg className="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+            <span>Cart</span>
+            {itemCount > 0 && (
               <span className="px-1.5 py-0.2 rounded bg-zinc-800 text-[10px] text-zinc-300">
                 {itemCount}
               </span>
-            </button>
-          </div>
-
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-medium tracking-tight text-zinc-100">
-                Maker Store
-              </h1>
-              <p className="text-xs sm:text-sm text-zinc-400 max-w-xl mt-1">
-                Microcontrollers, sensors, actuators, and electronic prototyping components in stock with verified inventory.
-              </p>
-            </div>
-            <Link
-              to="/quote"
-              className="text-xs font-mono text-cyan-400 hover:text-cyan-300 underline underline-offset-4 transition self-start sm:self-auto shrink-0"
-            >
-              Need custom 3D printing? Open instant STL quote →
-            </Link>
-          </div>
+            )}
+          </button>
         </div>
-
-        {/* Local Logistics & Delivery Banner */}
-        <LogisticsBanner />
 
         {/* Filter & Search Bar */}
         <div className="space-y-4 pt-2">
@@ -136,14 +120,12 @@ export default function ShopPage() {
             </div>
           </div>
 
-          {/* Result Count */}
-          <div className="flex items-center justify-between text-[11px] font-mono text-zinc-500">
-            <span>
-              Showing <span className="text-zinc-300">{products.length}</span> items
-              {selectedCategory !== 'all' && ` in ${selectedCategory}`}
-              {searchQuery && ` matching "${searchQuery}"`}
-            </span>
-          </div>
+          {/* Result Count (Only during active search) */}
+          {searchQuery && (
+            <div className="text-[11px] font-mono text-zinc-500">
+              {products.length} {products.length === 1 ? 'item' : 'items'} matching &ldquo;{searchQuery}&rdquo;
+            </div>
+          )}
         </div>
 
         {/* Loading State */}

@@ -126,7 +126,7 @@ export default function AdminLogin() {
                   <span>AUTHENTICATING...</span>
                 </>
               ) : (
-                <span>ENTER</span>
+                <span>AUTHENTICATE</span>
               )}
             </button>
           </form>

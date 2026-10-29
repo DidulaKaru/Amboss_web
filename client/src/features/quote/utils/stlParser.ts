@@ -59,7 +59,16 @@ function checkIsAscii(bytes: Uint8Array): boolean {
 
 function parseBinarySTL(buffer: ArrayBuffer): STLParseResult {
   const view = new DataView(buffer)
+  if (buffer.byteLength < 84) {
+    throw new Error('STL buffer is too small for a valid binary header')
+  }
   const triangleCount = view.getUint32(80, true)
+  const expectedMinSize = 84 + triangleCount * 50
+  if (buffer.byteLength < expectedMinSize) {
+    throw new Error(
+      `Corrupted binary STL file: expected at least ${expectedMinSize} bytes, but got ${buffer.byteLength}`
+    )
+  }
 
   const positions = new Float32Array(triangleCount * 9)
 

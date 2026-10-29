@@ -8,10 +8,6 @@ test.describe('Maker Shop Browsing & Cart Flow', () => {
     await expect(page).toHaveTitle(/Shop/i)
     await expect(page.locator('h1')).toContainText(/Maker Store/i)
 
-    // Verify logistics banner is visible
-    await expect(page.locator('text=Fulfillment Options')).toBeVisible()
-    await expect(page.locator('text=Free Campus & Workshop Pickup')).toBeVisible()
-
     // Verify product cards are rendered
     const cards = page.locator('[data-testid="product-card"]')
     await expect(cards.first()).toBeVisible({ timeout: 10000 })

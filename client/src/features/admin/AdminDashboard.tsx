@@ -472,25 +472,6 @@ export default function AdminDashboard() {
     })
   }, [portfolioItems, portfolioSearchQuery])
 
-  // Product Metrics
-  const productMetrics = useMemo(() => {
-    const total = products.length
-    const inStock = products.filter((p) => (p.stockQuantity ?? 0) > 0).length
-    const lowStock = products.filter(
-      (p) => (p.stockQuantity ?? 0) > 0 && (p.stockQuantity ?? 0) < 10
-    ).length
-    const outOfStock = products.filter((p) => (p.stockQuantity ?? 0) <= 0).length
-    return { total, inStock, lowStock, outOfStock }
-  }, [products])
-
-  // Portfolio Metrics
-  const portfolioMetrics = useMemo(() => {
-    const total = portfolioItems.length
-    const active = portfolioItems.filter((p) => p.isActive !== false).length
-    const withMaterial = portfolioItems.filter((p) => !!p.material).length
-    const inactive = total - active
-    return { total, active, withMaterial, inactive }
-  }, [portfolioItems])
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans pb-16">
@@ -606,25 +587,6 @@ export default function AdminDashboard() {
 
         {activeTab === 'products' ? (
           <>
-            {/* Metric Cards for Products */}
-            <section className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="p-3.5 rounded border border-zinc-800 bg-zinc-900/40">
-                <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Total SKUs</div>
-                <div className="mt-1 font-mono text-xl font-medium text-zinc-100">{productMetrics.total}</div>
-              </div>
-              <div className="p-3.5 rounded border border-zinc-800 bg-zinc-900/40">
-                <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">In Stock</div>
-                <div className="mt-1 font-mono text-xl font-medium text-emerald-400">{productMetrics.inStock}</div>
-              </div>
-              <div className="p-3.5 rounded border border-zinc-800 bg-zinc-900/40">
-                <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Low Stock (&lt;10)</div>
-                <div className="mt-1 font-mono text-xl font-medium text-amber-400">{productMetrics.lowStock}</div>
-              </div>
-              <div className="p-3.5 rounded border border-zinc-800 bg-zinc-900/40">
-                <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Out of Stock</div>
-                <div className="mt-1 font-mono text-xl font-medium text-red-400">{productMetrics.outOfStock}</div>
-              </div>
-            </section>
 
             {/* Search & Category Filter Toolbar */}
             <section className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
@@ -836,25 +798,6 @@ export default function AdminDashboard() {
           </>
         ) : (
           <>
-            {/* Metric Cards for Portfolio */}
-            <section className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="p-3.5 rounded border border-zinc-800 bg-zinc-900/40">
-                <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Total Projects</div>
-                <div className="mt-1 font-mono text-xl font-medium text-zinc-100">{portfolioMetrics.total}</div>
-              </div>
-              <div className="p-3.5 rounded border border-zinc-800 bg-zinc-900/40">
-                <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Active in Gallery</div>
-                <div className="mt-1 font-mono text-xl font-medium text-emerald-400">{portfolioMetrics.active}</div>
-              </div>
-              <div className="p-3.5 rounded border border-zinc-800 bg-zinc-900/40">
-                <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">With Material Specs</div>
-                <div className="mt-1 font-mono text-xl font-medium text-cyan-400">{portfolioMetrics.withMaterial}</div>
-              </div>
-              <div className="p-3.5 rounded border border-zinc-800 bg-zinc-900/40">
-                <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Hidden / Inactive</div>
-                <div className="mt-1 font-mono text-xl font-medium text-zinc-400">{portfolioMetrics.inactive}</div>
-              </div>
-            </section>
 
             {/* Search Toolbar for Portfolio */}
             <section className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">

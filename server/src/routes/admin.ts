@@ -23,6 +23,16 @@ export const adminRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.post('/api/v1/admin/login', async (request, reply) => {
     const ip = request.ip || 'unknown'
     const now = Date.now()
+
+    // Prune expired attempts periodically to prevent unbounded memory growth
+    if (loginAttempts.size > 100) {
+      for (const [key, value] of loginAttempts.entries()) {
+        if (value.lockoutUntil <= now) {
+          loginAttempts.delete(key)
+        }
+      }
+    }
+
     const attempt = loginAttempts.get(ip)
 
     if (attempt && attempt.lockoutUntil > now) {

@@ -69,7 +69,7 @@ export default function PartViewer({
       color: new THREE.Color(0xd4d4d8), // clean zinc-300 neutral metallic
       roughness: 0.4,
       metalness: 0.1,
-      wireframe: wireframe,
+      wireframe: false,
     })
     materialRef.current = material
 
@@ -128,7 +128,14 @@ export default function PartViewer({
         container.removeChild(renderer.domElement)
       }
     }
-  }, [stlResult, wireframe])
+  }, [stlResult])
+
+  // Update wireframe dynamically without re-creating WebGL context
+  useEffect(() => {
+    if (materialRef.current) {
+      materialRef.current.wireframe = wireframe
+    }
+  }, [wireframe])
 
   // Update autoRotate dynamically
   useEffect(() => {

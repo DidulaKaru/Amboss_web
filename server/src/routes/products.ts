@@ -41,10 +41,8 @@ export const productsRoutes: FastifyPluginAsync = async (fastify) => {
       try {
         const query = db.select().from(schema.products).where(eq(schema.products.isActive, true))
         const rows = await query
-        if (rows && rows.length > 0) {
-          const filtered = category ? rows.filter((r) => r.category === category) : rows
-          return { success: true, count: filtered.length, data: filtered }
-        }
+        const filtered = category ? rows.filter((r) => r.category === category) : rows
+        return { success: true, count: filtered.length, data: filtered }
       } catch (err) {
         fastify.log.warn({ err }, 'Querying products failed, using initial dataset')
       }
@@ -76,6 +74,7 @@ export const productsRoutes: FastifyPluginAsync = async (fastify) => {
         if (rows && rows.length > 0) {
           return { success: true, data: rows[0] }
         }
+        return reply.code(404).send({ success: false, error: 'Product not found' })
       } catch (err) {
         fastify.log.warn({ err }, `Querying product ${sku} failed, using initial dataset`)
       }
@@ -125,7 +124,13 @@ export const productsRoutes: FastifyPluginAsync = async (fastify) => {
             data: inserted[0],
           })
         }
-      } catch (err: unknown) {
+      } catch (err: any) {
+        if (err?.code === '23505') {
+          return reply.code(409).send({
+            success: false,
+            error: `Product with SKU '${newProd.sku}' already exists`,
+          })
+        }
         request.log.warn({ err }, 'Error inserting product into database, falling back to in-memory dataset')
       }
     }
@@ -189,6 +194,7 @@ export const productsRoutes: FastifyPluginAsync = async (fastify) => {
         if (updated && updated.length > 0) {
           return { success: true, data: updated[0] }
         }
+        return reply.code(404).send({ success: false, error: 'Product not found' })
       } catch (err: unknown) {
         request.log.warn({ err }, `Error updating product in database for ${id}, falling back to in-memory dataset`)
       }
@@ -232,6 +238,7 @@ export const productsRoutes: FastifyPluginAsync = async (fastify) => {
         if (deleted && deleted.length > 0) {
           return { success: true, message: 'Product deleted successfully', data: deleted[0] }
         }
+        return reply.code(404).send({ success: false, error: 'Product not found' })
       } catch (err: unknown) {
         request.log.warn({ err }, `Error deleting product in database for ${id}, falling back to in-memory dataset`)
       }

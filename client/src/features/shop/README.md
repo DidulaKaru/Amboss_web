@@ -32,7 +32,6 @@ This module powers the public electronics catalog, variant grouping, real-time i
 shop/
 ├── components/
 │   ├── Cart.tsx             # Slide-over cart drawer with logistics selector & checkout
-│   ├── LogisticsBanner.tsx  # Free pickup points & courier dispatch policy banner
 │   └── ProductCard.tsx      # Subtractive product card with variant dropdown & status dot
 ├── cartContext.tsx          # Cart state provider (localStorage persistence, sync, validation)
 ├── cartInternal.ts          # Internal createContext definition

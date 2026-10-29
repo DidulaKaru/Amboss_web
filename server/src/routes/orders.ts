@@ -220,8 +220,7 @@ export const ordersRoutes: FastifyPluginAsync = async (fastify) => {
       const deliveryText = getDeliveryDescription(deliveryMethod)
 
       textLines = [
-        'AMBOSS Store Order Request',
-        '--------------------------------',
+        'Hi Amboss, I would like to place an order:',
         ...(customerName ? [`Customer: ${customerName}`] : []),
         ...items.map(
           (i) =>
@@ -229,18 +228,17 @@ export const ordersRoutes: FastifyPluginAsync = async (fastify) => {
               i.priceLkr ? ` (Rs ${(i.priceLkr * i.quantity).toLocaleString()} LKR)` : ''
             }`
         ),
-        '--------------------------------',
-        `Subtotal: Rs ${subtotal.toLocaleString()} LKR`,
-        `Fulfillment: ${deliveryText}`,
+        '',
+        `Delivery Method: ${deliveryText}`,
         ...(deliveryFee > 0
           ? [`Delivery Fee: Rs ${deliveryFee.toLocaleString()} LKR`]
           : deliveryMethod === 'ruhuna_pickup'
           ? ['Delivery Fee: FREE (University of Ruhuna Pickup)']
+          : deliveryMethod === 'hapugala_pickup'
+          ? ['Delivery Fee: FREE (Amboss Shop Hapugala Pickup)']
           : ['Delivery Fee: FREE (Local Delivery Promotion)']),
         ...(deliveryAddress ? [`Delivery Address / Notes: ${deliveryAddress}`] : []),
         `Total: Rs ${grandTotal.toLocaleString()} LKR`,
-        '',
-        'Logistics Note: Ruhuna Faculty of Engineering pickup is free and prepared within 24h. Local Galle and nationwide courier dispatched upon confirmation.',
       ]
     } else if (type === 'quote' && quote) {
       const totalWeightGrams = quote.estimatedGrams ? quote.estimatedGrams * quote.quantity : 0
@@ -249,8 +247,7 @@ export const ordersRoutes: FastifyPluginAsync = async (fastify) => {
       const grandTotal = quote.totalPriceLkr + deliveryFee
 
       textLines = [
-        'AMBOSS 3D Print Quote Request',
-        '--------------------------------',
+        'Hi Amboss, I would like to get a 3D print quote:',
         `Model: ${quote.fileName}`,
         ...(quote.dimensions
           ? [`Dimensions: ${quote.dimensions.x} x ${quote.dimensions.y} x ${quote.dimensions.z} mm`]
@@ -261,16 +258,18 @@ export const ordersRoutes: FastifyPluginAsync = async (fastify) => {
         ...(quote.estimatedGrams ? [`Estimated Weight: ~${totalWeightGrams.toFixed(1)} g`] : []),
         `Quantity: ${quote.quantity}`,
         `Print Total: Rs ${quote.totalPriceLkr.toLocaleString()} LKR`,
-        `Fulfillment: ${deliveryText}`,
+        `Delivery Method: ${deliveryText}`,
         ...(deliveryFee > 0
           ? [`Delivery Fee: Rs ${deliveryFee.toLocaleString()} LKR`]
           : deliveryMethod === 'ruhuna_pickup'
           ? ['Delivery Fee: FREE (University of Ruhuna Pickup)']
+          : deliveryMethod === 'hapugala_pickup'
+          ? ['Delivery Fee: FREE (Amboss Shop Hapugala Pickup)']
           : ['Delivery Fee: FREE (Local Delivery Promotion)']),
         ...(deliveryAddress ? [`Delivery Address / Notes: ${deliveryAddress}`] : []),
         `Estimated Total: Rs ${grandTotal.toLocaleString()} LKR`,
         '',
-        'Note: Minimum print is 250 LKR. Automated estimate based on CAD volume. Final pricing and schedule will be confirmed based on project requirements.',
+        'Note: Minimum print is 250 LKR. Automated estimate based on CAD volume.',
       ]
     } else {
       return reply.code(400).send({
