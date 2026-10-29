@@ -8,21 +8,21 @@ test.describe('Projects Portfolio & News Removal Flow', () => {
     await expect(page).toHaveTitle(/Projects/i)
 
     // 2. Verify Pawsthetics Hero Section is completely intact
-    await expect(page.locator('text=Featured Case Study')).toBeVisible()
+    await expect(page.locator('text=Featured')).toBeVisible()
     await expect(page.locator('img[alt="Pawsthetics by Amboss"]')).toBeVisible()
     const pawstheticsLink = page.getByRole('link', { name: /Visit pawsthetics.lk/i })
     await expect(pawstheticsLink).toBeVisible()
     await expect(pawstheticsLink).toHaveAttribute('href', 'https://pawsthetics.lk/')
 
     // 3. Verify Dynamic Engineering Projects Section
-    await expect(page.getByRole('heading', { name: /Engineering Projects & Artifacts/i })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Engineering Projects & Portfolio/i })).toBeVisible()
 
     // 4. Verify portfolio cards adjust dynamically without category filter pills
     const portfolioCards = page.locator('[data-testid="portfolio-card"]')
-    await expect(portfolioCards).toHaveCount(8)
+    await expect(portfolioCards).toHaveCount(6)
 
     await expect(page.locator('text=Falcon 9 Pen')).toBeVisible()
-    await expect(page.locator('text=Nightingale Vein Monitor')).toBeVisible()
+    await expect(page.locator('text=Nightingale Near IR Vein Illuminator')).toBeVisible()
     await expect(page.locator('text=Body-Powered Mechanical Arm')).toBeVisible()
     await expect(page.locator('text=Rextro Souvenirs')).toBeVisible()
 
@@ -34,8 +34,8 @@ test.describe('Projects Portfolio & News Removal Flow', () => {
     const modal = page.locator('div[role="dialog"]')
     await expect(modal).toBeVisible()
     await expect(page.locator('#lightbox-title')).toHaveText('Falcon 9 Pen')
-    await expect(page.locator('text=Aerospace-inspired precision desk writing instrument.')).toBeVisible()
-    await expect(page.locator('text=PRINT INSPECTION:')).toBeVisible()
+    await expect(page.locator('text=Aerospace-inspired pen')).toBeVisible()
+    await expect(page.locator('text=Material')).toBeVisible()
 
     // Close Lightbox via ESC button
     const closeBtn = page.locator('button:has-text("[ESC] CLOSE")')
@@ -54,7 +54,7 @@ test.describe('Projects Portfolio & News Removal Flow', () => {
     // 2. Direct navigation to /news must redirect to /projects
     await page.goto('/news')
     await expect(page).toHaveURL(/\/projects/)
-    await expect(page.locator('text=Featured Case Study')).toBeVisible()
+    await expect(page.locator('text=Featured')).toBeVisible()
   })
 
   test('Admin CMS provides Portfolio Gallery tab with item controls', async ({ page }) => {

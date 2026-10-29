@@ -20,7 +20,7 @@ export default function Projects() {
 
         <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pb-10 sm:px-6 lg:px-8 space-y-4">
           <p className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
-            Featured Case Study
+            Featured
           </p>
           <div className="inline-flex items-center">
             <img
@@ -36,7 +36,7 @@ export default function Projects() {
             />
           </div>
           <p className="max-w-2xl text-xs sm:text-sm text-zinc-300 leading-relaxed">
-            Custom additive prosthetic design and fabrication for disabled animals in Sri Lanka, prototyped in collaboration with Animal SOS, Ahangama.
+            Custom additive prosthetic design and fabrication for disabled animals in Sri Lanka, in collaboration with Animal SOS, Ahangama.
           </p>
           <div>
             <a

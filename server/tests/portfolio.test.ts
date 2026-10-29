@@ -16,7 +16,7 @@ describe('Portfolio API', () => {
     expect(json.data.length).toBeGreaterThanOrEqual(4)
 
     const titles = json.data.map((p: any) => p.title)
-    expect(titles).toContain('Nightingale Vein Monitor')
+    expect(titles).toContain('Nightingale Near IR Vein Illuminator')
     expect(titles).toContain('Falcon 9 Pen')
     expect(titles).toContain('Rextro Souvenirs')
     expect(titles).toContain('Body-Powered Mechanical Arm')

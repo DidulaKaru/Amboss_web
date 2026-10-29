@@ -10,30 +10,22 @@ import { createMechanicalGeometry } from './geometry/createMechanicalGeometry'
 gsap.registerPlugin(ScrollTrigger)
 
 interface StageInfo {
-  number: string
   title: string
   subtitle: string
-  badge: string
 }
 
 const STAGES: StageInfo[] = [
   {
-    number: '01',
-    badge: 'Design & CAD',
-    title: 'Parametric CAD Modeling',
-    subtitle: 'Functional 3D design and engineering files ready for fabrication.',
+    title: 'Concept',
+    subtitle: 'Tell us your problem or idea, and we figure out the right solution.',
   },
   {
-    number: '02',
-    badge: 'Validation',
-    title: 'Digital Prototyping',
-    subtitle: 'Tolerances, fit checks, and rapid mechanical iteration.',
+    title: 'Design',
+    subtitle: 'We turn that solution into an accurate 3D model ready for production.',
   },
   {
-    number: '03',
-    badge: 'Fabrication',
-    title: 'Additive Manufacturing',
-    subtitle: 'FDM and resin production on calibrated industrial and desktop machines.',
+    title: 'Fabrication',
+    subtitle: 'We 3D print your parts into reality using high-grade, durable materials.',
   },
 ]
 
@@ -253,12 +245,6 @@ export default function HeroCanvas() {
         {/* Center / Hero Content */}
         <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col justify-center pointer-events-none">
           <div className="max-w-xl">
-            {/* Minimal Stage Badge */}
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-[11px] font-mono text-zinc-400 mb-4">
-              <span>{STAGES[activeStage].number}</span>
-              <span className="text-zinc-600">/</span>
-              <span>{STAGES[activeStage].badge}</span>
-            </div>
 
             {/* Dynamic Stage Main Title */}
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight text-zinc-100 leading-tight">
@@ -266,7 +252,7 @@ export default function HeroCanvas() {
             </h1>
 
             {/* Subtitle description */}
-            <p className="mt-3 text-sm sm:text-base text-zinc-400 max-w-md leading-relaxed">
+            <p className="mt-3 text-sm sm:text-base text-zinc-300 max-w-md leading-relaxed">
               {STAGES[activeStage].subtitle}
             </p>
 

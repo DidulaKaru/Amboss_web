@@ -65,10 +65,10 @@ export default function QuotePage() {
         {/* Minimal Header */}
         <div className="space-y-1.5">
           <p className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
-            Instant Estimation
+            Instant Quote
           </p>
           <h1 className="text-2xl sm:text-3xl font-medium tracking-tight text-zinc-100">
-            3D Print Configurator
+            Want to know the cost of your 3D print?
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 max-w-xl">
             Upload an STL file to get an instant cost estimate for your 3D print.
@@ -119,13 +119,6 @@ export default function QuotePage() {
             </div>
           </div>
         )}
-
-        {/* Minimal Reference Strip */}
-        <div className="pt-6 border-t border-zinc-850 flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-zinc-400">
-          <span>Max Single-Piece: 350 × 350 × 350 mm</span>
-          <span>Lead Time: 24–48 Hours</span>
-          <span>Pickup (UoR / Hapugala) or Courier</span>
-        </div>
       </div>
     </div>
   )

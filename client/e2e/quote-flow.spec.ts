@@ -8,7 +8,7 @@ test.describe('Instant 3D Print Quote Flow', () => {
 
     // Page title and header
     await expect(page).toHaveTitle(/Quote/i)
-    await expect(page.locator('h1')).toContainText(/3D Print Configurator/i)
+    await expect(page.locator('h1')).toContainText(/cost of your 3D print/i)
 
     // Dropzone interface
     const dropzone = page.locator('input[type="file"]')
