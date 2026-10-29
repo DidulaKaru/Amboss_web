@@ -2,7 +2,8 @@ import type { Product } from '../features/shop/types'
 
 export const PRODUCTS: Product[] = [
   {
-    id: 'prod_001',
+    id: 'MCU-ARDUINO-UNO-R3',
+    sku: 'MCU-ARDUINO-UNO-R3',
     name: 'Arduino Uno R3 DIP',
     description: 'Atmega328P microcontroller, 14 digital I/O pins (6 PWM), 6 analog inputs, a 16 MHz resonator',
     price: 1400,
@@ -10,7 +11,8 @@ export const PRODUCTS: Product[] = [
     image_url: '/images/Arduino-DIP.png',
   },
   {
-    id: 'prod_002',
+    id: 'MCU-ESP32-WROOM-32D',
+    sku: 'MCU-ESP32-WROOM-32D',
     name: 'ESP32 NodeMCU-32S',
     description: 'ESP-WROOM-32 module, featuring a dual-core CPU, built-in Wi-Fi and Bluetooth, 38 GPIO',
     price: 1450,
@@ -18,15 +20,17 @@ export const PRODUCTS: Product[] = [
     image_url: '/images/ESP32.png',
   },
   {
-    id: 'prod_003',
+    id: 'ACC-ARDUINO-USB-CABLE',
+    sku: 'ACC-ARDUINO-USB-CABLE',
     name: 'Arduino Uno USB',
-    description: 'USB type A to USB type B',
+    description: 'USB type A to USB type B programming and heavy-duty power transfer cable',
     price: 130,
     stock: 39,
     image_url: '/images/Arduino-USB.png',
   },
   {
-    id: 'prod_004',
+    id: 'PAS-10K-POTENTIOMETER',
+    sku: 'PAS-10K-POTENTIOMETER',
     name: '10K 20mm Mono Potentiometer',
     description: 'Single-channel (mono) variable resistor with 10,000 ohms of total resistance and a 20mm shaft length',
     price: 30,
@@ -34,7 +38,8 @@ export const PRODUCTS: Product[] = [
     image_url: '/images/10k-20-mm-potentiometer.png',
   },
   {
-    id: 'prod_005',
+    id: 'SEN-HC-SR04-ULTRASONIC',
+    sku: 'SEN-HC-SR04-ULTRASONIC',
     name: 'Ultrasonic Sensor (HC-SR04)',
     description: '4-pin ultrasound sensor for detecting objects within 2 cm to 400 cm range',
     price: 240,
@@ -42,7 +47,8 @@ export const PRODUCTS: Product[] = [
     image_url: '/images/Ultrasonic-Sensor.png',
   },
   {
-    id: 'prod_006',
+    id: 'SEN-IR-MH-FLYING-FISH',
+    sku: 'SEN-IR-MH-FLYING-FISH',
     name: 'IR Sensor (MH Flying Fish)',
     description: '3-pin infrared obstacle avoidance module for detecting objects within a 2–40 cm range',
     price: 125,
@@ -50,7 +56,8 @@ export const PRODUCTS: Product[] = [
     image_url: '/images/IR-Sensor.png',
   },
   {
-    id: 'prod_007',
+    id: 'PRT-GL12-BREADBOARD-840',
+    sku: 'PRT-GL12-BREADBOARD-840',
     name: 'GL-12 breadboard',
     description: '830-840 tie-point, white solderless project board used for prototyping electronic circuits',
     price: 230,
@@ -58,7 +65,8 @@ export const PRODUCTS: Product[] = [
     image_url: '/images/Arduino-DIPProject-Board.png',
   },
   {
-    id: 'prod_008',
+    id: 'ACC-AEC-SOLDER-ROLL-50G',
+    sku: 'ACC-AEC-SOLDER-ROLL-50G',
     name: 'AEC Solder Roll 1mm 50g 60/40',
     description: 'Tin-lead rosin core solder wire',
     price: 500,
@@ -67,6 +75,7 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'PAS-LED-3MM-RED',
+    sku: 'PAS-LED-3MM-RED',
     name: 'LED 3mm - Red',
     description: 'Standard diffused red 3mm indicator LED (forward voltage 1.8V - 2.2V)',
     price: 5,
@@ -75,6 +84,7 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'PAS-LED-3MM-GREEN',
+    sku: 'PAS-LED-3MM-GREEN',
     name: 'LED 3mm - Green',
     description: 'Standard diffused green 3mm indicator LED (forward voltage 2.0V - 2.4V)',
     price: 5,
@@ -82,7 +92,8 @@ export const PRODUCTS: Product[] = [
     image_url: '/images/LED.png',
   },
   {
-    id: 'prod_010',
+    id: 'PAS-RESISTORS-1-4W-10PK',
+    sku: 'PAS-RESISTORS-1-4W-10PK',
     name: 'Resistors, 1/4W, 10 pack',
     description: 'Message us for the specific values you want',
     price: 30,
@@ -90,7 +101,8 @@ export const PRODUCTS: Product[] = [
     image_url: '/images/1_4-W-Resistors.png',
   },
   {
-    id: 'prod_011',
+    id: 'SEN-GY521-MPU6050',
+    sku: 'SEN-GY521-MPU6050',
     name: '6-axis motion tracking sensor (GY-521)',
     description: 'MPU-6050 chip, 3-axis accelerometer and a 3-axis gyroscope',
     price: 650,
@@ -99,6 +111,7 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'PRT-JUMPER-WIRES-MM',
+    sku: 'PRT-JUMPER-WIRES-MM',
     name: 'Jumper Cables - Male-Male',
     description: 'Sets of 40 flexible multi-color 20cm male-to-male DuPont wires',
     price: 180,
@@ -107,6 +120,7 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'PRT-JUMPER-WIRES-MF',
+    sku: 'PRT-JUMPER-WIRES-MF',
     name: 'Jumper Cables - Male-Female',
     description: 'Sets of 40 flexible multi-color 20cm male-to-female DuPont wires',
     price: 180,
@@ -115,20 +129,11 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'PRT-JUMPER-WIRES-FF',
+    sku: 'PRT-JUMPER-WIRES-FF',
     name: 'Jumper Cables - Female-Female',
     description: 'Sets of 40 flexible multi-color 20cm female-to-female DuPont wires',
     price: 180,
     stock: 57,
     image_url: '/images/Jumper-cables.png',
   },
-  /*
-  {
-    id: 'prod_00',
-    name: '',
-    description: '',
-    price: 0,
-    stock: 0,
-    image_url: '/images/',
-  },
-  */
 ]

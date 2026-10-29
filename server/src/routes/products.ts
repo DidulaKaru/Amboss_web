@@ -4,6 +4,7 @@ import { INITIAL_PRODUCTS } from '../db/seedData.js'
 import { eq, or } from 'drizzle-orm'
 import { z } from 'zod'
 import { verifyAdmin } from '../middleware/auth.js'
+import { env } from '../config/env.js'
 
 const querySchema = z.object({
   category: z.string().optional(),
@@ -131,11 +132,22 @@ export const productsRoutes: FastifyPluginAsync = async (fastify) => {
             error: `Product with SKU '${newProd.sku}' already exists`,
           })
         }
-        request.log.warn({ err }, 'Error inserting product into database, falling back to in-memory dataset')
+        request.log.error({ err }, 'Error inserting product into database')
+        return reply.code(500).send({
+          success: false,
+          error: 'Database error: Failed to persist product',
+        })
       }
     }
 
-    // In-memory fallback
+    if (env.NODE_ENV !== 'test' && !db) {
+      return reply.code(503).send({
+        success: false,
+        error: 'Database unavailable: Operation could not be persisted',
+      })
+    }
+
+    // In-memory fallback for test environment
     const fallbackItem = {
       sku: newProd.sku,
       name: newProd.name,
@@ -196,11 +208,22 @@ export const productsRoutes: FastifyPluginAsync = async (fastify) => {
         }
         return reply.code(404).send({ success: false, error: 'Product not found' })
       } catch (err: unknown) {
-        request.log.warn({ err }, `Error updating product in database for ${id}, falling back to in-memory dataset`)
+        request.log.error({ err }, `Error updating product in database for ${id}`)
+        return reply.code(500).send({
+          success: false,
+          error: 'Database error: Failed to update product',
+        })
       }
     }
 
-    // In-memory fallback
+    if (env.NODE_ENV !== 'test' && !db) {
+      return reply.code(503).send({
+        success: false,
+        error: 'Database unavailable: Operation could not be persisted',
+      })
+    }
+
+    // In-memory fallback for test environment
     const itemIndex = INITIAL_PRODUCTS.findIndex((p) => p.sku === id || (p as any).id === id)
     if (itemIndex === -1) {
       return reply.code(404).send({ success: false, error: 'Product not found' })
@@ -240,11 +263,22 @@ export const productsRoutes: FastifyPluginAsync = async (fastify) => {
         }
         return reply.code(404).send({ success: false, error: 'Product not found' })
       } catch (err: unknown) {
-        request.log.warn({ err }, `Error deleting product in database for ${id}, falling back to in-memory dataset`)
+        request.log.error({ err }, `Error deleting product in database for ${id}`)
+        return reply.code(500).send({
+          success: false,
+          error: 'Database error: Failed to delete product',
+        })
       }
     }
 
-    // In-memory fallback
+    if (env.NODE_ENV !== 'test' && !db) {
+      return reply.code(503).send({
+        success: false,
+        error: 'Database unavailable: Operation could not be persisted',
+      })
+    }
+
+    // In-memory fallback for test environment
     const itemIndex = INITIAL_PRODUCTS.findIndex((p) => p.sku === id || (p as any).id === id)
     if (itemIndex === -1) {
       return reply.code(404).send({ success: false, error: 'Product not found' })

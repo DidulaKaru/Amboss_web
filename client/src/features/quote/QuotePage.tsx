@@ -10,10 +10,12 @@ export default function QuotePage() {
   const [fileName, setFileName] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [selectedMaterial, setSelectedMaterial] = useState<MaterialOption>(MATERIALS[0])
+  const [uploadError, setUploadError] = useState<string | null>(null)
 
   const handleFileLoaded = (file: File, buffer: ArrayBuffer) => {
     setIsLoading(true)
     setFileName(file.name)
+    setUploadError(null)
 
     // Attempt parsing via Web Worker for non-blocking UI
     try {
@@ -25,7 +27,13 @@ export default function QuotePage() {
       worker.onmessage = (e) => {
         setIsLoading(false)
         if (e.data.success) {
-          setStlResult(e.data.result)
+          if (!e.data.result || e.data.result.triangleCount === 0) {
+            setUploadError('The uploaded STL file contains 0 triangles or is empty.')
+            setStlResult(null)
+          } else {
+            setStlResult(e.data.result)
+            setUploadError(null)
+          }
         } else {
           fallbackParse(buffer)
         }
@@ -46,9 +54,18 @@ export default function QuotePage() {
   const fallbackParse = (buffer: ArrayBuffer) => {
     try {
       const result = parseSTL(buffer)
-      setStlResult(result)
-    } catch (e) {
+      if (result.triangleCount === 0) {
+        setUploadError('The uploaded STL file contains 0 triangles or is empty.')
+        setStlResult(null)
+      } else {
+        setStlResult(result)
+        setUploadError(null)
+      }
+    } catch (e: unknown) {
       console.error('Direct STL parsing error:', e)
+      const msg = e instanceof Error ? e.message : 'Corrupted or unsupported STL file.'
+      setUploadError(msg)
+      setStlResult(null)
     } finally {
       setIsLoading(false)
     }
@@ -57,6 +74,7 @@ export default function QuotePage() {
   const handleReset = () => {
     setStlResult(null)
     setFileName('')
+    setUploadError(null)
   }
 
   return (
@@ -74,6 +92,28 @@ export default function QuotePage() {
             Upload an STL file to get an instant cost estimate for your 3D print.
           </p>
         </div>
+
+        {/* Upload Error Banner */}
+        {uploadError && (
+          <div
+            role="alert"
+            className="max-w-2xl p-3.5 rounded border border-red-900/60 bg-red-950/40 text-red-200 text-xs font-mono flex items-center justify-between gap-3"
+          >
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <span>{uploadError}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setUploadError(null)}
+              className="text-red-400 hover:text-red-200 underline text-[11px] shrink-0 cursor-pointer"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
 
         {/* Upload Zone (If no file is active) */}
         {!stlResult && (

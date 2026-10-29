@@ -4,6 +4,7 @@ import { INITIAL_PORTFOLIO_ITEMS } from '../db/seedData.js'
 import { eq, asc } from 'drizzle-orm'
 import { z } from 'zod'
 import { verifyAdmin } from '../middleware/auth.js'
+import { env } from '../config/env.js'
 import { randomUUID } from 'node:crypto'
 
 const querySchema = z.object({
@@ -135,11 +136,22 @@ export const portfolioRoutes: FastifyPluginAsync = async (fastify) => {
           })
         }
       } catch (err: unknown) {
-        request.log.warn({ err }, 'Error inserting portfolio item into database, falling back to in-memory dataset')
+        request.log.error({ err }, 'Error inserting portfolio item into database')
+        return reply.code(500).send({
+          success: false,
+          error: 'Database error: Failed to persist portfolio item',
+        })
       }
     }
 
-    // In-memory fallback
+    if (env.NODE_ENV !== 'test' && !db) {
+      return reply.code(503).send({
+        success: false,
+        error: 'Database unavailable: Operation could not be persisted',
+      })
+    }
+
+    // In-memory fallback for test environment
     const fallbackItem = {
       id: randomUUID(),
       title: data.title,
@@ -198,11 +210,22 @@ export const portfolioRoutes: FastifyPluginAsync = async (fastify) => {
         }
         return reply.code(404).send({ success: false, error: 'Portfolio item not found' })
       } catch (err: unknown) {
-        request.log.warn({ err }, `Error updating portfolio item in database for ${id}, falling back to in-memory dataset`)
+        request.log.error({ err }, `Error updating portfolio item in database for ${id}`)
+        return reply.code(500).send({
+          success: false,
+          error: 'Database error: Failed to update portfolio item',
+        })
       }
     }
 
-    // In-memory fallback
+    if (env.NODE_ENV !== 'test' && !db) {
+      return reply.code(503).send({
+        success: false,
+        error: 'Database unavailable: Operation could not be persisted',
+      })
+    }
+
+    // In-memory fallback for test environment
     const itemIndex = INITIAL_PORTFOLIO_ITEMS.findIndex((p) => p.id === id)
     if (itemIndex === -1) {
       return reply.code(404).send({ success: false, error: 'Portfolio item not found' })
@@ -238,11 +261,22 @@ export const portfolioRoutes: FastifyPluginAsync = async (fastify) => {
         }
         return reply.code(404).send({ success: false, error: 'Portfolio item not found' })
       } catch (err: unknown) {
-        request.log.warn({ err }, `Error deleting portfolio item in database for ${id}, falling back to in-memory dataset`)
+        request.log.error({ err }, `Error deleting portfolio item in database for ${id}`)
+        return reply.code(500).send({
+          success: false,
+          error: 'Database error: Failed to delete portfolio item',
+        })
       }
     }
 
-    // In-memory fallback
+    if (env.NODE_ENV !== 'test' && !db) {
+      return reply.code(503).send({
+        success: false,
+        error: 'Database unavailable: Operation could not be persisted',
+      })
+    }
+
+    // In-memory fallback for test environment
     const itemIndex = INITIAL_PORTFOLIO_ITEMS.findIndex((p) => p.id === id)
     if (itemIndex === -1) {
       return reply.code(404).send({ success: false, error: 'Portfolio item not found' })

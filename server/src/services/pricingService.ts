@@ -84,7 +84,15 @@ export function computeServerPricing(input: PricingInput): PricingOutput {
   let isOversized = false
 
   if (isSla) {
-    if (dimensions.x <= 211 && dimensions.y <= 118 && dimensions.z <= 220) {
+    // Sort dimensions so orientation (rotating part in vat) doesn't cause false oversized flags
+    const partDims = [dimensions.x, dimensions.y, dimensions.z].sort((a, b) => a - b)
+    const vatDims = [118, 211, 220].sort((a, b) => a - b)
+    const fitsSla =
+      partDims[0] <= vatDims[0] &&
+      partDims[1] <= vatDims[1] &&
+      partDims[2] <= vatDims[2]
+
+    if (fitsSla) {
       recommendedMachine = 'Elegoo Saturn 4 Ultra 16K (Resin)'
     } else {
       isOversized = true

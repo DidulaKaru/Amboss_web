@@ -25,7 +25,7 @@ export function calculateQuote(
   const shellVolumeCm3 = Math.min(volumeCm3, surfaceAreaCm2 * shellThicknessCm)
   const coreVolumeCm3 = Math.max(0, volumeCm3 - shellVolumeCm3)
 
-  const infillRatio = infillPct / 100.0
+  const infillRatio = Math.max(0.1, Math.min(1.0, infillPct / 100.0))
   const effectiveVolumeCm3 = shellVolumeCm3 + coreVolumeCm3 * infillRatio
   const rawGrams = effectiveVolumeCm3 * material.densityGPerCm3
 
@@ -66,7 +66,19 @@ export function calculateQuote(
   let isOversized = false
 
   if (material.type === 'SLA') {
-    if (boundingBox.dimensions.x <= 211 && boundingBox.dimensions.y <= 118 && boundingBox.dimensions.z <= 220) {
+    // Sort dimensions so orientation (rotating part in vat) doesn't cause false oversized flags
+    const partDims = [
+      boundingBox.dimensions.x,
+      boundingBox.dimensions.y,
+      boundingBox.dimensions.z,
+    ].sort((a, b) => a - b)
+    const vatDims = [118, 211, 220].sort((a, b) => a - b)
+    const fitsSla =
+      partDims[0] <= vatDims[0] &&
+      partDims[1] <= vatDims[1] &&
+      partDims[2] <= vatDims[2]
+
+    if (fitsSla) {
       recommendedMachine = 'Elegoo Saturn 4 Ultra 16K (Resin)'
     } else {
       isOversized = true

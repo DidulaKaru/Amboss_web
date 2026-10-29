@@ -62,11 +62,16 @@ export const adminRoutes: FastifyPluginAsync = async (fastify) => {
     const passwordMatch = await bcrypt.compare(password, hashToTest)
 
     if (!isTargetUser || !passwordMatch) {
-      const currentAttempts =
-        (attempt && attempt.lockoutUntil <= now ? 0 : attempt?.count || 0) + 1
+      // If previous lockout expired, reset counter to 0. Otherwise use existing count.
+      const previousCount =
+        attempt && attempt.lockoutUntil > 0 && attempt.lockoutUntil <= now
+          ? 0
+          : attempt?.count || 0
+
+      const currentAttempts = previousCount + 1
       const isLocked = currentAttempts >= MAX_ATTEMPTS
       loginAttempts.set(ip, {
-        count: currentAttempts,
+        count: isLocked ? 0 : currentAttempts,
         lockoutUntil: isLocked ? now + LOCKOUT_WINDOW_MS : 0,
       })
 

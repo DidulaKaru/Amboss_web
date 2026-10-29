@@ -29,7 +29,7 @@ export function useProducts() {
       // First attempt relative /api/v1/products (proxied by Vite or web server)
       const url = `${API_BASE}/api/v1/products`
       const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 4000)
+      const timeoutId = setTimeout(() => controller.abort(), 12000)
 
       const res = await fetch(url, { signal: controller.signal })
       clearTimeout(timeoutId)

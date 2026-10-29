@@ -484,6 +484,15 @@ npx playwright install --with-deps chromium
 * Created `server/.dockerignore` to keep builds minimal.
 * Created `client/.env.example` and `server/.env.example` documenting all production environment variables.
 
+### 9.5 Fault-Tolerance & Production Hardening
+* **Admin Rate Limiting:** Enforced strict lockout (`MAX_ATTEMPTS = 5`, 15-minute lock window, HTTP 429) against brute-force attacks in `server/src/routes/admin.ts`.
+* **Explicit Persistence Errors:** Disallowed silent in-memory fallbacks on `POST`/`PUT`/`DELETE` mutations in `products.ts` and `portfolioRoutes.ts` to prevent split-brain data loss.
+* **Database Wake Resiliency:** Tuned PostgreSQL client connection timeout to 15s in `server/src/db/index.ts` to accommodate Neon serverless cold starts.
+* **Quote Pipeline Synchronization:** Bound frontend quotation submissions to `POST /api/v1/quote/calculate`, generating permanent DB records and reference codes (`Quote Ref: AMB-...`) for WhatsApp orders.
+* **Geometry Safety:** Sanitized 0-triangle STL bounding box generation in `stlParser.ts` and Three.js camera calculations in `PartViewer.tsx`.
+* **3D Orientation Sizing:** Implemented sorted dimension comparison in `pricingService.ts` and `pricing.ts` for SLA build envelopes.
+* **Catalog SKU Alignment:** Synchronized client fallback identifiers in `products.ts` with canonical PostgreSQL SKUs (`MCU-ARDUINO-UNO-R3`, etc.).
+
 ---
 
 ## Architectural Principles: Modularity & Single Source of Truth (SSOT)

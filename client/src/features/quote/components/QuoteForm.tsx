@@ -13,6 +13,8 @@ interface QuoteFormProps {
 
 type DeliveryOption = 'ruhuna_pickup' | 'hapugala_pickup' | 'courier'
 
+const API_BASE = import.meta.env.VITE_API_URL || ''
+
 export default function QuoteForm({
   stlResult,
   fileName,
@@ -23,6 +25,7 @@ export default function QuoteForm({
   const [layerHeight, setLayerHeight] = useState(0.20)
   const [quantity, setQuantity] = useState(1)
   const [deliveryOption, setDeliveryOption] = useState<DeliveryOption>('ruhuna_pickup')
+  const [isSubmittingQuote, setIsSubmittingQuote] = useState(false)
 
   const quote = calculateQuote(stlResult, selectedMaterial, infillPct, layerHeight)
   const rawPrintTotal = quote.totalPriceLkr * quantity
@@ -45,11 +48,61 @@ export default function QuoteForm({
     return '100% (Solid)'
   }
 
-  const handleWhatsAppQuote = () => {
+  // Persists the generated quote to the PostgreSQL quotes table
+  const recordQuoteOnServer = async (): Promise<string | null> => {
+    try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 3500)
+      const res = await fetch(`${API_BASE}/api/v1/quote/calculate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
+        body: JSON.stringify({
+          fileName: fileName || 'model.stl',
+          volumeCm3: Math.max(0.01, stlResult.volumeCm3),
+          surfaceAreaCm2: Math.max(0.01, stlResult.surfaceAreaCm2),
+          dimensions: {
+            x: Math.max(0.1, stlResult.boundingBox.dimensions.x),
+            y: Math.max(0.1, stlResult.boundingBox.dimensions.y),
+            z: Math.max(0.1, stlResult.boundingBox.dimensions.z),
+          },
+          materialSlug: selectedMaterial.id,
+          infillPct,
+          layerHeightMm: layerHeight,
+          quantity,
+        }),
+      })
+      clearTimeout(timeoutId)
+      if (res.ok) {
+        const json = await res.json()
+        if (json.success && json.quoteId) {
+          return json.quoteId
+        }
+      }
+    } catch {
+      // Non-blocking: continue to WhatsApp even if backend is unreachable
+    }
+    return null
+  }
+
+  const handleWhatsAppQuote = async () => {
+    setIsSubmittingQuote(true)
+    const quoteId = await recordQuoteOnServer()
+    setIsSubmittingQuote(false)
+
+    const deliveryLabel =
+      deliveryOption === 'ruhuna_pickup'
+        ? 'Free Pickup: Faculty of Engineering, University of Ruhuna'
+        : deliveryOption === 'hapugala_pickup'
+        ? 'Free Pickup: Amboss Shop (Hapugala)'
+        : `Islandwide Courier (Rs ${deliveryFee.toLocaleString()} LKR)`
+
     const lines = [
       `Hi Amboss, I'd like to get a 3D print:`,
+      ...(quoteId ? [`- Quote Ref: AMB-${quoteId.slice(0, 6).toUpperCase()}`] : []),
       `- File: ${fileName}`,
       `- Material: ${selectedMaterial.name}`,
+      `- Delivery: ${deliveryLabel}`,
       `- Estimated Price: Rs ${grandTotal.toLocaleString()} LKR`,
       ...(quantity > 1 ? [`- Quantity: ${quantity}`] : []),
     ]
@@ -59,11 +112,24 @@ export default function QuoteForm({
     window.open(url, '_blank', 'noopener,noreferrer')
   }
 
-  const handleWhatsAppOversized = () => {
+  const handleWhatsAppOversized = async () => {
+    setIsSubmittingQuote(true)
+    const quoteId = await recordQuoteOnServer()
+    setIsSubmittingQuote(false)
+
+    const deliveryLabel =
+      deliveryOption === 'ruhuna_pickup'
+        ? 'Free Pickup: Faculty of Engineering, University of Ruhuna'
+        : deliveryOption === 'hapugala_pickup'
+        ? 'Free Pickup: Amboss Shop (Hapugala)'
+        : `Islandwide Courier (Rs ${deliveryFee.toLocaleString()} LKR)`
+
     const lines = [
       `Hi Amboss, my model exceeds your print capacity:`,
+      ...(quoteId ? [`- Quote Ref: AMB-${quoteId.slice(0, 6).toUpperCase()}`] : []),
       `- File: ${fileName}`,
       `- Material: ${selectedMaterial.name}`,
+      `- Delivery: ${deliveryLabel}`,
       `- Estimated Price: Rs ${grandTotal.toLocaleString()} LKR`,
       ...(quantity > 1 ? [`- Quantity: ${quantity}`] : []),
       ``,
@@ -146,7 +212,7 @@ export default function QuoteForm({
           </div>
         </div>
 
-        {/* Layer Precision */}
+        {/* Layer Height Selection */}
         <div className="space-y-2">
           <label className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
             Layer Height
@@ -289,9 +355,17 @@ export default function QuoteForm({
             <button
               type="button"
               onClick={handleWhatsAppOversized}
-              className="w-full py-2.5 px-4 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-semibold text-xs tracking-tight rounded transition-all cursor-pointer shadow-sm"
+              disabled={isSubmittingQuote}
+              className="w-full py-2.5 px-4 bg-amber-500 hover:bg-amber-400 text-zinc-950 font-semibold text-xs tracking-tight rounded transition-all cursor-pointer shadow-sm flex items-center justify-center gap-1.5 disabled:opacity-50"
             >
-              Contact Us on WhatsApp to Cut & Print
+              {isSubmittingQuote ? (
+                <>
+                  <span className="h-3 w-3 border-2 border-zinc-900 border-t-transparent rounded-full animate-spin" />
+                  Logging Quote...
+                </>
+              ) : (
+                'Contact Us on WhatsApp to Cut & Print'
+              )}
             </button>
           </div>
         )}
@@ -301,10 +375,18 @@ export default function QuoteForm({
           <button
             type="button"
             onClick={handleWhatsAppQuote}
+            disabled={isSubmittingQuote}
             style={{ color: '#09090b' }}
-            className="w-full py-2.5 px-4 bg-zinc-100 hover:bg-white text-zinc-950 hover:text-black font-semibold text-xs tracking-tight rounded transition-all cursor-pointer shadow-sm"
+            className="w-full py-2.5 px-4 bg-zinc-100 hover:bg-white text-zinc-950 hover:text-black font-semibold text-xs tracking-tight rounded transition-all cursor-pointer shadow-sm flex items-center justify-center gap-1.5 disabled:opacity-50"
           >
-            Order via WhatsApp
+            {isSubmittingQuote ? (
+              <>
+                <span className="h-3 w-3 border-2 border-zinc-900 border-t-transparent rounded-full animate-spin" />
+                Preparing Quote...
+              </>
+            ) : (
+              'Order via WhatsApp'
+            )}
           </button>
         )}
       </div>

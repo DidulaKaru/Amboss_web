@@ -167,18 +167,47 @@ function parseBinarySTL(buffer: ArrayBuffer): STLParseResult {
     volumeCm3: Math.round(volumeCm3 * 100) / 100,
     surfaceAreaMm2: Math.round(totalArea * 100) / 100,
     surfaceAreaCm2: Math.round(surfaceAreaCm2 * 100) / 100,
-    boundingBox: {
-      min: { x: minX, y: minY, z: minZ },
-      max: { x: maxX, y: maxY, z: maxZ },
-      dimensions: {
-        x: Math.round(Math.max(0, maxX - minX) * 10) / 10,
-        y: Math.round(Math.max(0, maxY - minY) * 10) / 10,
-        z: Math.round(Math.max(0, maxZ - minZ) * 10) / 10,
-      },
-    },
+    boundingBox: computeSafeBoundingBox(minX, minY, minZ, maxX, maxY, maxZ, triangleCount),
     positions,
     isAscii: false,
     isManifoldEstimate: absVolumeMm3 > 0.001,
+  }
+}
+
+function computeSafeBoundingBox(
+  minX: number,
+  minY: number,
+  minZ: number,
+  maxX: number,
+  maxY: number,
+  maxZ: number,
+  triangleCount: number
+) {
+  const isValid =
+    triangleCount > 0 &&
+    isFinite(minX) &&
+    isFinite(maxX) &&
+    isFinite(minY) &&
+    isFinite(maxY) &&
+    isFinite(minZ) &&
+    isFinite(maxZ)
+
+  if (!isValid) {
+    return {
+      min: { x: 0, y: 0, z: 0 },
+      max: { x: 0, y: 0, z: 0 },
+      dimensions: { x: 0, y: 0, z: 0 },
+    }
+  }
+
+  return {
+    min: { x: minX, y: minY, z: minZ },
+    max: { x: maxX, y: maxY, z: maxZ },
+    dimensions: {
+      x: Math.round(Math.max(0, maxX - minX) * 10) / 10,
+      y: Math.round(Math.max(0, maxY - minY) * 10) / 10,
+      z: Math.round(Math.max(0, maxZ - minZ) * 10) / 10,
+    },
   }
 }
 
@@ -245,15 +274,7 @@ function parseAsciiSTL(text: string): STLParseResult {
     volumeCm3: Math.round(volumeCm3 * 100) / 100,
     surfaceAreaMm2: Math.round(totalArea * 100) / 100,
     surfaceAreaCm2: Math.round(surfaceAreaCm2 * 100) / 100,
-    boundingBox: {
-      min: { x: minX, y: minY, z: minZ },
-      max: { x: maxX, y: maxY, z: maxZ },
-      dimensions: {
-        x: Math.round(Math.max(0, maxX - minX) * 10) / 10,
-        y: Math.round(Math.max(0, maxY - minY) * 10) / 10,
-        z: Math.round(Math.max(0, maxZ - minZ) * 10) / 10,
-      },
-    },
+    boundingBox: computeSafeBoundingBox(minX, minY, minZ, maxX, maxY, maxZ, triangleCount),
     positions,
     isAscii: true,
     isManifoldEstimate: absVolumeMm3 > 0.001,

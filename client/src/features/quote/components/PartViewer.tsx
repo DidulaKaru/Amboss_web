@@ -79,13 +79,16 @@ export default function PartViewer({
     scene.add(mesh)
 
     // Ground Plane Grid (minimal dark zinc grid)
-    const bbox = geometry.boundingBox!
-    const sizeY = bbox.max.y - bbox.min.y
-    const maxDim = Math.max(
-      bbox.max.x - bbox.min.x,
-      bbox.max.y - bbox.min.y,
-      bbox.max.z - bbox.min.z
-    )
+    const bbox = geometry.boundingBox || new THREE.Box3(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 0))
+    const rawDimX = bbox.max.x - bbox.min.x
+    const rawDimY = bbox.max.y - bbox.min.y
+    const rawDimZ = bbox.max.z - bbox.min.z
+
+    const sizeY = isFinite(rawDimY) ? Math.max(0, rawDimY) : 0
+    const maxDim =
+      isFinite(rawDimX) && isFinite(rawDimY) && isFinite(rawDimZ)
+        ? Math.max(1, rawDimX, rawDimY, rawDimZ)
+        : 20
 
     const grid = new THREE.GridHelper(Math.max(100, maxDim * 2.5), 20, 0x3f3f46, 0x27272a)
     grid.position.y = -sizeY / 2 - 0.5

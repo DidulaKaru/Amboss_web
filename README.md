@@ -149,10 +149,10 @@ All suites run locally and via GitHub Actions CI (`.github/workflows/ci.yml`):
 # 1. Run ESLint across all workspaces
 npm run lint
 
-# 2. Run Vitest Unit & Integration Suites (43 tests)
+# 2. Run Vitest Unit & Integration Suites (46 tests)
 npm test
 
-# 3. Run Playwright End-to-End Tests (7 specs across Chromium)
+# 3. Run Playwright End-to-End Tests (8 specs across Chromium)
 npm run test:e2e
 
 # 4. Compile Production Builds (Client Vite bundle + Server tsc)

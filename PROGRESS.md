@@ -249,3 +249,33 @@ Provide an air-gapped, zero-DB-overhead administrative control panel for Amboss 
   - **Trap 2 (Cross-Origin Cookie Blocking):** Configured `server/src/routes/admin.ts` with `sameSite: isProd ? 'none' : 'lax'` and `secure: isProd` for both `setCookie` and `clearCookie` to prevent modern browsers from blocking admin cookies across `amboss.lk` $\rightarrow$ `*.koyeb.app`. Retained client-side `Authorization: Bearer <token>` fallback in `AdminAuthContext.tsx` and `AdminDashboard.tsx`.
   - **Trap 3 (Neon Migration Advisory Locks):** Separated pooled runtime connections from direct migration connections via `DATABASE_URL_DIRECT` in `drizzle.config.ts`, `env.ts`, `db/index.ts`, and `db/seed.ts` preventing PgBouncer lock errors during `drizzle-kit migrate` and `drizzle-kit push`.
   - **Test Execution & Build:** **45/45 tests passing** across monorepo (22 client + 23 server). Full production builds compile with 0 errors.
+
+---
+
+## Phase 10: Deep Reliability Hardening, Edge-Case Fault Tolerance & Security Remediation
+- [x] **Task 10.1: SEC-01 Admin Login Rate-Limiting Fix:**
+  - Resolved logic bug in `server/src/routes/admin.ts` where uninitialized `lockoutUntil` caused `currentAttempts` to reset to 1 on every attempt.
+  - Implemented proper lockout window tracking: failed attempts cleanly increment (`1 → 2 → 3 → 4 → 5`), triggering a 15-minute lock on attempt 5, and responding with HTTP `429 Too Many Requests` plus `Retry-After` on subsequent attempts.
+  - Added automated integration test suite in `server/tests/admin.test.ts`.
+- [x] **Task 10.2: DAT-01 Fail-Explicit Database Mutation Persistence:**
+  - Eliminated silent in-memory fallback on database mutations (`POST`, `PUT`, `DELETE`) in `server/src/routes/products.ts` and `server/src/routes/portfolioRoutes.ts`.
+  - Database write errors now return explicit HTTP 500 status codes with descriptive error messages, preventing silent split-brain data loss between ephemeral RAM and PostgreSQL.
+- [x] **Task 10.3: DAT-02 Neon Serverless Cold-Start Connection Resilience:**
+  - Increased `connect_timeout` in `server/src/db/index.ts` from 5 seconds to 15 seconds, preventing connection timeout aborts during Neon serverless PostgreSQL compute cold starts.
+- [x] **Task 10.4: DAT-03 Quotation Flow Backend Persistence & Order Reference:**
+  - Connected client `QuoteForm.tsx` to Fastify backend `POST /api/v1/quote/calculate`.
+  - Every 3D print quote initiated by customers is now persisted in the PostgreSQL `quotes` table, and the generated unique reference (e.g. `Quote Ref: AMB-9F2B1C`) is included in the resulting WhatsApp order message.
+- [x] **Task 10.5: GEO-01 Zero-Triangle STL Bounding Box Guard & Upload Feedback:**
+  - Updated `stlParser.ts` with `computeSafeBoundingBox()` to guarantee `min`, `max`, and `dimensions` default safely to `0` instead of `Infinity` / `-Infinity` when parsing empty or corrupt 0-triangle STL files.
+  - Protected `PartViewer.tsx` camera matrix calculations against non-finite bounds.
+  - Added user-facing error notification banner in `QuotePage.tsx` explaining file parsing issues.
+- [x] **Task 10.6: GEO-02 3D Orientation-Agnostic Machine Routing:**
+  - Refactored SLA resin vat build envelope evaluation in both `client/src/features/quote/utils/pricing.ts` and `server/src/services/pricingService.ts`.
+  - Dimensions are now sorted prior to comparison against sorted vat dimensions ($[118, 211, 220]$ mm), ensuring rotated models fit without false "Oversized" warnings.
+- [x] **Task 10.7: CAT-01 Fallback Catalog SKU Unification & Network Timeout Tuning:**
+  - Replaced legacy fallback IDs (`prod_001`, `prod_002`) in `client/src/data/products.ts` with canonical server database SKUs (`MCU-ARDUINO-UNO-R3`, etc.).
+  - Increased `useProducts.ts` catalog fetch timeout from 4s to 12s, allowing serverless backends sufficient time to wake up before falling back to local datasets.
+- [x] **Task 10.8: Quality Assurance & Full Test Verification:**
+  - **Vitest Unit & Integration Suites:** **46/46 tests passing** (22 Client + 24 Server).
+  - **Playwright E2E Suites:** **8/8 tests passing** cleanly across all user flows.
+  - **Linter & Compilations:** Clean with 0 errors across monorepo.

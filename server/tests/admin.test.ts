@@ -62,6 +62,39 @@ describe('Admin Authentication & CMS API', () => {
     await app.close()
   })
 
+  it('enforces brute-force lockout after 5 failed attempts and returns 429 on subsequent attempts', async () => {
+    const app = await buildApp()
+    const testIp = '198.51.100.42'
+    for (let i = 0; i < 4; i++) {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/api/v1/admin/login',
+        remoteAddress: testIp,
+        payload: { username: 'admin', password: 'bad-password' },
+      })
+      expect(res.statusCode).toBe(401)
+      expect(res.json().error).toBe('Invalid username or password')
+    }
+    const res5 = await app.inject({
+      method: 'POST',
+      url: '/api/v1/admin/login',
+      remoteAddress: testIp,
+      payload: { username: 'admin', password: 'bad-password' },
+    })
+    expect(res5.statusCode).toBe(401)
+    expect(res5.json().error).toContain('Access locked for 15 minutes')
+    const res6 = await app.inject({
+      method: 'POST',
+      url: '/api/v1/admin/login',
+      remoteAddress: testIp,
+      payload: { username: 'admin', password: 'bad-password' },
+    })
+    expect(res6.statusCode).toBe(429)
+    expect(res6.headers['retry-after']).toBeDefined()
+    expect(res6.json().error).toContain('Too many failed login attempts')
+    await app.close()
+  })
+
   it('authenticates valid admin credentials, sets HttpOnly cookie, and performs CRUD operations', async () => {
     const app = await buildApp()
 
