@@ -100,3 +100,7 @@ export async function buildApp(opts: FastifyServerOptions = {}): Promise<Fastify
 
   return app
 }
+
+// Export initialized app as default for Vercel's Fastify runner
+const app = await buildApp();
+export default app;
