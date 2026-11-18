@@ -27,20 +27,38 @@ test.describe('Projects Portfolio & News Removal Flow', () => {
     await expect(page.locator('text=Rextro Souvenirs')).toBeVisible()
 
     // 5. Test Click-to-open Lightbox modal
-    const falconCard = page.locator('div:has-text("Falcon 9 Pen")').last()
-    await falconCard.click()
+    const falconCard = page.getByRole('button', { name: /Inspect Falcon 9 Pen/i })
+    await falconCard.focus()
+    await falconCard.press('Enter')
 
     // Lightbox modal verification
-    const modal = page.locator('div[role="dialog"]')
+    const modal = page.getByRole('dialog')
     await expect(modal).toBeVisible()
     await expect(page.locator('#lightbox-title')).toHaveText('Falcon 9 Pen')
+    await expect(modal).toHaveAccessibleDescription(/Aerospace-inspired pen/)
+
+    // Focus moves into the dialog, scroll is locked
+    const closeBtn = page.getByRole('button', { name: 'Close project details' })
+    await expect(closeBtn).toBeFocused()
+    await expect(page.locator('body')).toHaveCSS('overflow', 'hidden')
+
+    // Tab stays trapped inside the dialog
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Tab')
+    expect(await modal.evaluate((el) => el.contains(document.activeElement))).toBe(true)
     await expect(page.locator('text=Aerospace-inspired pen')).toBeVisible()
     await expect(page.locator('text=Material')).toBeVisible()
 
-    // Close Lightbox via ESC button
-    const closeBtn = page.locator('button:has-text("[ESC] CLOSE")')
-    await expect(closeBtn).toBeVisible()
-    await closeBtn.click()
+    // Escape closes, focus returns to the card, scroll lock is released
+    await page.keyboard.press('Escape')
+    await expect(modal).toHaveCount(0)
+    await expect(falconCard).toBeFocused()
+    await expect(page.locator('body')).not.toHaveCSS('overflow', 'hidden')
+
+    // Close button also works
+    await falconCard.click()
+    await expect(modal).toBeVisible()
+    await page.getByRole('button', { name: 'Close project details' }).click()
     await expect(modal).toHaveCount(0)
   })
 

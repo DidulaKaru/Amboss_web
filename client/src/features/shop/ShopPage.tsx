@@ -44,12 +44,12 @@ export default function ShopPage() {
             onClick={openCart}
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-xs font-mono text-zinc-200 transition cursor-pointer shrink-0"
           >
-            <svg className="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg aria-hidden="true" className="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
             </svg>
             <span>Cart</span>
             {itemCount > 0 && (
-              <span className="px-1.5 py-0.2 rounded bg-zinc-800 text-[10px] text-zinc-300">
+              <span className="px-1.5 py-0.2 rounded bg-zinc-800 text-xs text-zinc-300">
                 {itemCount}
               </span>
             )}
@@ -68,6 +68,7 @@ export default function ShopPage() {
                     key={cat.id}
                     type="button"
                     onClick={() => setSelectedCategory(cat.id)}
+                    aria-pressed={isActive}
                     className={`px-3 py-1.5 rounded text-xs font-mono transition shrink-0 cursor-pointer ${
                       isActive
                         ? 'bg-zinc-100 text-zinc-950 font-medium'
@@ -83,23 +84,28 @@ export default function ShopPage() {
             {/* Search Input & Refresh Button */}
             <div className="flex items-center gap-2">
               <div className="relative flex-1 sm:w-64">
+                <label htmlFor="shop-search" className="sr-only">
+                  Search components
+                </label>
                 <input
-                  type="text"
+                  id="shop-search"
+                  type="search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search components..."
-                  className="w-full rounded bg-zinc-900 border border-zinc-800 pl-8 pr-3 py-1.5 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-600 font-sans"
+                  className="w-full rounded bg-zinc-900 border border-zinc-800 pl-8 pr-8 [&::-webkit-search-cancel-button]:appearance-none py-1.5 text-xs text-zinc-200 placeholder-zinc-400 focus:outline-none focus:border-zinc-600 font-sans"
                 />
-                <svg className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg aria-hidden="true" className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 {searchQuery && (
                   <button
                     type="button"
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-2.5 top-1.5 text-zinc-500 hover:text-zinc-300 text-xs cursor-pointer"
+                    aria-label="Clear search"
+                    className="absolute right-2.5 top-1.5 text-zinc-400 hover:text-zinc-300 text-xs cursor-pointer"
                   >
-                    ×
+                    <span aria-hidden="true">&times;</span>
                   </button>
                 )}
               </div>
@@ -108,21 +114,28 @@ export default function ShopPage() {
                 type="button"
                 onClick={refetch}
                 title="Refresh live catalog and inventory"
+                aria-label="Refresh live catalog and inventory"
                 className="p-1.5 rounded border border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 transition cursor-pointer"
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg aria-hidden="true" className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
               </button>
             </div>
           </div>
 
-          {/* Result Count (Only during active search) */}
-          {searchQuery && (
-            <div className="text-[11px] font-mono text-zinc-500">
-              {products.length} {products.length === 1 ? 'item' : 'items'} matching &ldquo;{searchQuery}&rdquo;
-            </div>
-          )}
+          {/* Result Count: visible only during active search, always announced to screen readers */}
+          <div
+            aria-live="polite"
+            aria-atomic="true"
+            className={searchQuery ? 'text-xs font-mono text-zinc-400' : 'sr-only'}
+          >
+            {isLoading && products.length === 0
+              ? 'Loading products'
+              : searchQuery
+                ? `${products.length} ${products.length === 1 ? 'item' : 'items'} matching “${searchQuery}”`
+                : `${products.length} ${products.length === 1 ? 'item' : 'items'} shown`}
+          </div>
         </div>
 
         {/* Loading State */}
@@ -155,13 +168,13 @@ export default function ShopPage() {
         {/* Empty State */}
         {!isLoading && products.length === 0 && (
           <div className="flex flex-col items-center justify-center min-h-64 border border-dashed border-zinc-800 rounded p-8 text-center space-y-3">
-            <div className="h-10 w-10 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-500">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="h-10 w-10 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400">
+              <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
             <p className="text-sm font-medium text-zinc-300">No products found</p>
-            <p className="text-xs text-zinc-500 max-w-sm">
+            <p className="text-xs text-zinc-400 max-w-sm">
               We couldn't find any items matching your selected criteria. Reset your category filter or search keywords.
             </p>
             <button

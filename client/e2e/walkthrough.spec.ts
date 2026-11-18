@@ -18,8 +18,9 @@ test.describe('End-to-End Comprehensive Button & User Flow Walkthrough', () => {
     await page.goto('/')
     await expect(page).toHaveTitle(/AMBOSS/i)
 
-    // Check Hero stage 01
+    // Static hero heading + stage 01 title
     await expect(page.locator('h1')).toBeVisible()
+    await expect(page.getByTestId('hero-stage-title')).toHaveText('Concept')
 
     // Click "Instant Quote" Hero button
     const heroQuoteBtn = page.locator('a:has-text("Instant Quote")').first()
@@ -86,7 +87,7 @@ endsolid cube`
     await addToCartBtn.click()
 
     // Open Cart Drawer using header cart icon button
-    const cartBtn = page.locator('header button[aria-label="Shopping cart"]').first()
+    const cartBtn = page.locator('header button[aria-label^="Shopping cart"]').first()
     await cartBtn.click()
 
     // Cart drawer should be visible with item & delivery methods
@@ -111,11 +112,11 @@ endsolid cube`
     // Click first portfolio item to open inspection lightbox
     const portfolioCard = page.locator('[data-testid="portfolio-card"]').first()
     await portfolioCard.click()
-    const modal = page.locator('div[role="dialog"]')
+    const modal = page.getByRole('dialog')
     await expect(modal).toBeVisible()
 
     // Click ESC close button
-    const closeLightboxBtn = page.locator('button:has-text("[ESC] CLOSE")')
+    const closeLightboxBtn = page.getByRole('button', { name: 'Close project details' })
     await closeLightboxBtn.click()
     await expect(modal).toHaveCount(0)
 

@@ -67,7 +67,7 @@ function Services({
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="space-y-2">
-          <p className="text-[11px] uppercase tracking-wider font-mono text-zinc-400">{kicker}</p>
+          <p className="text-xs uppercase tracking-wider font-mono text-zinc-400">{kicker}</p>
           <h2 className="text-2xl sm:text-3xl font-medium tracking-tight text-zinc-100">{title}</h2>
           <p className="text-xs sm:text-sm text-zinc-400 max-w-2xl">{subtitle}</p>
         </div>

@@ -170,7 +170,7 @@ export default function PartViewer({
 
       {/* Top Header & Controls */}
       <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-zinc-900/90 border border-zinc-800 text-[11px] font-mono text-zinc-300">
+        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-zinc-900/90 border border-zinc-800 text-xs font-mono text-zinc-300">
           <span className="truncate max-w-[160px] sm:max-w-xs">{fileName}</span>
         </div>
 
@@ -178,32 +178,34 @@ export default function PartViewer({
         <div className="flex items-center gap-1.5 pointer-events-auto">
           <button
             type="button"
+            aria-pressed={wireframe}
             onClick={() => setWireframe(!wireframe)}
-            className={`px-2 py-1 rounded text-[11px] font-mono border transition ${
+            className={`px-2 py-1 rounded text-xs font-mono border transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-300 ${
               wireframe
                 ? 'bg-zinc-800 border-zinc-600 text-zinc-100'
                 : 'bg-zinc-900/90 border-zinc-800 text-zinc-400 hover:text-zinc-200'
             }`}
           >
-            {wireframe ? 'Solid' : 'Wireframe'}
+            Wireframe
           </button>
 
           <button
             type="button"
+            aria-pressed={autoRotate}
             onClick={() => setAutoRotate(!autoRotate)}
-            className={`px-2 py-1 rounded text-[11px] font-mono border transition ${
+            className={`px-2 py-1 rounded text-xs font-mono border transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-300 ${
               autoRotate
                 ? 'bg-zinc-800 border-zinc-600 text-zinc-100'
                 : 'bg-zinc-900/90 border-zinc-800 text-zinc-400 hover:text-zinc-200'
             }`}
           >
-            {autoRotate ? 'Pause' : 'Rotate'}
+            Rotate
           </button>
         </div>
       </div>
 
       {/* Bottom Model Dimensions Pill */}
-      <div className="absolute bottom-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2 pointer-events-none text-[11px] font-mono">
+      <div className="absolute bottom-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2 pointer-events-none text-xs font-mono">
         <div className="px-2.5 py-1 rounded bg-zinc-900/90 border border-zinc-800 text-zinc-300">
           {stlResult.boundingBox.dimensions.x} × {stlResult.boundingBox.dimensions.y} × {stlResult.boundingBox.dimensions.z} mm
         </div>

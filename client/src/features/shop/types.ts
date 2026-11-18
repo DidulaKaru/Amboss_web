@@ -63,6 +63,11 @@ export interface WhatsAppOrderResponse {
   whatsappUrl: string
 }
 
+export interface CartNotice {
+  message: string
+  type: 'error' | 'info'
+}
+
 export interface CartContextType {
   cartItems: CartItem[]
   addToCart: (product: Product, quantity: number) => boolean
@@ -83,6 +88,8 @@ export interface CartContextType {
   openCart: () => void
   closeCart: () => void
   isCheckingOut: boolean
+  notice: CartNotice | null
+  dismissNotice: () => void
   validationErrors: string[]
   clearValidationErrors: () => void
   validateLiveCart: () => Promise<{ valid: boolean; errors: string[] }>

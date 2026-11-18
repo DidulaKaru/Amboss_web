@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { getAssetUrl } from '../../../utils/assets'
+import PortfolioLightbox from './PortfolioLightbox'
 
 export interface PortfolioItem {
   id: string
@@ -69,6 +70,17 @@ const API_BASE = import.meta.env.VITE_API_URL || ''
 export default function PortfolioGrid() {
   const [items, setItems] = useState<PortfolioItem[]>(STATIC_FALLBACK_ITEMS)
   const [activeModalItem, setActiveModalItem] = useState<PortfolioItem | null>(null)
+  const openerRef = useRef<HTMLElement | null>(null)
+
+  const closeModal = useCallback(() => {
+    setActiveModalItem(null)
+    // Return focus to the card that opened the lightbox
+    const opener = openerRef.current
+    openerRef.current = null
+    if (opener && opener.isConnected) {
+      requestAnimationFrame(() => opener.focus())
+    }
+  }, [])
 
   // Fetch from server with static fallback
   useEffect(() => {
@@ -94,24 +106,13 @@ export default function PortfolioGrid() {
     }
   }, [])
 
-  // Keyboard navigation for Lightbox
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setActiveModalItem(null)
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
-
   const activeItems = items.filter((item) => item.isActive !== false)
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8 space-y-8 border-t border-zinc-800/80">
       {/* Section Heading */}
       <div className="space-y-1">
-        <p className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
+        <p className="text-xs font-mono uppercase tracking-wider text-zinc-400">
           Amboss Manufacturing
         </p>
         <h2 className="text-xl sm:text-2xl font-medium tracking-tight text-zinc-100">
@@ -121,23 +122,29 @@ export default function PortfolioGrid() {
 
       {/* Dynamic CSS Column Masonry Grid */}
       {activeItems.length === 0 ? (
-        <div className="py-16 text-center border border-dashed border-zinc-800 rounded font-mono text-xs text-zinc-500">
+        <div className="py-16 text-center border border-dashed border-zinc-800 rounded font-mono text-xs text-zinc-400">
           NO ARTIFACTS IN PORTFOLIO
         </div>
       ) : (
         <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
           {activeItems.map((item) => (
-            <div
+            <button
               key={item.id}
+              type="button"
               data-testid="portfolio-card"
-              onClick={() => setActiveModalItem(item)}
-              className="group relative break-inside-avoid mb-4 rounded border border-zinc-800 bg-zinc-900/40 overflow-hidden cursor-pointer transition hover:border-zinc-600 hover:shadow-lg"
+              aria-haspopup="dialog"
+              aria-label={`Inspect ${item.title}${item.material ? `, ${item.material}` : ''}`}
+              onClick={(e) => {
+                openerRef.current = e.currentTarget
+                setActiveModalItem(item)
+              }}
+              className="group relative block w-full text-left break-inside-avoid mb-4 rounded border border-zinc-800 bg-zinc-900/40 overflow-hidden cursor-pointer transition hover:border-zinc-600 hover:shadow-lg"
             >
               {/* Dynamic Photo Container: adjusts naturally without forced aspect ratio */}
-              <div className="w-full overflow-hidden bg-zinc-950">
+              <span className="block w-full overflow-hidden bg-zinc-950">
                 <img
                   src={getAssetUrl(item.imageUrl)}
-                  alt={item.title}
+                  alt=""
                   loading="lazy"
                   decoding="async"
                   width={800}
@@ -147,93 +154,31 @@ export default function PortfolioGrid() {
                   }}
                   className="w-full h-auto block object-cover transition-transform duration-300 group-hover:scale-105"
                 />
-              </div>
+              </span>
 
               {/* Monospace Part Specs Bar */}
-              <div className="p-3 bg-zinc-950 border-t border-zinc-800/80 transition-colors group-hover:bg-zinc-900">
-                <div className="flex items-center justify-between gap-2">
-                  <h3 className="font-mono text-xs font-medium text-zinc-200 truncate">
+              <span className="block p-3 bg-zinc-950 border-t border-zinc-800/80 transition-colors group-hover:bg-zinc-900">
+                <span className="flex items-center justify-between gap-2">
+                  <span className="font-mono text-xs font-medium text-zinc-200 truncate">
                     {item.title}
-                  </h3>
-                  <span className="text-[10px] font-mono text-cyan-400 shrink-0 opacity-80 group-hover:opacity-100 transition">
+                  </span>
+                  <span className="text-xs font-mono text-cyan-400 shrink-0 opacity-80 group-hover:opacity-100 transition">
                     INSPECT
                   </span>
-                </div>
+                </span>
                 {item.material && (
-                  <p className="font-mono text-[10px] text-zinc-400 mt-1 truncate">
+                  <span className="block font-mono text-xs text-zinc-400 mt-1 truncate">
                     MAT: {item.material}
-                  </p>
+                  </span>
                 )}
-              </div>
-            </div>
+              </span>
+            </button>
           ))}
         </div>
       )}
 
       {/* Lightbox Modal for Inspecting Print Layer Details */}
-      {activeModalItem && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="lightbox-title"
-          onClick={() => setActiveModalItem(null)}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-md transition-opacity"
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-4xl max-h-[90vh] flex flex-col md:flex-row rounded-lg border border-zinc-800 bg-zinc-950 overflow-y-auto md:overflow-hidden shadow-2xl"
-          >
-            {/* Close Button */}
-            <button
-              type="button"
-              aria-label="Close inspection lightbox"
-              onClick={() => setActiveModalItem(null)}
-              className="absolute top-3 right-3 z-20 px-2.5 py-1 rounded border border-zinc-800 bg-zinc-950/80 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-100 text-xs font-mono transition cursor-pointer"
-            >
-              [ESC] CLOSE
-            </button>
-
-            {/* High-Resolution Media Viewport */}
-            <div className="flex-1 min-h-[300px] md:min-h-[500px] bg-black flex items-center justify-center overflow-hidden p-2">
-              <img
-                src={getAssetUrl(activeModalItem.imageUrl)}
-                alt={activeModalItem.title}
-                width={1200}
-                height={900}
-                onError={(e) => {
-                  e.currentTarget.src = getAssetUrl('images/amboss-logo.png')
-                }}
-                className="max-h-[75vh] w-auto max-w-full object-contain rounded"
-              />
-            </div>
-
-            {/* Technical Detail Sidebar */}
-            <div className="w-full md:w-80 lg:w-96 p-6 flex flex-col justify-between border-t md:border-t-0 md:border-l border-zinc-800 bg-zinc-900/60 font-mono text-xs space-y-6 md:overflow-y-auto">
-              <div className="space-y-4">
-                <h3 id="lightbox-title" className="text-base font-medium text-zinc-100 leading-snug md:pr-28">
-                  {activeModalItem.title}
-                </h3>
-
-                {activeModalItem.material && (
-                  <div className="p-3 rounded border border-zinc-800 bg-zinc-950 space-y-1">
-                    <span className="text-[10px] uppercase text-zinc-500">Material</span>
-                    <p className="text-zinc-200 text-xs font-medium">{activeModalItem.material}</p>
-                  </div>
-                )}
-
-                {activeModalItem.description && (
-                  <div className="space-y-1 font-sans text-xs text-zinc-300 leading-relaxed">
-                    <span className="font-mono text-[10px] uppercase text-zinc-500 block">
-                      Notes
-                    </span>
-                    <p>{activeModalItem.description}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {activeModalItem && <PortfolioLightbox item={activeModalItem} onClose={closeModal} />}
     </section>
   )
 }

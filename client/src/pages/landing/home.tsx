@@ -25,7 +25,7 @@ function Home() {
   return (
     <main>
       <Suspense
-        fallback={<div id="hero-scroll-track" className="relative w-full h-[300vh] bg-zinc-950" aria-hidden="true" />}
+        fallback={<div id="hero-scroll-track" className="relative w-full h-[200vh] md:h-[300vh] bg-zinc-950" aria-hidden="true" />}
       >
         <HeroCanvas />
       </Suspense>

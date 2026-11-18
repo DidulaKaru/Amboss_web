@@ -23,11 +23,11 @@ body,
 	}
 }
 
-/* Focus rings */
+/* Focus rings: high-contrast on zinc-950 backgrounds, no layout or radius change.
+   The inner dark offset keeps the ring visible on light (zinc-100) buttons too. */
 *:focus-visible {
-	outline: none;
-	box-shadow: 0 0 0 2px rgba(50, 130, 184, 0.5);
-	border-radius: 0.25rem;
+	outline: 2px solid #38bdf8;
+	outline-offset: 2px;
 }
 
 /* Smooth site-wide transition utility */
@@ -70,4 +70,14 @@ body,
 	color: var(--color-bg);
 }
 
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+	.smooth-transitions :is(a, button, input, select, textarea, [role="button"]) {
+		transition: none;
+	}
 
+	.btn-add-animate {
+		animation: none;
+		will-change: auto;
+	}
+}

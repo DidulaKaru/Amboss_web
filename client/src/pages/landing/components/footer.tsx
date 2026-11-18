@@ -107,15 +107,15 @@ export default function Footer({
           <div className="space-y-3">
             <h4 className="text-xs font-mono uppercase tracking-wider text-zinc-400">Contact</h4>
             <div className="flex items-start gap-2.5 text-xs text-zinc-400">
-              <span className="mt-0.5 text-zinc-500"><IconMail /></span>
+              <span className="mt-0.5 text-zinc-400"><IconMail /></span>
               <a href={`mailto:${email}`} className="hover:text-white break-all">{email}</a>
             </div>
             <div className="flex items-start gap-2.5 text-xs text-zinc-400">
-              <span className="mt-0.5 text-zinc-500"><IconPhone /></span>
+              <span className="mt-0.5 text-zinc-400"><IconPhone /></span>
               <a href={`https://wa.me/${phone.replace(/[^\d]/g, "")}`} target="_blank" rel="noopener noreferrer" className="hover:text-white">{phone}</a>
             </div>
             <div className="flex items-start gap-2.5 text-xs text-zinc-400">
-              <span className="mt-0.5 text-zinc-500"><IconMap /></span>
+              <span className="mt-0.5 text-zinc-400"><IconMap /></span>
               <p className="whitespace-pre-line">
                 {addressLines.join("\n")}
               </p>
@@ -124,7 +124,7 @@ export default function Footer({
         </div>
       </div>
       <div className="border-t border-zinc-800/80">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8 py-4 text-[11px] text-zinc-500 font-mono">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8 py-4 text-xs text-zinc-400 font-mono flex-wrap gap-2">
           <p>© {new Date().getFullYear()} {company}. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <a href="#home" className="hover:text-zinc-300">Back to top</a>

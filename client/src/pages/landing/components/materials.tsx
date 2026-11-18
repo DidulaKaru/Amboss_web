@@ -64,7 +64,7 @@ function Materials({
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="space-y-2">
-          <p className="text-[11px] uppercase tracking-wider font-mono text-zinc-400">
+          <p className="text-xs uppercase tracking-wider font-mono text-zinc-400">
             {kicker}
           </p>
           <h2 className="text-2xl sm:text-3xl font-medium tracking-tight text-zinc-100">
@@ -82,7 +82,7 @@ function Materials({
             const label = LABELS[key] ?? key.replace(/^[a-z]/, (m) => m.toUpperCase());
             return (
               <div key={key}>
-                <p className="mb-2.5 text-[11px] font-mono uppercase tracking-wider text-zinc-400">
+                <p className="mb-2.5 text-xs font-mono uppercase tracking-wider text-zinc-400">
                   {label}
                 </p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">

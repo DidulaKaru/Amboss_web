@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import type { Product, DeliveryMethod } from '../src/features/shop/types'
+import { getOrderErrorMessage, GENERIC_ORDER_REJECTION } from '../src/features/shop/cartInternal'
 import { calculateCourierFee } from '../src/features/quote/utils/pricing'
 
 // Test delivery fee logic for electronics
@@ -95,5 +96,13 @@ describe('Maker Shop Cart & Logistics Logic', () => {
     expect(outOfStockItem.stock).toBe(0)
     const canAdd = outOfStockItem.stock > 0
     expect(canAdd).toBe(false)
+  })
+
+  it('extracts server rejection messages for the cart drawer', () => {
+    expect(getOrderErrorMessage({ error: 'Unknown SKU: X' })).toBe('Unknown SKU: X')
+    expect(getOrderErrorMessage({ message: 'Insufficient stock' })).toBe('Insufficient stock')
+    expect(getOrderErrorMessage({ error: '  ' })).toBe(GENERIC_ORDER_REJECTION)
+    expect(getOrderErrorMessage(null)).toBe(GENERIC_ORDER_REJECTION)
+    expect(getOrderErrorMessage('boom')).toBe(GENERIC_ORDER_REJECTION)
   })
 })
