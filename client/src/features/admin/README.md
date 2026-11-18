@@ -12,12 +12,12 @@ This module provides an air-gapped, zero-DB-overhead administration gateway (`SY
      - `/admin/login`: Monospace terminal authentication screen.
      - `/admin`: Guarded inventory dashboard.
 2. **Session & Security Management:**
-   - Communicates with Fastify server via HttpOnly cookie `amboss_admin_token` and `Authorization: Bearer <token>` fallback header.
+   - Cookie-only auth: the Fastify server sets the HttpOnly cookie `amboss_admin_token`; the client never reads or stores a token (no localStorage, no `Authorization` header) and every request uses `credentials: 'include'`. `AdminAuthContext` removes any legacy `amboss_admin_token` localStorage key once on mount.
    - Guarded via `AdminRoute.tsx`, which automatically redirects unauthorized users to `/admin/login`.
 3. **Live Inventory Control (`[ Products & Stock ]` Tab):**
    - Lists all catalog items with SKU, specifications, category, price (LKR), and stock.
    - Quick inline stock modifiers (`−`, numeric input, `+`) that save immediately to the backend (`PUT /api/v1/products/:id`) with debounce and visual saving indicators.
-   - Product creation, edit, and delete modals using `getAuthHeaders(false)` on body-less DELETE calls.
+   - Product creation, edit, and delete modals using `getAuthHeaders(false)` on body-less DELETE calls. All protected calls go through `adminFetch`, which sends `credentials: 'include'` and, on a 401, logs out and redirects to `/admin/login`.
 4. **Portfolio Gallery Control (`[ Portfolio Gallery ]` Tab):**
    - Lists all portfolio projects with thumbnail preview, title, material specifications, and active status.
    - Real-time "Toggle Status" action updating public gallery visibility instantly (`PUT /api/v1/portfolio/:id`).

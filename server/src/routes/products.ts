@@ -1,49 +1,67 @@
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb, schema } from '../db/index.js'
 import { INITIAL_PRODUCTS } from '../db/seedData.js'
-import { eq, or } from 'drizzle-orm'
+import { and, eq, or } from 'drizzle-orm'
 import { z } from 'zod'
 import { verifyAdmin } from '../middleware/auth.js'
 import { env } from '../config/env.js'
+import { imageUrlSchema, LIMITS } from '../config/validation.js'
+import { PUBLIC_CACHE_CONTROL } from '../config/cache.js'
 
 const querySchema = z.object({
-  category: z.string().optional(),
+  category: z.string().max(LIMITS.category).optional(),
 })
 
+const MAX_PRICE_LKR = 10_000_000
+const MAX_STOCK = 1_000_000
+
 const createProductSchema = z.object({
-  sku: z.string().min(2, 'SKU is required'),
-  name: z.string().min(2, 'Product name is required'),
-  category: z.string().min(2, 'Category is required'),
-  description: z.string().default(''),
-  priceLkr: z.coerce.number().min(0, 'Price must be positive'),
-  stockQuantity: z.coerce.number().int().min(0, 'Stock must be 0 or more').default(0),
-  imageUrl: z.string().default('images/amboss-logo.png'),
+  sku: z.string().min(2, 'SKU is required').max(LIMITS.sku),
+  name: z.string().min(2, 'Product name is required').max(LIMITS.productName),
+  category: z.string().min(2, 'Category is required').max(LIMITS.category),
+  description: z.string().max(5000).default(''),
+  priceLkr: z.coerce.number().min(0, 'Price must be positive').max(MAX_PRICE_LKR),
+  stockQuantity: z.coerce.number().int().min(0, 'Stock must be 0 or more').max(MAX_STOCK).default(0),
+  imageUrl: imageUrlSchema.default('images/amboss-logo.png'),
   isActive: z.boolean().default(true),
 })
 
 const updateProductSchema = z.object({
-  name: z.string().optional(),
-  category: z.string().optional(),
-  description: z.string().optional(),
-  priceLkr: z.coerce.number().min(0).optional(),
-  stockQuantity: z.coerce.number().int().min(0).optional(),
-  imageUrl: z.string().optional(),
+  name: z.string().min(2).max(LIMITS.productName).optional(),
+  category: z.string().min(2).max(LIMITS.category).optional(),
+  description: z.string().max(5000).optional(),
+  priceLkr: z.coerce.number().min(0).max(MAX_PRICE_LKR).optional(),
+  stockQuantity: z.coerce.number().int().min(0).max(MAX_STOCK).optional(),
+  imageUrl: imageUrlSchema.optional(),
   isActive: z.boolean().optional(),
 })
 
 export const productsRoutes: FastifyPluginAsync = async (fastify) => {
   // Public: List products
-  fastify.get('/api/v1/products', async (request) => {
+  fastify.get('/api/v1/products', async (request, reply) => {
     const parseResult = querySchema.safeParse(request.query)
-    const category = parseResult.success ? parseResult.data.category : undefined
+    if (!parseResult.success) {
+      return reply.code(400).send({
+        success: false,
+        error: 'Validation failed',
+        details: parseResult.error.errors,
+      })
+    }
+    const category = parseResult.data.category
+    reply.header('Cache-Control', PUBLIC_CACHE_CONTROL)
 
     const db = getDb()
     if (db) {
       try {
-        const query = db.select().from(schema.products).where(eq(schema.products.isActive, true))
-        const rows = await query
-        const filtered = category ? rows.filter((r) => r.category === category) : rows
-        return { success: true, count: filtered.length, data: filtered }
+        const rows = await db
+          .select()
+          .from(schema.products)
+          .where(
+            category
+              ? and(eq(schema.products.isActive, true), eq(schema.products.category, category))
+              : eq(schema.products.isActive, true)
+          )
+        return { success: true, count: rows.length, data: rows }
       } catch (err) {
         fastify.log.warn({ err }, 'Querying products failed, using initial dataset')
       }
@@ -63,6 +81,7 @@ export const productsRoutes: FastifyPluginAsync = async (fastify) => {
   // Public: Single product by SKU
   fastify.get('/api/v1/products/:sku', async (request, reply) => {
     const { sku } = request.params as { sku: string }
+    reply.header('Cache-Control', PUBLIC_CACHE_CONTROL)
 
     const db = getDb()
     if (db) {

@@ -1,11 +1,12 @@
 import { useLocation } from 'react-router-dom'
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import Capabilities from './components/capabilities'
 import Footer from './components/footer'
-import HeroCanvas from '../../components/3d/HeroCanvas'
 import Materials from './components/materials'
 import Services from './components/services'
 import WhyUs from './components/whyUs'
+
+const HeroCanvas = lazy(() => import('../../components/3d/HeroCanvas'))
 
 function Home() {
   const location = useLocation()
@@ -23,7 +24,11 @@ function Home() {
 
   return (
     <main>
-      <HeroCanvas />
+      <Suspense
+        fallback={<div id="hero-scroll-track" className="relative w-full h-[300vh] bg-zinc-950" aria-hidden="true" />}
+      >
+        <HeroCanvas />
+      </Suspense>
       <WhyUs />
       <Services />
       <Capabilities />

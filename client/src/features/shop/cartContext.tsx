@@ -13,6 +13,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [customerName, setCustomerName] = useState<string>('')
   const [isCheckingOut, setIsCheckingOut] = useState<boolean>(false)
   const [validationErrors, setValidationErrors] = useState<string[]>([])
+  const [isCartOpen, setIsCartOpen] = useState<boolean>(false)
+
+  const openCart = useCallback(() => setIsCartOpen(true), [])
+  const closeCart = useCallback(() => setIsCartOpen(false), [])
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -269,6 +273,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         deliveryFee,
         cartTotal,
         itemCount,
+        isCartOpen,
+        openCart,
+        closeCart,
         isCheckingOut,
         validationErrors,
         clearValidationErrors,

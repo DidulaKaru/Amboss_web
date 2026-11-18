@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import STLDropzone from './components/STLDropzone'
 import PartViewer from './components/PartViewer'
 import QuoteForm from './components/QuoteForm'
@@ -12,10 +12,65 @@ export default function QuotePage() {
   const [selectedMaterial, setSelectedMaterial] = useState<MaterialOption>(MATERIALS[0])
   const [uploadError, setUploadError] = useState<string | null>(null)
 
+  const workerRef = useRef<Worker | null>(null)
+  const requestIdRef = useRef(0)
+
+  const stopWorker = () => {
+    if (workerRef.current) {
+      workerRef.current.terminate()
+      workerRef.current = null
+    }
+  }
+
+  // Terminate any in-flight worker on unmount and invalidate pending responses
+  useEffect(() => {
+    const requestId = requestIdRef
+    const worker = workerRef
+    return () => {
+      requestId.current++
+      worker.current?.terminate()
+      worker.current = null
+    }
+  }, [])
+
+  const applyResult = (result: STLParseResult | undefined) => {
+    if (!result || result.triangleCount === 0) {
+      setUploadError('The uploaded STL file contains 0 triangles or is empty.')
+      setStlResult(null)
+    } else {
+      setStlResult(result)
+      setUploadError(null)
+    }
+    setIsLoading(false)
+  }
+
   const handleFileLoaded = (file: File, buffer: ArrayBuffer) => {
+    // New upload invalidates any previous in-flight parse
+    const requestId = ++requestIdRef.current
+    stopWorker()
+
     setIsLoading(true)
     setFileName(file.name)
     setUploadError(null)
+
+    const isStale = () => requestId !== requestIdRef.current
+
+    // The buffer is transferred (detached) to the worker, so the main-thread
+    // fallback re-reads the file from disk instead of reusing it.
+    const fallbackParse = async () => {
+      try {
+        const fresh = await file.arrayBuffer()
+        if (isStale()) return
+        applyResult(parseSTL(fresh))
+      } catch (e: unknown) {
+        if (isStale()) return
+        console.error('Direct STL parsing error:', e)
+        const msg = e instanceof Error ? e.message : 'Corrupted or unsupported STL file.'
+        setUploadError(msg)
+        setStlResult(null)
+        setIsLoading(false)
+      }
+    }
 
     // Attempt parsing via Web Worker for non-blocking UI
     try {
@@ -23,51 +78,28 @@ export default function QuotePage() {
         new URL('../../workers/stlVolumeWorker.ts', import.meta.url),
         { type: 'module' }
       )
+      workerRef.current = worker
 
       worker.onmessage = (e) => {
-        setIsLoading(false)
+        if (isStale()) return
+        stopWorker()
         if (e.data.success) {
-          if (!e.data.result || e.data.result.triangleCount === 0) {
-            setUploadError('The uploaded STL file contains 0 triangles or is empty.')
-            setStlResult(null)
-          } else {
-            setStlResult(e.data.result)
-            setUploadError(null)
-          }
+          applyResult(e.data.result)
         } else {
-          fallbackParse(buffer)
+          void fallbackParse()
         }
-        worker.terminate()
       }
 
       worker.onerror = () => {
-        fallbackParse(buffer)
-        worker.terminate()
+        if (isStale()) return
+        stopWorker()
+        void fallbackParse()
       }
 
-      worker.postMessage({ buffer })
+      worker.postMessage({ buffer }, [buffer])
     } catch {
-      fallbackParse(buffer)
-    }
-  }
-
-  const fallbackParse = (buffer: ArrayBuffer) => {
-    try {
-      const result = parseSTL(buffer)
-      if (result.triangleCount === 0) {
-        setUploadError('The uploaded STL file contains 0 triangles or is empty.')
-        setStlResult(null)
-      } else {
-        setStlResult(result)
-        setUploadError(null)
-      }
-    } catch (e: unknown) {
-      console.error('Direct STL parsing error:', e)
-      const msg = e instanceof Error ? e.message : 'Corrupted or unsupported STL file.'
-      setUploadError(msg)
-      setStlResult(null)
-    } finally {
-      setIsLoading(false)
+      stopWorker()
+      void fallbackParse()
     }
   }
 

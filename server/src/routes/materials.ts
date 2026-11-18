@@ -2,9 +2,11 @@ import type { FastifyPluginAsync } from 'fastify'
 import { getDb, schema } from '../db/index.js'
 import { INITIAL_MATERIALS } from '../db/seedData.js'
 import { eq } from 'drizzle-orm'
+import { PUBLIC_CACHE_CONTROL } from '../config/cache.js'
 
 export const materialsRoutes: FastifyPluginAsync = async (fastify) => {
-  fastify.get('/api/v1/materials', async () => {
+  fastify.get('/api/v1/materials', async (_request, reply) => {
+    reply.header('Cache-Control', PUBLIC_CACHE_CONTROL)
     const db = getDb()
     if (db) {
       try {

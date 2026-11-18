@@ -2,7 +2,6 @@
 
 :root {
 	color-scheme: dark;
-	scroll-behavior: smooth;
 	--color-bg: #09090b;
 	--color-section: #18181b;
 	--color-accent: #27272a;
@@ -37,9 +36,9 @@ body,
 	--amboss-animation-ease: cubic-bezier(.2,.9,.2,1);
 }
 
-/* Apply lightweight smooth transitions for common properties. */
-/* Use the `.smooth-transitions` utility on high-level containers to enable. */
-.smooth-transitions * {
+/* Lightweight smooth transitions, scoped to interactive elements only. */
+/* (Avoids a transition on every node in the tree.) */
+.smooth-transitions :is(a, button, input, select, textarea, [role="button"]) {
 	transition-property: background-color, border-color, color, transform, opacity, box-shadow;
 	transition-duration: var(--amboss-animation-duration);
 	transition-timing-function: var(--amboss-animation-ease);

@@ -12,17 +12,18 @@ export function AdminAuthProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     let isMounted = true
 
+    // One-time cleanup: the session lives only in the HttpOnly cookie, so drop any
+    // token a previous version of the app stored in localStorage.
+    try {
+      localStorage.removeItem('amboss_admin_token')
+    } catch {
+      // Storage unavailable (private mode / blocked) - nothing to clean up
+    }
+
     async function checkSession() {
       try {
-        const storedToken = localStorage.getItem('amboss_admin_token')
-        const headers: Record<string, string> = {}
-        if (storedToken) {
-          headers['Authorization'] = `Bearer ${storedToken}`
-        }
-
         const res = await fetch(`${API_BASE}/api/v1/admin/me`, {
           credentials: 'include',
-          headers,
         })
 
         if (res.ok) {
@@ -31,10 +32,7 @@ export function AdminAuthProvider({ children }: PropsWithChildren) {
             setUser({ username: json.user.username, role: 'admin' })
           }
         } else {
-          if (isMounted) {
-            setUser(null)
-            localStorage.removeItem('amboss_admin_token')
-          }
+          if (isMounted) setUser(null)
         }
       } catch {
         if (isMounted) setUser(null)
@@ -60,9 +58,6 @@ export function AdminAuthProvider({ children }: PropsWithChildren) {
 
       const json = await res.json()
       if (res.ok && json.success) {
-        if (json.token) {
-          localStorage.setItem('amboss_admin_token', json.token)
-        }
         setUser({ username: json.user.username, role: 'admin' })
         return { success: true }
       }
@@ -82,7 +77,6 @@ export function AdminAuthProvider({ children }: PropsWithChildren) {
     } catch {
       // Continue client cleanup even if network fails
     } finally {
-      localStorage.removeItem('amboss_admin_token')
       setUser(null)
     }
   }, [])

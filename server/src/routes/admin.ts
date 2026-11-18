@@ -3,10 +3,14 @@ import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import { env } from '../config/env.js'
 import { verifyAdmin } from '../middleware/auth.js'
+import { limitFor, RATE_LIMITS } from '../config/rateLimit.js'
+
+// Session lifetime: JWT expiry and cookie maxAge must match (12 hours)
+const SESSION_SECONDS = 12 * 60 * 60
 
 const loginSchema = z.object({
-  username: z.string().min(1, 'Username is required'),
-  password: z.string().min(1, 'Password is required'),
+  username: z.string().min(1, 'Username is required').max(100),
+  password: z.string().min(1, 'Password is required').max(200),
 })
 
 // In-memory rate limiting to defend against brute-force password guessing
@@ -20,7 +24,10 @@ const LOCKOUT_WINDOW_MS = 15 * 60 * 1000 // 15 minutes
 
 export const adminRoutes: FastifyPluginAsync = async (fastify) => {
   // Login Endpoint
-  fastify.post('/api/v1/admin/login', async (request, reply) => {
+  fastify.post(
+    '/api/v1/admin/login',
+    { config: { rateLimit: { max: limitFor(RATE_LIMITS.adminLogin), timeWindow: '1 minute' } } },
+    async (request, reply) => {
     const ip = request.ip || 'unknown'
     const now = Date.now()
 
@@ -86,10 +93,10 @@ export const adminRoutes: FastifyPluginAsync = async (fastify) => {
     // Reset attempt counter upon successful authentication
     loginAttempts.delete(ip)
 
-    // Sign JWT token valid for 24h
+    // Sign JWT with the same lifetime as the session cookie
     const token = (fastify as any).jwt.sign(
       { username: env.ADMIN_USERNAME, role: 'admin' },
-      { expiresIn: '24h' }
+      { expiresIn: SESSION_SECONDS }
     )
 
     const isProd = env.NODE_ENV === 'production'
@@ -100,18 +107,18 @@ export const adminRoutes: FastifyPluginAsync = async (fastify) => {
       httpOnly: true,
       secure: isProd,
       sameSite: isProd ? 'none' : 'lax',
-      maxAge: 43200, // 12 hours in seconds
+      maxAge: SESSION_SECONDS,
     })
 
     return {
       success: true,
-      token,
       user: {
         username: env.ADMIN_USERNAME,
         role: 'admin',
       },
     }
-  })
+    }
+  )
 
   // Logout Endpoint
   fastify.post('/api/v1/admin/logout', async (request, reply) => {

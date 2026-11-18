@@ -14,9 +14,8 @@ const MAIN_NAV_ITEMS: NavItem[] = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
   const location = useLocation();
-  const { itemCount } = useCart();
+  const { itemCount, isCartOpen, openCart, closeCart } = useCart();
 
   // lock body scroll when mobile menu is open
   useEffect(() => {
@@ -67,7 +66,7 @@ export default function Navbar() {
 
             <div className="relative">
               <button
-                onClick={() => setCartOpen(true)}
+                onClick={() => openCart()}
                 className="text-zinc-400 transition hover:text-zinc-100 p-1 cursor-pointer"
                 aria-label="Shopping cart"
               >
@@ -97,7 +96,7 @@ export default function Navbar() {
           <div className="ml-auto flex items-center gap-3 md:hidden">
             <div className="relative">
               <button
-                onClick={() => setCartOpen(true)}
+                onClick={() => openCart()}
                 className="text-zinc-400 transition hover:text-white p-1"
                 aria-label="Shopping cart"
               >
@@ -183,7 +182,7 @@ export default function Navbar() {
       </header>
 
       {/* Cart Sidebar */}
-      <Cart isOpen={cartOpen} onClose={() => setCartOpen(false)} />
+      <Cart isOpen={isCartOpen} onClose={closeCart} />
     </>
   );
 }

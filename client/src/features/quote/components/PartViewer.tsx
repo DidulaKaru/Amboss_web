@@ -17,6 +17,7 @@ export default function PartViewer({
   const [autoRotate, setAutoRotate] = useState(true)
   const materialRef = useRef<THREE.MeshStandardMaterial | null>(null)
   const controlsRef = useRef<OrbitControls | null>(null)
+  const invalidateRef = useRef<() => void>(() => {})
 
   useEffect(() => {
     const container = mountRef.current
@@ -34,8 +35,6 @@ export default function PartViewer({
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false })
     renderer.setSize(width, height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.shadowMap.enabled = true
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap
     container.appendChild(renderer.domElement)
 
     // OrbitControls
@@ -51,7 +50,6 @@ export default function PartViewer({
 
     const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.2)
     dirLight1.position.set(5, 10, 7)
-    dirLight1.castShadow = true
     scene.add(dirLight1)
 
     const dirLight2 = new THREE.DirectionalLight(0xa1a1aa, 0.5)
@@ -74,8 +72,6 @@ export default function PartViewer({
     materialRef.current = material
 
     const mesh = new THREE.Mesh(geometry, material)
-    mesh.castShadow = true
-    mesh.receiveShadow = true
     scene.add(mesh)
 
     // Ground Plane Grid (minimal dark zinc grid)
@@ -100,31 +96,50 @@ export default function PartViewer({
     camera.lookAt(0, 0, 0)
     controls.target.set(0, 0, 0)
 
-    // Render loop
-    let animId: number
+    // Render on demand: only draw when something changed (controls moved,
+    // damping still settling, auto-rotate active, resize, or wireframe toggle).
+    let animId = 0
+    let needsRender = true
+    const invalidate = () => {
+      needsRender = true
+    }
+    invalidateRef.current = invalidate
+    controls.addEventListener('change', invalidate)
+
     const animate = () => {
       animId = requestAnimationFrame(animate)
+      // controls.update() returns true (and fires 'change') when the camera moved,
+      // which covers auto-rotate and damping inertia.
       controls.update()
-      renderer.render(scene, camera)
+      if (needsRender) {
+        needsRender = false
+        renderer.render(scene, camera)
+      }
     }
     animate()
 
     // Handle container resize
     const handleResize = () => {
-      if (!container) return
       const w = container.clientWidth
       const h = container.clientHeight || 400
+      if (w === 0) return
       camera.aspect = w / h
       camera.updateProjectionMatrix()
       renderer.setSize(w, h)
+      invalidate()
     }
-    window.addEventListener('resize', handleResize)
+    const resizeObserver = new ResizeObserver(handleResize)
+    resizeObserver.observe(container)
 
     return () => {
-      window.removeEventListener('resize', handleResize)
+      resizeObserver.disconnect()
+      controls.removeEventListener('change', invalidate)
+      invalidateRef.current = () => {}
       cancelAnimationFrame(animId)
       controls.dispose()
       geometry.dispose()
+      grid.geometry.dispose()
+      ;(grid.material as THREE.Material).dispose()
       material.dispose()
       renderer.dispose()
       if (container.contains(renderer.domElement)) {
@@ -137,6 +152,7 @@ export default function PartViewer({
   useEffect(() => {
     if (materialRef.current) {
       materialRef.current.wireframe = wireframe
+      invalidateRef.current()
     }
   }, [wireframe])
 

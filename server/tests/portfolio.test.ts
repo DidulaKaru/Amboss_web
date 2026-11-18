@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { buildApp } from '../src/app.js'
+import { adminCookie } from './helpers.js'
 
 describe('Portfolio API', () => {
   it('GET /api/v1/portfolio returns active portfolio items ordered by displayOrder', async () => {
@@ -81,21 +82,8 @@ describe('Portfolio API', () => {
   it('authenticates admin and successfully executes portfolio CRUD operations', async () => {
     const app = await buildApp()
 
-    // Login as admin
-    const resLogin = await app.inject({
-      method: 'POST',
-      url: '/api/v1/admin/login',
-      payload: {
-        username: 'Dory',
-        password: 'poplintu7577',
-      },
-    })
-    expect(resLogin.statusCode).toBe(200)
-    const { token } = resLogin.json()
-
-    const authHeaders = {
-      Authorization: `Bearer ${token}`,
-    }
+    // Login as admin (cookie-only session)
+    const authHeaders = await adminCookie(app)
 
     // 1. Create new item
     const resCreate = await app.inject({

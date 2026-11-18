@@ -24,19 +24,18 @@ export default function STLDropzone({ onFileLoaded, isLoading }: STLDropzoneProp
       return
     }
 
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const buffer = e.target?.result as ArrayBuffer
-      if (buffer) {
-        onFileLoaded(file, buffer)
-      } else {
-        setError('Failed to read file content.')
-      }
-    }
-    reader.onerror = () => {
-      setError('Error reading file from disk.')
-    }
-    reader.readAsArrayBuffer(file)
+    file
+      .arrayBuffer()
+      .then((buffer) => {
+        if (buffer && buffer.byteLength > 0) {
+          onFileLoaded(file, buffer)
+        } else {
+          setError('Failed to read file content.')
+        }
+      })
+      .catch(() => {
+        setError('Error reading file from disk.')
+      })
   }
 
   const handleDragOver = (e: React.DragEvent) => {

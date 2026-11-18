@@ -79,6 +79,9 @@ export interface CartContextType {
   deliveryFee: number
   cartTotal: number
   itemCount: number
+  isCartOpen: boolean
+  openCart: () => void
+  closeCart: () => void
   isCheckingOut: boolean
   validationErrors: string[]
   clearValidationErrors: () => void

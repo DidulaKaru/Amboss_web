@@ -3,7 +3,9 @@ import cors from '@fastify/cors'
 import helmet from '@fastify/helmet'
 import cookie from '@fastify/cookie'
 import jwt from '@fastify/jwt'
-import { env } from './config/env.js'
+import rateLimit from '@fastify/rate-limit'
+import { env, resolveTrustProxy } from './config/env.js'
+import { limitFor, RATE_LIMITS } from './config/rateLimit.js'
 import { healthRoutes } from './routes/health.js'
 import { materialsRoutes } from './routes/materials.js'
 import { machinesRoutes } from './routes/machines.js'
@@ -16,7 +18,9 @@ import { portfolioRoutes } from './routes/portfolioRoutes.js'
 export async function buildApp(opts: FastifyServerOptions = {}): Promise<FastifyInstance> {
   const app = Fastify({
     logger: env.NODE_ENV === 'test' ? false : true,
-    trustProxy: env.NODE_ENV === 'production',
+    // Hop count (not `true`) so a client cannot spoof request.ip via X-Forwarded-For
+    trustProxy: resolveTrustProxy(),
+    bodyLimit: 100 * 1024, // 100kb
     ...opts,
   })
 
@@ -41,6 +45,15 @@ export async function buildApp(opts: FastifyServerOptions = {}): Promise<Fastify
   })
 
   await app.register(cookie)
+
+  // Global rate limiting (generous default; stricter per-route limits are set on the routes).
+  // Effectively disabled under test unless a test opts in via RATE_LIMIT_IN_TEST (see config/rateLimit.ts).
+  await app.register(rateLimit, {
+    global: true,
+    max: limitFor(RATE_LIMITS.global),
+    timeWindow: '1 minute',
+    allowList: (request) => request.url === '/health' || request.url.startsWith('/api/v1/health'),
+  })
 
   await app.register(jwt, {
     secret: env.JWT_SECRET,
@@ -70,17 +83,7 @@ export async function buildApp(opts: FastifyServerOptions = {}): Promise<Fastify
     credentials: true,
   })
 
-  // Register API Routes
-  await app.register(healthRoutes)
-  await app.register(materialsRoutes)
-  await app.register(machinesRoutes)
-  await app.register(productsRoutes)
-  await app.register(quoteRoutes)
-  await app.register(ordersRoutes)
-  await app.register(adminRoutes)
-  await app.register(portfolioRoutes)
-
-  // 404 Handler
+  // 404 Handler (must be set BEFORE route plugins load, otherwise encapsulated plugin routes keep Fastify's defaults)
   app.setNotFoundHandler((request, reply) => {
     reply.code(404).send({
       success: false,
@@ -91,12 +94,29 @@ export async function buildApp(opts: FastifyServerOptions = {}): Promise<Fastify
 
   // Global Error Handler
   app.setErrorHandler((error: FastifyError, request, reply) => {
-    app.log.error(error)
-    reply.code(error.statusCode || 500).send({
+    const status = error.statusCode && error.statusCode >= 400 ? error.statusCode : 500
+    if (status >= 500) {
+      // Log the real error, but never leak internals to the client
+      app.log.error(error)
+      reply.code(status).send({ success: false, error: 'Internal Server Error' })
+      return
+    }
+    app.log.warn(error)
+    reply.code(status).send({
       success: false,
-      error: error.message || 'Internal Server Error',
+      error: error.message || 'Bad Request',
     })
   })
+
+  // Register API Routes
+  await app.register(healthRoutes)
+  await app.register(materialsRoutes)
+  await app.register(machinesRoutes)
+  await app.register(productsRoutes)
+  await app.register(quoteRoutes)
+  await app.register(ordersRoutes)
+  await app.register(adminRoutes)
+  await app.register(portfolioRoutes)
 
   return app
 }

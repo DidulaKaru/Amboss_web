@@ -1,7 +1,5 @@
-import { useState } from 'react'
 import { useProducts } from './useProducts'
 import ProductCard from './components/ProductCard'
-import Cart from './components/Cart'
 import { useCart } from './useCart'
 import type { ProductCategory } from './types'
 
@@ -25,8 +23,7 @@ export default function ShopPage() {
     refetch,
   } = useProducts()
 
-  const { itemCount } = useCart()
-  const [isCartOpen, setIsCartOpen] = useState(false)
+  const { itemCount, openCart } = useCart()
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 py-10 px-4 sm:px-6 lg:px-8">
@@ -44,7 +41,7 @@ export default function ShopPage() {
 
           <button
             type="button"
-            onClick={() => setIsCartOpen(true)}
+            onClick={openCart}
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-xs font-mono text-zinc-200 transition cursor-pointer shrink-0"
           >
             <svg className="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -180,9 +177,6 @@ export default function ShopPage() {
           </div>
         )}
       </div>
-
-      {/* Cart Drawer */}
-      <Cart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>
   )
 }
