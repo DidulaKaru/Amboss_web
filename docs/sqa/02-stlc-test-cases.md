@@ -19,7 +19,7 @@
 | REQ-Q-02 | Infill accepted 10–100%; layer height 0.05–0.40 mm; quantity integer 1–100 | `quote.ts` Zod schema |
 | REQ-Q-03 | Unknown material → 404; malformed input → 400 | `quote.ts` |
 | REQ-Q-04 | Parts route to the smallest printer whose build volume fits; SLA fit is orientation-independent | `pricing.ts`, GEO-02 |
-| REQ-Q-05 | Minimum print price 250 LKR | `logistics.ts`, UI label |
+| REQ-Q-05 | Minimum print price 250 LKR. **Withdrawn** by the shop owner (BUG-01): the price follows REQ-Q-01 only | `logistics.ts`, UI label |
 | REQ-Q-06 | Non-watertight or corrupt STL files must not be priced as valid parts | `stlParser.ts`, GEO-01 |
 | REQ-S-01 | Courier: 500 LKR first kg, +150 LKR per started extra kg | `logistics.ts` |
 | REQ-S-02 | Galle local delivery free at a subtotal of 3000 LKR or more, else 200 LKR | `logistics.ts` |
@@ -45,8 +45,8 @@ Full automated sets: `TC-BB-*` in `client/tests/blackbox.test.ts`, `TC-API-*` in
 | TC-07 | REQ-Q-03 | Unknown material | API running | POST quote | materialSlug = "unobtainium" | 404 "not found" | 404 | Pass |
 | TC-08 | REQ-Q-04 | Rotated SLA part fits the vat | — | `calculateQuote` | 210 × 100 × 200 mm, lite-resin | Saturn 4 Ultra, not oversized | As expected | Pass |
 | TC-09 | REQ-Q-04 | Open-material part over 350 mm | — | `calculateQuote` | 400 mm cube, PLA+ | isOversized = true | As expected | Pass |
-| TC-10 | REQ-Q-05 | Tiny part clamped to minimum price | — | `calculateQuote` | 0.01 cm³, PLA+ | 250 LKR | **450 LKR** | **Fail → BUG-01** |
-| TC-11 | REQ-Q-06 | Open surface STL flagged as invalid | — | `parseSTL` | One 20 × 20 mm square at z = 20 | isManifoldEstimate = false | **true, 2.67 cm³** | **Fail → BUG-03** |
+| TC-10 | REQ-Q-01 | Tiny part priced from its cost components (first run tested the withdrawn 250 LKR minimum: **Fail → BUG-01**) | — | `calculateQuote` | 0.01 cm³, PLA+ | 120 + 80 + 250 = 450 LKR | 450 LKR | Pass (re-test) |
+| TC-11 | REQ-Q-06 | Open surface STL flagged as invalid | — | `parseSTL` | One 20 × 20 mm square at z = 20 | isManifoldEstimate = false | false (first run: **true, 2.67 cm³**, Fail → BUG-03) | Pass (re-test) |
 | TC-12 | REQ-S-01 | Courier fee at exactly 1 kg | — | `calculateCourierFee` | 1000 g | 500 | 500 | Pass |
 | TC-13 | REQ-S-01 | Courier fee just over 1 kg | — | `calculateCourierFee` | 1001 g | 650 | 650 | Pass |
 | TC-14 | REQ-S-02 | Galle free-delivery threshold | — | `calculateShopDeliveryFee` | galle_local, 3000 | 0 | 0 | Pass |
@@ -56,7 +56,7 @@ Full automated sets: `TC-BB-*` in `client/tests/blackbox.test.ts`, `TC-API-*` in
 | TC-18 | REQ-A-02 | 5th failure locks the account | Fresh IP | 5 × wrong login | — | 5th → 401 "locked"; 6th → 429 + Retry-After | As expected | Pass |
 | TC-19 | REQ-A-03 | No username enumeration | API running | Login with wrong user / wrong password | ghost/wrong, Dory/wrong | Identical 401 message | Identical | Pass |
 | TC-20 | REQ-A-04 | Tampered JWT rejected | API running | GET `/admin/me` with a modified token | Bad signature | 401 | 401 | Pass |
-| TC-21 | REQ-A-04 | Forged JWT with the default secret rejected | Server without a custom secret | GET `/admin/me` with a token signed by the default secret | — | 401 | **200** | **Fail → BUG-04** |
+| TC-21 | REQ-A-04 | Server refuses default secrets in production (first run: a token forged with the default secret was accepted, **Fail → BUG-04**) | `NODE_ENV=production`, no custom secrets | Start the server | — | Startup error | Startup error | Pass (re-test) |
 | TC-22 | REQ-A-04 | Mutation without auth | API running | POST `/api/v1/products` | `{}` | 401 | 401 | Pass |
 | TC-23 | F2 (UI) | Add a product to the cart | Client + API running | `/shop` → Add to Cart → open cart | — | Cart dialog with "Order via WhatsApp" | As expected | Pass (SEL-01) |
 | TC-24 | F1 (UI) | Upload STL and see specification | Client + API running | `/quote` → upload STL | ASCII STL | Specification panel and materials shown | As expected | Pass (SEL-02) |

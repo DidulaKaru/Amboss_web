@@ -1,11 +1,9 @@
 /**
  * Amboss Logistics & Pricing Single Source of Truth (Server)
  *
- * All manufacturing minimum thresholds, courier fees, and fulfillment options
+ * All courier fees and fulfillment options
  * are centrally defined and verified here.
  */
-
-export const MINIMUM_PRINT_PRICE_LKR = 250
 
 export const LOGISTICS_CONFIG = {
   courier: {

@@ -17,8 +17,10 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import type { FastifyInstance } from 'fastify'
 import { buildApp } from '../src/app.js'
+import { env } from '../src/config/env.js'
+import { adminCredentials } from './helpers.js'
 
-const GOOD = { username: 'Dory', password: 'poplintu7577' }
+const GOOD = adminCredentials
 let app: FastifyInstance
 
 beforeAll(async () => {
@@ -85,5 +87,23 @@ describe('Decision table — admin login', () => {
     // counter was reset, so 4 more failures must not lock the IP
     await failTimes(ip, 4)
     expect((await login(ip, GOOD)).statusCode).toBe(200)
+  })
+
+  it('wrong username with the CORRECT password → 401 (both share one bcrypt comparison)', async () => {
+    const res = await login('203.0.113.40', { ...GOOD, username: 'ghost' })
+    expect(res.statusCode).toBe(401)
+    expect(res.headers['set-cookie']).toBeUndefined()
+  })
+
+  it.each(['', 'replace-with-bcrypt-hash'])('admin login is disabled when ADMIN_PASSWORD_HASH is %j', async (hash) => {
+    const original = env.ADMIN_PASSWORD_HASH
+    env.ADMIN_PASSWORD_HASH = hash
+    try {
+      for (const password of [GOOD.password, hash || 'x']) {
+        expect((await login('203.0.113.41', { username: GOOD.username, password })).statusCode).toBe(401)
+      }
+    } finally {
+      env.ADMIN_PASSWORD_HASH = original
+    }
   })
 })

@@ -187,12 +187,12 @@ function computeSafeBoundingBox(
 ) {
   const isValid =
     triangleCount > 0 &&
-    isFinite(minX) &&
-    isFinite(maxX) &&
-    isFinite(minY) &&
-    isFinite(maxY) &&
-    isFinite(minZ) &&
-    isFinite(maxZ)
+    Number.isFinite(minX) &&
+    Number.isFinite(maxX) &&
+    Number.isFinite(minY) &&
+    Number.isFinite(maxY) &&
+    Number.isFinite(minZ) &&
+    Number.isFinite(maxZ)
 
   if (!isValid) {
     return {
@@ -232,9 +232,9 @@ function parseAsciiSTL(text: string): STLParseResult {
       grown.set(coords)
       coords = grown
     }
-    coords[coordCount++] = parseFloat(match[1])
-    coords[coordCount++] = parseFloat(match[2])
-    coords[coordCount++] = parseFloat(match[3])
+    coords[coordCount++] = Number.parseFloat(match[1])
+    coords[coordCount++] = Number.parseFloat(match[2])
+    coords[coordCount++] = Number.parseFloat(match[3])
   }
 
   const vertexCount = coordCount / 3

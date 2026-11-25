@@ -1,13 +1,14 @@
 import { describe, it, expect } from 'vitest'
 import {
   assertProductionSecrets,
-  DEV_DEFAULT_ADMIN_PASSWORD_HASH,
   DEV_DEFAULT_JWT_SECRET,
   MIN_JWT_SECRET_LENGTH,
 } from '../src/config/env.js'
 
 // Structurally valid bcrypt hash of a throwaway string (60 chars) - not the dev default.
 const GOOD_HASH = '$2b$10$xmIhuW5YhEW4Co2CqSdWp.uVWGjIG/VKaZrVzUA4KxJ8b1Oa0Uqam'
+// The hash that used to be the default in env.ts; revoked, and rejected by fingerprint.
+const LEAKED_HASH = '$2b$10$if6Vv4XeouWjfdqpIvQBIurozAOyjzN0hpoCNlVTnJJ4eyrFlDpMG'
 const GOOD_SECRET = 'x'.repeat(MIN_JWT_SECRET_LENGTH)
 
 const config = (over: Partial<Parameters<typeof assertProductionSecrets>[0]> = {}) => ({
@@ -22,11 +23,11 @@ describe('assertProductionSecrets (BUG-04 guard)', () => {
     expect(() => assertProductionSecrets(config())).not.toThrow()
   })
 
-  it.each(['development', 'test'] as const)('allows the public defaults in %s', (NODE_ENV) => {
+  it.each(['development', 'test'] as const)('allows unset secrets in %s', (NODE_ENV) => {
     expect(() =>
       assertProductionSecrets({
         NODE_ENV,
-        ADMIN_PASSWORD_HASH: DEV_DEFAULT_ADMIN_PASSWORD_HASH,
+        ADMIN_PASSWORD_HASH: '',
         JWT_SECRET: DEV_DEFAULT_JWT_SECRET,
       })
     ).not.toThrow()
@@ -36,10 +37,14 @@ describe('assertProductionSecrets (BUG-04 guard)', () => {
     expect(() => assertProductionSecrets(config({ JWT_SECRET: DEV_DEFAULT_JWT_SECRET }))).toThrow(/JWT_SECRET/)
   })
 
-  it('rejects the default admin hash in production', () => {
+  it('rejects the previously leaked admin hash in production', () => {
     expect(() =>
-      assertProductionSecrets(config({ ADMIN_PASSWORD_HASH: DEV_DEFAULT_ADMIN_PASSWORD_HASH }))
+      assertProductionSecrets(config({ ADMIN_PASSWORD_HASH: LEAKED_HASH }))
     ).toThrow(/ADMIN_PASSWORD_HASH/)
+  })
+
+  it('rejects a missing admin hash in production', () => {
+    expect(() => assertProductionSecrets(config({ ADMIN_PASSWORD_HASH: '' }))).toThrow(/ADMIN_PASSWORD_HASH/)
   })
 
   it('rejects the .env.example placeholders', () => {
@@ -67,7 +72,7 @@ describe('assertProductionSecrets (BUG-04 guard)', () => {
   it('reports every problem in one error', () => {
     expect(() =>
       assertProductionSecrets(
-        config({ ADMIN_PASSWORD_HASH: DEV_DEFAULT_ADMIN_PASSWORD_HASH, JWT_SECRET: DEV_DEFAULT_JWT_SECRET })
+        config({ ADMIN_PASSWORD_HASH: LEAKED_HASH, JWT_SECRET: DEV_DEFAULT_JWT_SECRET })
       )
     ).toThrow(/ADMIN_PASSWORD_HASH[\s\S]*JWT_SECRET/)
   })

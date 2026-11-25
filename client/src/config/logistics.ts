@@ -5,8 +5,6 @@
  * and minimum manufacturing thresholds are centrally defined here.
  */
 
-export const MINIMUM_PRINT_PRICE_LKR = 250
-
 export const LOGISTICS_CONFIG = {
   courier: {
     firstKgFeeLkr: 500,

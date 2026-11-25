@@ -41,7 +41,7 @@ export function AdminAuthProvider({ children }: PropsWithChildren) {
       }
     }
 
-    checkSession()
+    void checkSession() // handles its own errors
     return () => {
       isMounted = false
     }

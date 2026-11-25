@@ -100,7 +100,7 @@ export default function PortfolioGrid() {
       }
     }
 
-    fetchPortfolio()
+    void fetchPortfolio() // handles its own errors (keeps the static fallback)
     return () => {
       isMounted = false
     }

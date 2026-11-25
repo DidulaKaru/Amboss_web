@@ -33,7 +33,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Run Linter
         run: npm run lint --if-present
@@ -75,7 +75,16 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      - run: npm ci
+      - run: npm ci --ignore-scripts
+
+      - name: Generate throwaway admin credentials for this run
+        run: |
+          ADMIN_PASSWORD=$(openssl rand -hex 16)
+          echo "::add-mask::$ADMIN_PASSWORD"
+          export ADMIN_PASSWORD
+          ADMIN_PASSWORD_HASH=$(node server/scripts/hash-admin-password.mjs)
+          echo "ADMIN_PASSWORD=$ADMIN_PASSWORD" >> "$GITHUB_ENV"
+          echo "ADMIN_PASSWORD_HASH=$ADMIN_PASSWORD_HASH" >> "$GITHUB_ENV"
 
       - name: Start API server (seed-data fallback, no database)
         working-directory: server
@@ -83,14 +92,14 @@ jobs:
           NODE_ENV: development
           DATABASE_URL: postgresql://qa:qa@127.0.0.1:1/none
         run: |
-          npx tsx src/index.ts > server.log 2>&1 &
+          node --import=tsx src/index.ts > server.log 2>&1 &
           for i in $(seq 1 30); do curl -sf http://localhost:4000/health && break; sleep 1; done
 
       - name: Run Postman collection with Newman
         run: |
           mkdir -p docs/sqa/reports/newman
-          npx newman run docs/sqa/postman/amboss.postman_collection.json \
-            -e docs/sqa/postman/local.postman_environment.json \
+          npm run test:api -- \
+            --env-var "adminPassword=$ADMIN_PASSWORD" \
             --reporters cli,junit \
             --reporter-junit-export docs/sqa/reports/newman/newman-junit.xml
 
@@ -117,21 +126,30 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Install Playwright Chromium
-        run: npx --workspace=client playwright install --with-deps chromium
+        run: npm run test:e2e:install --workspace=client
 
       - name: Run Playwright Tests
         run: npm run test:e2e
+
+      - name: Generate throwaway admin credentials for this run
+        run: |
+          ADMIN_PASSWORD=$(openssl rand -hex 16)
+          echo "::add-mask::$ADMIN_PASSWORD"
+          export ADMIN_PASSWORD
+          ADMIN_PASSWORD_HASH=$(node server/scripts/hash-admin-password.mjs)
+          echo "ADMIN_PASSWORD=$ADMIN_PASSWORD" >> "$GITHUB_ENV"
+          echo "ADMIN_PASSWORD_HASH=$ADMIN_PASSWORD_HASH" >> "$GITHUB_ENV"
 
       - name: Start API + frontend for Selenium
         env:
           NODE_ENV: development
           DATABASE_URL: postgresql://qa:qa@127.0.0.1:1/none
         run: |
-          (cd server && npx tsx src/index.ts > server.log 2>&1 &)
-          (cd client && npx vite --port 5173 --strictPort > vite.log 2>&1 &)
+          (cd server && node --import=tsx src/index.ts > server.log 2>&1 &)
+          (npm run dev --workspace=client -- --port 5173 --strictPort > client/vite.log 2>&1 &)
           for i in $(seq 1 30); do curl -sf http://localhost:4000/health && curl -sf -o /dev/null http://localhost:5173 && break; sleep 1; done
 
       - name: Run Selenium WebDriver Tests (headless Chrome)

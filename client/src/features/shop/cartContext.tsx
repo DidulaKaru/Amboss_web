@@ -3,6 +3,7 @@ import type { CartItem, Product, DeliveryMethod, InventoryValidationResponse, Wh
 import { CartContext, STORAGE_KEY, GENERIC_ORDER_REJECTION, getOrderErrorMessage } from './cartInternal'
 import { calculateShopDeliveryFee } from '../../config/logistics'
 import { SITE } from '../../config/site'
+import { buildWhatsAppUrl } from '../quote/utils/quoteOrder'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
 const NOTICE_TIMEOUT_MS = 4000
@@ -223,8 +224,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
       if (res.ok) {
         const data: WhatsAppOrderResponse = await res.json()
-        if (data.success && data.whatsappUrl) {
-          window.location.href = data.whatsappUrl
+        if (data.success && data.messageText) {
+          // Build the link here instead of following a URL from the response (no open redirect)
+          window.location.href = buildWhatsAppUrl(SITE.phone, data.messageText)
           setIsCheckingOut(false)
           return true
         }
@@ -269,9 +271,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       `Total: Rs ${cartTotal.toLocaleString()} LKR`,
     ].join('\n')
 
-    const encoded = encodeURIComponent(message)
-    const whatsappNumber = SITE.phone.replace(/[^\d]/g, '')
-    window.location.href = `https://wa.me/${whatsappNumber}?text=${encoded}`
+    window.location.href = buildWhatsAppUrl(SITE.phone, message)
     setIsCheckingOut(false)
     return true
   }, [

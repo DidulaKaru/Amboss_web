@@ -33,7 +33,7 @@ All cases below are automated:
 |---|---|---|---|---|---|
 | E1 | Valid closed mesh (binary/ASCII) | 20 mm cube | Correct volume | ✔ | existing `stlParser.test.ts` |
 | E2 | Invalid: zero triangles / empty | empty file | Safe zero bbox, error banner | ✔ | existing (GEO-01) |
-| E3 | Invalid: **open surface** | one square at z = 20 | Flagged non-manifold | ✘ 2.67 cm³, "manifold" | TC-BB-23/24 → **BUG-03** |
+| E3 | Invalid: **open surface** | one square at z = 20 | Flagged non-manifold | ✔ after the fix (first run: ✘ "manifold") | TC-BB-23/24 → **BUG-03** |
 | E4 | Invalid: zero or negative volume to API | `volumeCm3: 0` | 400 | ✔ | TC-API-23 |
 | E5 | Invalid: negative dimension | `x: -1` | 400 | ✔ | TC-API-24 |
 | E6 | Invalid type | `volumeCm3: "eight"` | 400 | ✔ | TC-API-25 |
@@ -78,14 +78,15 @@ Approach: for each range [min, max], test min−δ, min, min+δ, max−δ, max, 
 | Expected fee | 200 | 200 | 0 | 0 |
 | Actual | ✔ | ✔ | ✔ | ✔ |
 
-### BVA-6: Minimum print price (250 LKR)
+### BVA-6: Lowest print price
 
 | Input | Expected | Actual | Result |
 |---|---|---|---|
-| Tiny part (0.01 cm³) | 250 | **450** | **Fail → BUG-01** |
-| Large part (100 cm³) | > 250 | > 250 | Pass |
+| Tiny part (0.01 cm³), first run | 250 (advertised minimum) | **450** | **Fail → BUG-01** |
+| Tiny part, after the minimum was removed | 450 | 450 | Pass (TC-BB-18) |
+| Large part (100 cm³) | > 450 | > 450 | Pass (TC-BB-19) |
 
-**Analysis:** the lower boundary of the price output domain can never be reached. The handling fee alone is 250 LKR, plus at least 80 LKR of machine time and 120 LKR of material. This defect was **missed by 100% branch coverage** and found only by BVA, which is a good argument for combining both techniques.
+**Analysis:** the advertised 250 LKR minimum could never be reached, so the shop owner removed it. The handling fee alone is 250 LKR, plus at least 80 LKR of machine time and 120 LKR of material. This defect was **missed by 100% branch coverage** and found only by BVA, which is a good argument for combining both techniques.
 
 ## 3.3 Decision Tables
 

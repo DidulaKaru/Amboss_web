@@ -41,7 +41,7 @@ endsolid cube`
     // After parsing, the specification heading should appear
     const specHeading = page.getByRole('heading', { name: 'Specification' })
     await expect(specHeading).toBeVisible({ timeout: 10000 })
-    await expect(page.locator('text=Min print Rs 250')).toBeVisible()
+    await expect(page.locator('text=Min print')).toHaveCount(0)
 
     // Verify materials buttons are visible
     await expect(page.locator('button:has-text("PLA+")')).toBeVisible()

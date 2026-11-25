@@ -294,18 +294,21 @@ export default function Cart({ isOpen, onClose }: CartProps) {
                           name="deliveryMethod"
                           checked={selected}
                           onChange={() => setDeliveryMethod(opt.id)}
+                          aria-labelledby={`delivery-${opt.id}-title delivery-${opt.id}-price`}
+                          aria-describedby={`delivery-${opt.id}-note`}
                           className={`mt-0.5 ${opt.free ? 'accent-emerald-500' : 'accent-zinc-400'}`}
                         />
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-baseline">
-                            <span className="text-xs font-medium text-zinc-200">{opt.title}</span>
+                            <span id={`delivery-${opt.id}-title`} className="text-xs font-medium text-zinc-200">{opt.title}</span>
                             <span
+                              id={`delivery-${opt.id}-price`}
                               className={`text-xs font-mono font-medium ${opt.free ? 'text-emerald-400' : 'text-zinc-200'}`}
                             >
                               {opt.price}
                             </span>
                           </div>
-                          <p className="text-xs text-zinc-400 mt-0.5 leading-relaxed">{opt.note}</p>
+                          <p id={`delivery-${opt.id}-note`} className="text-xs text-zinc-400 mt-0.5 leading-relaxed">{opt.note}</p>
                         </div>
                       </label>
                     )

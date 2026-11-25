@@ -310,7 +310,7 @@ describe('Orders WhatsApp Payload API', () => {
     expect(jsonCourierQuote.messageText).toContain(
       `Estimated Total: Rs ${(calc.totalPriceLkr + expectedFee).toLocaleString()} LKR`
     )
-    expect(jsonCourierQuote.messageText).toContain('Minimum print is 250 LKR')
+    expect(jsonCourierQuote.messageText).not.toContain('Minimum print')
 
     await app.close()
   })

@@ -87,7 +87,6 @@ export default function AdminLogin() {
                 id="admin-username"
                 type="text"
                 autoComplete="username"
-                autoFocus
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="admin"

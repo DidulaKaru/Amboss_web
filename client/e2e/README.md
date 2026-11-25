@@ -9,7 +9,7 @@ This directory houses the Playwright automated browser test suite, validating en
 | Spec File | Flow Tested | Verification Details |
 | :--- | :--- | :--- |
 | `hero-scroll.spec.ts` | Landing Page & 3D Hero | Page render, 3D WebGL canvas initialization, navbar link destinations, capabilities grid visibility, and responsive layout. |
-| `quote-flow.spec.ts` | 3D CAD Upload & Quote | Navigation to `/quote`, dropzone presence, material selection, minimum print threshold validation (250 LKR), fulfillment option selection (Ruhuna faculty, Hapugala shop, courier), and WhatsApp quotation CTA. |
+| `quote-flow.spec.ts` | 3D CAD Upload & Quote | Navigation to `/quote`, dropzone presence, material selection, fulfillment option selection (Ruhuna faculty, Hapugala shop, courier), and WhatsApp quotation CTA. |
 | `shop-checkout.spec.ts` | Maker Store & Cart | Catalog loading, variant selection dropdowns (LED colors, Jumper Cable terminations), discrete "In stock" indicators without raw stock count exposure, adding items to cart, slide-over cart drawer opening, and fulfillment options. |
 | `admin-cms.spec.ts` | Discreet Gateway & Admin CMS | Navigation via discreet `SYS / CTRL` link in About Us colophon, 401 error rejection on invalid credentials, successful authentication to `/admin`, metric cards and inventory table rendering, and secure logout. |
 

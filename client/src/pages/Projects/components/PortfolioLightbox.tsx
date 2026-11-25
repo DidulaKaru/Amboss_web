@@ -78,10 +78,15 @@ export default function PortfolioLightbox({ item, onClose }: PortfolioLightboxPr
     : `${item.title}, 3D printed part`
 
   return (
-    <div
-      onClick={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-md transition-opacity"
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-md transition-opacity">
+      {/* Click-outside-to-close. Mouse/touch only: keyboard users have Escape and the Close button. */}
+      <button
+        type="button"
+        tabIndex={-1}
+        aria-hidden="true"
+        onClick={onClose}
+        className="absolute inset-0 h-full w-full cursor-default"
+      />
       <div
         ref={panelRef}
         role="dialog"
@@ -89,7 +94,6 @@ export default function PortfolioLightbox({ item, onClose }: PortfolioLightboxPr
         aria-labelledby="lightbox-title"
         aria-describedby={item.description ? 'lightbox-description' : undefined}
         tabIndex={-1}
-        onClick={(e) => e.stopPropagation()}
         className="relative w-full max-w-4xl max-h-[90vh] flex flex-col md:flex-row rounded-lg border border-zinc-800 bg-zinc-950 overflow-y-auto md:overflow-hidden shadow-2xl"
       >
         {/* Close Button */}

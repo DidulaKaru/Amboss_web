@@ -116,4 +116,4 @@ material.type === 'SLA'?
 
 📸 *Evidence: open `client/coverage/index.html` and screenshot the `pricing.ts` row and its annotated source view → `evidence/coverage-pricing.png`*
 
-**Key lesson:** 100% statement and branch coverage did **not** reveal BUG-01. The `Math.max(250, raw)` clamp is a single statement with no branch, and it executes every time. Coverage tells you code *ran*, not that it is *correct*. Boundary analysis of the output domain found the defect.
+**Key lesson:** 100% statement and branch coverage did **not** reveal BUG-01. The `Math.max(250, raw)` clamp (since removed) was a single statement with no branch, and it executed every time. Coverage tells you code *ran*, not that it is *correct*. Boundary analysis of the output domain found the defect.

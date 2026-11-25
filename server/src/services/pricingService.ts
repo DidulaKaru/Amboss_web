@@ -32,12 +32,9 @@ export interface PricingOutput {
   isOversized: boolean
 }
 
-import {
-  MINIMUM_PRINT_PRICE_LKR,
-  calculateCourierFee,
-} from '../config/logistics.js'
+import { calculateCourierFee } from '../config/logistics.js'
 
-export { MINIMUM_PRINT_PRICE_LKR, calculateCourierFee }
+export { calculateCourierFee }
 
 export function computeServerPricing(input: PricingInput): PricingOutput {
   const { volumeCm3, surfaceAreaCm2, dimensions, material, infillPct, layerHeightMm } = input
@@ -73,10 +70,9 @@ export function computeServerPricing(input: PricingInput): PricingOutput {
   // 4. Handling & Post-processing
   const handlingCostLkr = isSla ? 350 : 250
 
-  // 5. Total (Minimum print is 250 LKR)
-  const rawUnitPrice = materialCostLkr + machineCostLkr + handlingCostLkr
-  const unitPriceLkr = Math.max(MINIMUM_PRINT_PRICE_LKR, rawUnitPrice)
-  const totalPriceLkr = Math.max(MINIMUM_PRINT_PRICE_LKR, unitPriceLkr * quantity)
+  // 5. Total
+  const unitPriceLkr = materialCostLkr + machineCostLkr + handlingCostLkr
+  const totalPriceLkr = unitPriceLkr * quantity
 
   // 6. Printer Routing
   const maxDim = Math.max(dimensions.x, dimensions.y, dimensions.z)

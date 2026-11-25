@@ -52,7 +52,6 @@ client/
    - Client-side STL file parsing in a Web Worker using the Divergence Theorem for signed tetrahedral volume.
    - Interactive Three.js OrbitControls part viewer with wireframe toggle and dimension bounding boxes.
    - Instant LKR pricing with material densities, infill sliders, and WhatsApp dispatch payload formatting.
-   - Minimum manufacturing order threshold enforced at **250 LKR**.
 
 3. **Maker Electronics Store (`client/src/features/shop/`):**
    - Live catalog fetching with automatic offline fallback to local dataset.

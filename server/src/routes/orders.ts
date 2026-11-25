@@ -298,7 +298,7 @@ export const ordersRoutes: FastifyPluginAsync = async (fastify) => {
         ...(deliveryAddress ? [`Delivery Address / Notes: ${deliveryAddress}`] : []),
         `Estimated Total: Rs ${grandTotal.toLocaleString()} LKR`,
         '',
-        'Note: Minimum print is 250 LKR. Automated estimate based on CAD volume.',
+        'Note: Automated estimate based on CAD volume.',
       ]
     } else {
       return reply.code(400).send({

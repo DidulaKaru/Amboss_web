@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest'
 import {
   calculateQuote,
   calculateCourierFee,
-  MINIMUM_PRINT_PRICE_LKR,
 } from '../src/features/quote/utils/pricing'
 import { MATERIALS } from '../src/features/quote/types'
 import type { STLParseResult } from '../src/features/quote/utils/stlParser'
@@ -25,7 +24,7 @@ describe('Instant 3D Print Quote Pricing Engine', () => {
     isManifoldEstimate: true,
   }
 
-  // Tiny 5mm calibration chip (raw cost will be under 250 LKR)
+  // Tiny 5mm calibration chip
   const mockTinyChip: STLParseResult = {
     triangleCount: 12,
     volumeMm3: 125.0,
@@ -71,14 +70,17 @@ describe('Instant 3D Print Quote Pricing Engine', () => {
     expect(quote.materialCostLkr).toBeGreaterThan(0)
     expect(quote.machineTimeCostLkr).toBeGreaterThan(0)
     expect(quote.handlingFeeLkr).toBeGreaterThan(0)
-    expect(quote.totalPriceLkr).toBeGreaterThanOrEqual(MINIMUM_PRINT_PRICE_LKR)
+    expect(quote.totalPriceLkr).toBe(
+      quote.materialCostLkr + quote.machineTimeCostLkr + quote.handlingFeeLkr
+    )
     expect(quote.recommendedMachine).toBeDefined()
   })
 
-  it('enforces MINIMUM_PRINT_PRICE_LKR (250 LKR) threshold', () => {
+  it('prices a tiny part from its cost components only (no minimum price)', () => {
     const quote = calculateQuote(mockTinyChip, pla, 10, 0.28)
-    expect(quote.totalPriceLkr).toBeGreaterThanOrEqual(MINIMUM_PRINT_PRICE_LKR)
-    expect(MINIMUM_PRINT_PRICE_LKR).toBe(250)
+    expect(quote.totalPriceLkr).toBe(
+      quote.materialCostLkr + quote.machineTimeCostLkr + quote.handlingFeeLkr
+    )
   })
 
   it('routes engineering materials (PETG-CF) and large parts to large/enclosed machines', () => {

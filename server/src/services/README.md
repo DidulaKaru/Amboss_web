@@ -13,15 +13,13 @@ This directory houses pure domain logic decoupled from Fastify HTTP request/repl
   2. **Material Cost:** Grams $\times$ material cost per gram.
   3. **Machine Cost:** Machine runtime hours $\times$ machine hourly rate (160 LKR/hr for FDM, 250 LKR/hr for SLA).
   4. **Preparation & Post-Processing Fee:** 250 LKR for FDM, 350 LKR for SLA (alcohol wash & UV curing).
-  5. **Minimum Order Enforcement:** Enforces `MINIMUM_PRINT_PRICE_LKR = 250`.
-  6. **Build Envelope Checks:** Flags oversized parts exceeding standard envelopes (e.g. Creality K2 Plus: $350\times 350\times 350\,\text{mm}$).
+  5. **Build Envelope Checks:** Flags oversized parts exceeding standard envelopes (e.g. Creality K2 Plus: $350\times 350\times 350\,\text{mm}$).
 
 ---
 
 ## Single Source of Truth (SSOT)
 
-All logistics rules and pricing thresholds are imported from [`server/src/config/logistics.ts`](file:///c:/Users/didul/Documents/GitHub/Amboss_web/server/src/config/logistics.ts):
-- `MINIMUM_PRINT_PRICE_LKR = 250`
+All logistics rules are imported from [`server/src/config/logistics.ts`](file:///c:/Users/didul/Documents/GitHub/Amboss_web/server/src/config/logistics.ts):
 - `calculateCourierFee(weightGrams: number): number`
   - 500 LKR for first 1,000g, +150 LKR per additional 1,000g.
 - `calculateElectronicsDeliveryFee(method, subtotal): number`

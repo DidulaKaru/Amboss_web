@@ -94,13 +94,14 @@ describe('Amboss UI — Selenium', () => {
     assert.match(await alert.getText(), /ACCESS DENIED|Invalid/i)
   })
 
-  it('SEL-04 admin login accepts valid credentials and opens the dashboard', async () => {
+  const noPassword = !process.env.ADMIN_PASSWORD && 'set ADMIN_PASSWORD to the admin password of the API under test'
+  it('SEL-04 admin login accepts valid credentials and opens the dashboard', { skip: noPassword }, async () => {
     // Also resets this IP's failed-attempt counter after SEL-03
     await driver.get(`${BASE_URL}/admin/login`)
     const user = await waitVisible(By.id('admin-username'))
     await user.clear()
     await user.sendKeys(process.env.ADMIN_USER ?? 'Dory')
-    await driver.findElement(By.id('admin-password')).sendKeys(process.env.ADMIN_PASSWORD ?? 'poplintu7577')
+    await driver.findElement(By.id('admin-password')).sendKeys(process.env.ADMIN_PASSWORD)
     await driver.findElement(By.css('button[type="submit"]')).click()
 
     await waitVisible(byText('*', 'OPERATOR:'))

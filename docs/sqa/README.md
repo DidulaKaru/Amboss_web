@@ -21,7 +21,7 @@
 | With coverage | `npm run test:coverage` |
 | BDD (Cucumber) | `npm run test:bdd --workspace=server` |
 | Cyclomatic complexity report | `npm run lint:complexity --workspace=client` |
-| API tests (needs API on :4000) | `npx newman run docs/sqa/postman/amboss.postman_collection.json -e docs/sqa/postman/local.postman_environment.json` |
+| API tests (needs API on :4000) | `npm run test:api -- --env-var "adminPassword=<your local admin password>"` |
 | Selenium (needs API :4000 + Vite :5173) | `npm run test:selenium --workspace=client` |
 | Playwright | `npm run test:e2e` |
 | JMeter | see [07](07-perf-security-usability.md#71-load-testing-with-apache-jmeter) |

@@ -80,9 +80,9 @@ export default function PartViewer({
     const rawDimY = bbox.max.y - bbox.min.y
     const rawDimZ = bbox.max.z - bbox.min.z
 
-    const sizeY = isFinite(rawDimY) ? Math.max(0, rawDimY) : 0
+    const sizeY = Number.isFinite(rawDimY) ? Math.max(0, rawDimY) : 0
     const maxDim =
-      isFinite(rawDimX) && isFinite(rawDimY) && isFinite(rawDimZ)
+      Number.isFinite(rawDimX) && Number.isFinite(rawDimY) && Number.isFinite(rawDimZ)
         ? Math.max(1, rawDimX, rawDimY, rawDimZ)
         : 20
 

@@ -29,7 +29,7 @@
 - The 3D hero animation and WebGL shaders (visual only, no business logic)
 - SEO metadata, sitemap, static About/Projects page content
 - WhatsApp message delivery: we only verify the generated `wa.me` link
-- Production infrastructure (hosting, DNS, the Neon database). **No testing is performed against the live site.**
+- Production infrastructure (hosting, DNS, the Neon database). **No testing is performed against the live site**, except Lighthouse, which only loads public pages.
 - Mobile native apps (there are none)
 
 ## 1.3 Approach: the test pyramid
@@ -53,7 +53,7 @@
 | **Reliability** | Fault tolerance, recoverability | Corrupt/empty/open STL files; DB-unavailable fallback mode (BUG-02, OBS-01) |
 | **Security** | Confidentiality, integrity, authenticity | Lockout decision table, JWT tampering, access control, injection, headers (BUG-04) |
 | **Performance efficiency** | Time behaviour, capacity | JMeter: capacity, stress, and rate-limited runs |
-| **Usability** | Operability, user error protection, accessibility | Nielsen heuristics checklist, Lighthouse accessibility, E2E walkthrough |
+| **Usability** | Operability, user error protection, accessibility | Lighthouse audits, E2E walkthrough |
 | **Maintainability** | Analysability, modifiability, testability | Cyclomatic complexity, SonarCloud smells, duplication, debt |
 
 ## 1.5 Verification vs validation
@@ -61,7 +61,7 @@
 | | Verification: "are we building the product right?" | Validation: "are we building the right product?" |
 |---|---|---|
 | **Question** | Does the code conform to its specification (`guide.md`, Zod schemas, READMEs)? | Does it meet customers' and the owner's real needs? |
-| **Activities** | Code review on PRs; ESLint and `tsc --noEmit`; SonarCloud static analysis; unit tests against spec values (fees, limits); white-box coverage analysis | BDD scenarios written from the customer's view; Playwright/Selenium end-to-end journeys; usability sessions with 2–3 real users; owner acceptance of the quote output |
+| **Activities** | Code review on PRs; ESLint and `tsc --noEmit`; SonarCloud static analysis; unit tests against spec values (fees, limits); white-box coverage analysis | BDD scenarios written from the customer's view; Playwright/Selenium end-to-end journeys; owner acceptance of the quote output |
 | **Static or dynamic** | Mostly static, plus dynamic unit tests | Dynamic |
 | **Example** | "infillPct 101 returns 400" matches the schema | "A maker can upload a part and understand the price breakdown" |
 
