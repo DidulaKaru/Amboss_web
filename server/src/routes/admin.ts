@@ -22,6 +22,10 @@ const loginAttempts = new Map<string, LoginAttempt>()
 const MAX_ATTEMPTS = 5
 const LOCKOUT_WINDOW_MS = 15 * 60 * 1000 // 15 minutes
 
+// bcrypt hash of a random throwaway string nobody knows. Compared against when the username is
+// wrong so both login paths take the same time (prevents username enumeration by timing).
+const DUMMY_HASH = '$2b$10$xmIhuW5YhEW4Co2CqSdWp.uVWGjIG/VKaZrVzUA4KxJ8b1Oa0Uqam'
+
 export const adminRoutes: FastifyPluginAsync = async (fastify) => {
   // Login Endpoint
   fastify.post(
@@ -63,7 +67,6 @@ export const adminRoutes: FastifyPluginAsync = async (fastify) => {
     const { username, password } = parseResult.data
 
     // Constant-time execution to prevent timing-based username enumeration
-    const DUMMY_HASH = '$2b$10$if6Vv4XeouWjfdqpIvQBIurozAOyjzN0hpoCNlVTnJJ4eyrFlDpMG'
     const isTargetUser = username === env.ADMIN_USERNAME
     const hashToTest = isTargetUser ? env.ADMIN_PASSWORD_HASH : DUMMY_HASH
     const passwordMatch = await bcrypt.compare(password, hashToTest)
