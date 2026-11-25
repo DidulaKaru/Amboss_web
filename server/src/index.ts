@@ -25,4 +25,8 @@ async function start() {
   }
 }
 
-start()
+// Failures before listen() (e.g. plugin registration) would otherwise be an unhandled rejection
+start().catch((err) => {
+  console.error(err)
+  process.exit(1)
+})

@@ -13,7 +13,7 @@ This directory houses the backend test suite executed with Vitest, leveraging Fa
 | `materials.test.ts`| `/api/v1/materials` | Returns active 7 Amboss additive manufacturing materials with densities and prices. |
 | `orders.test.ts` | `/api/v1/orders/*` | Validates cart quantities against inventory; generates formatted WhatsApp payloads for store and quote orders; tests free pickup and dynamic courier calculations. |
 | `products.test.ts`| `/api/v1/products` | Returns full maker catalog; filters by category; retrieves product by SKU. |
-| `quote.test.ts` | `/api/v1/quote/calculate` | Computes valid quote for 20mm calibration cube; verifies price updates with infill changes; tests build volume limits; enforces **250 LKR** minimum print threshold. |
+| `quote.test.ts` | `/api/v1/quote/calculate` | Computes valid quote for 20mm calibration cube; verifies price updates with infill changes; tests build volume limits; prices tiny parts from their cost components. |
 
 ---
 

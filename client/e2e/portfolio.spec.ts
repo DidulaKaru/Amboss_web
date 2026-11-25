@@ -59,6 +59,13 @@ test.describe('Projects Portfolio & News Removal Flow', () => {
     await falconCard.click()
     await expect(modal).toBeVisible()
     await page.getByRole('button', { name: 'Close project details' }).click()
+    await expect(page.locator('#lightbox-title')).toHaveCount(0)
+
+    // Clicking inside the panel keeps it open; clicking the backdrop closes it
+    await falconCard.click()
+    await page.locator('#lightbox-title').click()
+    await expect(page.locator('#lightbox-title')).toBeVisible()
+    await page.mouse.click(5, 5)
     await expect(modal).toHaveCount(0)
   })
 

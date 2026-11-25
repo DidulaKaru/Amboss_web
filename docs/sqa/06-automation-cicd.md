@@ -17,11 +17,11 @@
 
 ```bash
 # terminal 1: API in DB-isolated fallback mode
-cd server && DATABASE_URL=postgresql://qa:qa@127.0.0.1:1/none npx tsx src/index.ts
+cd server && DATABASE_URL=postgresql://qa:qa@127.0.0.1:1/none npm run dev
 # terminal 2: frontend
 npm run dev:client
 # terminal 3
-npm run test:selenium --workspace=client       # add HEADLESS=0 to watch the browser
+ADMIN_PASSWORD=<your local admin password> npm run test:selenium --workspace=client   # HEADLESS=0 to watch; SEL-04 is skipped without ADMIN_PASSWORD
 ```
 
 Screenshots of every test are saved automatically to `docs/sqa/evidence/selenium/`.
@@ -52,7 +52,7 @@ Import both into Postman to run them in the GUI.
 | 04 Security (OWASP) | TC-PM-16…22 | A01 access control, tampered JWT, A03 injection, A05 headers, A07 auth errors |
 | 05 Admin session | TC-PM-23…26 | Login → `/me` → logout → `/me` = 401 (cookie jar) |
 
-**Run:** `npx newman run docs/sqa/postman/amboss.postman_collection.json -e docs/sqa/postman/local.postman_environment.json`
+**Run:** `npm run test:api -- --env-var "adminPassword=<your local admin password>"`
 
 **Result:** 26 requests, **46 assertions, 0 failures**.
 
@@ -65,7 +65,7 @@ Import both into Postman to run them in the GUI.
 ```
                  ┌──────────────────────────────┐
   push / PR ───▶ │ validate                     │
-                 │  • npm ci                    │
+                 │  • npm ci --ignore-scripts   │
                  │  • ESLint                    │
                  │  • Vitest + coverage (lcov)  │
                  │  • Cucumber BDD              │
@@ -86,6 +86,8 @@ Import both into Postman to run them in the GUI.
 | api | `newman-report` (JUnit XML), server log |
 | e2e | `selenium-screenshots` |
 | sonar | results appear on the SonarCloud dashboard; the job is skipped with a notice if `SONAR_TOKEN` isn't set |
+
+**No stored credentials:** the `api` and `e2e` jobs generate a random admin password for each run and mask it in the logs. Vitest and Cucumber do the same. Dependencies are installed with `--ignore-scripts`, and the SonarCloud action is pinned to a commit SHA.
 
 **Fail-fast design:** `api`, `e2e` and `sonar` depend on `validate`. A failing unit test stops the slower jobs and saves CI minutes.
 

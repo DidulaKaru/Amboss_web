@@ -8,7 +8,7 @@ Feature: Admin login brute-force protection
     And I am connecting from IP "192.0.2.50"
 
   Scenario: Valid credentials open an admin session
-    When I log in as "Dory" with password "poplintu7577"
+    When I log in as "Dory" with the correct password
     Then the response status should be 200
     And a HttpOnly session cookie should be set
 
@@ -16,6 +16,6 @@ Feature: Admin login brute-force protection
     When I fail to log in 5 times
     Then the response status should be 401
     And the error message should contain "Access locked for 15 minutes"
-    When I log in as "Dory" with password "poplintu7577"
+    When I log in as "Dory" with the correct password
     Then the response status should be 429
     And the response should include a Retry-After header

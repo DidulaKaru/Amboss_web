@@ -305,7 +305,7 @@ Install Playwright in `client/`:
 npx playwright install --with-deps chromium
 ```
 * `hero-scroll.spec.ts`: Validates 3D canvas viewport rendering, navbar links, and initial scroll-triggered states.
-* `quote-flow.spec.ts`: Simulates navigating to the instant quote page, verifying STL dropzone upload, selecting material parameters, minimum print threshold validation (250 LKR), and WhatsApp quotation formatting.
+* `quote-flow.spec.ts`: Simulates navigating to the instant quote page, verifying STL dropzone upload, selecting material parameters, and WhatsApp quotation formatting.
 * `shop-checkout.spec.ts`: Tests browsing maker hardware, selecting variant dropdowns (LED colors, Jumper Cable pinouts), verifying discrete "In stock" indicators without raw stock exposure, adding items to cart, and confirming free pickup and courier fee logic.
 * `admin-cms.spec.ts`: Tests the discreet colophon `SYS / CTRL` link from About Us, authentication rejection on invalid credentials, successful login to Admin Dashboard, table display of real-time inventory, and secure logout.
 * `portfolio.spec.ts`: Validates dynamic photo grid rendering without rigid aspect ratios, lightbox modal inspection with ESC listeners, `/news` demolition and graceful redirect to `/projects`, and the Admin CMS portfolio management tab.
@@ -500,7 +500,7 @@ npx playwright install --with-deps chromium
 To prevent code duplication, configuration drift, and business logic divergence across the monorepo, every shared business value must have exactly one source of truth:
 
 1. **Logistics & Delivery Policies:**
-   - **Client:** `client/src/config/logistics.ts` defines `MINIMUM_PRINT_PRICE_LKR` (250), `LOGISTICS_CONFIG` (pickup locations, courier rates, Galle local delivery rules), `calculateCourierFee()`, and `calculateShopDeliveryFee()`.
+   - **Client:** `client/src/config/logistics.ts` defines `LOGISTICS_CONFIG` (pickup locations, courier rates, Galle local delivery rules), `calculateCourierFee()`, and `calculateShopDeliveryFee()`.
    - **Server:** `server/src/config/logistics.ts` mirrors these exact rules for order validation and WhatsApp payload generation.
 2. **Contact & Company Identity:**
    - `client/src/config/site.ts` defines official WhatsApp phone (`+94779902796`), email, social media links, and physical workshop coordinates in Galle.

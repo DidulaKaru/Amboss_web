@@ -3,7 +3,7 @@ import { buildApp } from '../src/app.js'
 import { resolveTrustProxy, env } from '../src/config/env.js'
 import { imageUrlSchema } from '../src/config/validation.js'
 import { INITIAL_PRODUCTS, INITIAL_PORTFOLIO_ITEMS } from '../src/db/seedData.js'
-import { adminCookie } from './helpers.js'
+import { adminCookie, adminCredentials } from './helpers.js'
 
 const QUOTE = {
   fileName: 'cube.stl',
@@ -76,7 +76,7 @@ describe('Rate limiting', () => {
         method: 'POST',
         url: '/api/v1/admin/login',
         remoteAddress: '192.0.2.50',
-        payload: { username: 'Dory', password: 'poplintu7577' },
+        payload: adminCredentials,
       })
       statuses.push(res.statusCode)
     }

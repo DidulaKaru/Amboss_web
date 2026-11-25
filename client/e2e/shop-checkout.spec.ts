@@ -49,4 +49,41 @@ test.describe('Maker Shop Browsing & Cart Flow', () => {
     await expect(drawer).toHaveCount(0)
     await expect(cartBtn).toBeFocused()
   })
+
+  test('checkout opens the shop WhatsApp with the server message and ignores any URL in the response', async ({ page }) => {
+    const messageText = 'Order: 2 x LED\nTotal: Rs 100 & 50% + "tax" ✓'
+
+    await page.route('**/api/v1/orders/validate-cart', (route) =>
+      route.fulfill({ json: { success: true, valid: true, errors: [], items: [] } })
+    )
+    await page.route('**/api/v1/orders/whatsapp-payload', (route) =>
+      route.fulfill({ json: { success: true, messageText, whatsappUrl: 'https://evil.example/phish' } })
+    )
+    const visited: string[] = []
+    for (const pattern of ['https://wa.me/**', 'https://evil.example/**']) {
+      await page.route(pattern, (route) => {
+        visited.push(route.request().url())
+        return route.fulfill({ body: 'stub' })
+      })
+    }
+
+    await page.goto('/shop')
+    await page.locator('button:has-text("Add to Cart")').first().click()
+    await page.locator('header button[aria-label^="Shopping cart"]').first().click()
+
+    // Delivery radios are named by title and price, and described by their note
+    const drawer = page.getByRole('dialog', { name: 'Cart' })
+    const courier = drawer.getByRole('radio', { name: /Islandwide Courier/ })
+    await courier.check()
+    await expect(courier).toBeChecked()
+    await expect(courier).toHaveAccessibleDescription(/.+/)
+
+    await page.locator('button:has-text("Order via WhatsApp")').first().click()
+    await page.waitForURL('https://wa.me/**')
+
+    expect(visited).toHaveLength(1)
+    const url = new URL(visited[0])
+    expect(url.pathname).toBe('/94779902796')
+    expect(url.searchParams.get('text')).toBe(messageText)
+  })
 })

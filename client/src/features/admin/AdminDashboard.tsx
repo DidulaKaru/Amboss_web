@@ -55,6 +55,7 @@ export default function AdminDashboard() {
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
   const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const [savingSku, setSavingSku] = useState<string | null>(null)
+  const [stockDrafts, setStockDrafts] = useState<Record<string, string>>({})
 
   // Product modal state
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -175,6 +176,22 @@ export default function AdminDashboard() {
   }, [fetchCatalog, fetchPortfolio])
 
   // Product Stock update helper
+  // Commit a typed stock value. The draft is kept apart from `products` so it can be compared with the
+  // saved stock, and is dropped afterwards so the input always falls back to the saved value.
+  const commitStockDraft = (sku: string, savedStock: number) => {
+    const draft = stockDrafts[sku]
+    if (draft === undefined) return
+    setStockDrafts((prev) => {
+      const next = { ...prev }
+      delete next[sku]
+      return next
+    })
+    const value = Number(draft)
+    if (draft.trim() !== '' && Number.isInteger(value) && value >= 0 && value !== savedStock) {
+      void handleStockUpdate(sku, value)
+    }
+  }
+
   const handleStockUpdate = async (sku: string, newStock: number) => {
     if (newStock < 0) return
     setSavingSku(sku)
@@ -721,24 +738,13 @@ export default function AdminDashboard() {
                                   type="number"
                                   min={0}
                                   disabled={isSaving}
-                                  value={currentStock}
+                                  value={stockDrafts[p.sku] ?? currentStock}
                                   aria-label={`Stock quantity for ${p.sku}`}
                                   onChange={(e) => {
-                                    const val = parseInt(e.target.value, 10)
-                                    if (!isNaN(val)) {
-                                      setProducts((prev) =>
-                                        prev.map((item) =>
-                                          item.sku === p.sku ? { ...item, stockQuantity: val } : item
-                                        )
-                                      )
-                                    }
+                                    const draft = e.target.value
+                                    setStockDrafts((prev) => ({ ...prev, [p.sku]: draft }))
                                   }}
-                                  onBlur={(e) => {
-                                    const val = parseInt(e.target.value, 10)
-                                    if (!isNaN(val) && val !== currentStock) {
-                                      handleStockUpdate(p.sku, val)
-                                    }
-                                  }}
+                                  onBlur={() => commitStockDraft(p.sku, currentStock)}
                                   onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                       e.currentTarget.blur()
@@ -1034,7 +1040,7 @@ export default function AdminDashboard() {
                     min={0}
                     required
                     value={formData.stockQuantity}
-                    onChange={(e) => setFormData({ ...formData, stockQuantity: parseInt(e.target.value, 10) || 0 })}
+                    onChange={(e) => setFormData({ ...formData, stockQuantity: Number.parseInt(e.target.value, 10) || 0 })}
                     className="w-full px-2.5 py-1.5 rounded border border-zinc-800 bg-zinc-950 text-zinc-100 focus:outline-none focus:border-cyan-500"
                   />
                 </div>

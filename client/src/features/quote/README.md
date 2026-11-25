@@ -16,7 +16,6 @@ This module provides an interactive client-side 3D CAD analysis, visualization, 
    - Evaluates material cost (gram price $\times$ estimated mass).
    - Evaluates machine runtime hourly cost based on print technology (FDM vs. SLA).
    - Adds fixed preparation & QA handling fee.
-   - Enforces a minimum manufacturing charge of **250 LKR** (`MINIMUM_PRINT_PRICE_LKR`).
 4. **Logistics & WhatsApp Payload Generation:**
    - Computes delivery options: Free pickup at Faculty of Engineering (University of Ruhuna) or Amboss Shop (Hapugala), or islandwide courier (500 LKR for 1st kg, +150 LKR/kg thereafter).
    - Generates a pre-formatted WhatsApp quote request directly to Amboss management.
@@ -43,9 +42,8 @@ quote/
 
 ## Single Source of Truth (SSOT) References
 
-- **Minimum Manufacturing Charge & Courier Rates:**
+- **Courier Rates:**
   Imported from [`client/src/config/logistics.ts`](file:///c:/Users/didul/Documents/GitHub/Amboss_web/client/src/config/logistics.ts):
-  - `MINIMUM_PRINT_PRICE_LKR = 250`
   - `calculateCourierFee(weightGrams: number)`
 - **Contact & WhatsApp Phone Number:**
   Imported from [`client/src/config/site.ts`](file:///c:/Users/didul/Documents/GitHub/Amboss_web/client/src/config/site.ts):

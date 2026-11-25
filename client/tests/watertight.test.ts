@@ -80,6 +80,16 @@ describe('BUG-03: watertight (closed-surface) check in parseSTL', () => {
     expect(parseSTL(toAscii(reversed)).isManifoldEstimate).toBe(true)
   })
 
+  it('an edge shared by three triangles is NOT valid', () => {
+    const fin: Tri = [0, 0, 0, 10, 0, 0, 5, -5, -5]
+    expect(parseSTL(toAscii([...cube, fin])).isManifoldEstimate).toBe(false)
+  })
+
+  it('treats 0 and -0 as the same corner', () => {
+    const negZero = cube.map((t, i) => (i % 2 ? t.map((n) => (n === 0 ? -0 : n)) : t) as Tri)
+    expect(parseSTL(toBinary(negZero)).isManifoldEstimate).toBe(true)
+  })
+
   it('an empty file is NOT valid', () => {
     expect(parseSTL(toAscii([])).isManifoldEstimate).toBe(false)
   })

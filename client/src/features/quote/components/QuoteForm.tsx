@@ -1,7 +1,7 @@
 import { useId, useState } from 'react'
 import type { STLParseResult } from '../utils/stlParser'
 import { MATERIALS, LAYER_HEIGHTS, INFILL_OPTIONS, type MaterialOption } from '../types'
-import { calculateQuote, calculateCourierFee, MINIMUM_PRINT_PRICE_LKR } from '../utils/pricing'
+import { calculateQuote, calculateCourierFee } from '../utils/pricing'
 import {
   MAX_QUANTITY,
   buildWhatsAppMessage,
@@ -61,8 +61,7 @@ export default function QuoteForm({
   const deliveryLabelId = `${uid}-delivery`
 
   const quote = calculateQuote(stlResult, selectedMaterial, infillPct, layerHeight)
-  const rawPrintTotal = quote.totalPriceLkr * quantity
-  const clientPrintSubtotal = Math.max(MINIMUM_PRINT_PRICE_LKR, rawPrintTotal)
+  const clientPrintSubtotal = quote.totalPriceLkr * quantity
   const totalWeightGrams = quote.estimatedGrams * quantity
 
   // The server figure is only valid for the exact options it priced
@@ -184,9 +183,6 @@ export default function QuoteForm({
               Select material and print options
             </p>
           </div>
-          <span className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-400">
-            Min print Rs 250
-          </span>
         </div>
 
         {/* Material Selection: Compact Grid */}

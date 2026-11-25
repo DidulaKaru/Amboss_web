@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { buildApp } from '../src/app.js'
 import { env } from '../src/config/env.js'
+import { adminCredentials } from './helpers.js'
 
 describe('Admin Authentication & CMS API', () => {
   it('rejects unauthenticated product mutations with 401 Unauthorized', async () => {
@@ -104,7 +105,7 @@ describe('Admin Authentication & CMS API', () => {
       url: '/api/v1/admin/login',
       payload: {
         username: 'Dory',
-        password: 'poplintu7577',
+        password: adminCredentials.password,
       },
     })
 
@@ -257,7 +258,7 @@ describe('Admin Authentication & CMS API', () => {
         url: '/api/v1/admin/login',
         payload: {
           username: 'Dory',
-          password: 'poplintu7577',
+          password: adminCredentials.password,
         },
       })
 

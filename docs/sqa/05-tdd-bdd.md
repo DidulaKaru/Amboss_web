@@ -16,13 +16,15 @@ The project is TypeScript, so we use **Vitest**, the TypeScript/Vite counterpart
 - `npm test`: all unit and integration tests
 - `npm run test:coverage`: the same, plus coverage reports in `client/coverage`, `server/coverage`
 
-**Current suite:** 165 Vitest tests. 163 pass; 2 are expected-fail markers for open defects BUG-01 and BUG-03. (After the TDD exercise in 5.2, BUG-03's marker is removed and 8 tests are added.)
+**Current suite:** 179 Vitest tests (84 client, 95 server), all passing. The `it.fails` markers used for BUG-01 and BUG-03 were removed when those tests passed.
 
 ## 5.2 TDD: Red → Green → Refactor (team exercise)
 
 > **[YOU]** Do these three steps yourselves as **three separate commits**, so the git history shows real TDD. Screenshot the terminal after steps 1 and 2.
 
 **Task:** fix **BUG-03** (REQ-Q-06): an open-surface STL is reported as a valid solid. This is a real defect we found, not a new feature, so it needs no business decision. `isManifoldEstimate` is not read by the UI today, so the fix changes no prices and does not reject any customer upload.
+
+**Status: done** in three commits: `daa5499` (RED), `f586600` (GREEN), `d3f36e9` (REFACTOR). The steps below are kept as the record of the exercise.
 
 **Rule to implement:** a mesh is a closed solid only if **every edge is shared by exactly two triangles**.
 
@@ -159,7 +161,9 @@ Run `npm test --workspace=client` and `npm run lint --workspace=client`: still g
 
 Commit: `refactor: extract closed-surface check into meshTopology`
 
-**Result:** BUG-03's expected-fail marker is gone (1 left: BUG-01), and the suite gains 8 passing tests. Update the defect log: BUG-03 → Fixed (note in [08-defects.md](08-defects.md)).
+**Result:** BUG-03's expected-fail marker is gone and the suite gained 8 passing tests.
+
+**Later optimisation:** the string-keyed maps made the check slow on very large uploads. They were replaced by typed-array hash tables. On a 980 000-triangle mesh the check went from about 2.5 s to 0.24 s, and old and new agreed on 20 000 random meshes. Two tests were added. This was only safe because the TDD tests already existed.
 
 > **Scope note:** this fixes the *detection*. Whether the quote page should warn or block the customer when `isManifoldEstimate` is false is a product decision for the shop owner. Do not add that without their approval.
 
@@ -182,7 +186,7 @@ Scenario: Account locks after 5 failed logins
   When I fail to log in 5 times
   Then the response status should be 401
   And the error message should contain "Access locked for 15 minutes"
-  When I log in as "Dory" with password "poplintu7577"
+  When I log in as "Dory" with the correct password
   Then the response status should be 429
   And the response should include a Retry-After header
 ```

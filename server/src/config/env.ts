@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { z } from 'zod'
 import dotenv from 'dotenv'
 
@@ -6,11 +7,10 @@ import dotenv from 'dotenv'
 if (process.env.NODE_ENV !== 'test') dotenv.config()
 
 /**
- * Development-only fallbacks. These values are public (they live in this repo), so they must
- * never be accepted in production; `assertProductionSecrets` enforces that at startup.
+ * Development-only fallback. It is public (it lives in this repo), so it must never be accepted in
+ * production; `assertProductionSecrets` enforces that at startup. There is deliberately no default
+ * admin password: without ADMIN_PASSWORD_HASH, admin login is disabled.
  */
-export const DEV_DEFAULT_ADMIN_PASSWORD_HASH =
-  '$2b$10$if6Vv4XeouWjfdqpIvQBIurozAOyjzN0hpoCNlVTnJJ4eyrFlDpMG'
 export const DEV_DEFAULT_JWT_SECRET = 'amboss-industrial-jwt-secret-key-super-secure'
 
 /** Placeholders from server/.env.example that must also be rejected. */
@@ -19,7 +19,14 @@ const PLACEHOLDER_VALUES = new Set([
   'replace-with-bcrypt-hash',
 ])
 
+/** SHA-256 of admin hashes that were once committed to this public repo and must never be used again. */
+const LEAKED_ADMIN_HASH_FINGERPRINTS = new Set([
+  '898c021825f4f46d0decafa359cf670f5286cafc91b1ba76017788ee86d17373',
+])
+
 export const MIN_JWT_SECRET_LENGTH = 32
+
+const sha256 = (value: string): string => createHash('sha256').update(value).digest('hex')
 
 const envSchema = z.object({
   PORT: z.coerce.number().default(4000),
@@ -29,7 +36,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   CORS_ORIGIN: z.string().default('https://amboss.lk,https://www.amboss.lk'),
   ADMIN_USERNAME: z.string().default('Dory'),
-  ADMIN_PASSWORD_HASH: z.string().default(DEV_DEFAULT_ADMIN_PASSWORD_HASH),
+  ADMIN_PASSWORD_HASH: z.string().default(''),
   // Number of reverse-proxy hops to trust for X-Forwarded-For (0 = trust none).
   // Defaults to 1 in production (single load balancer), 0 elsewhere.
   TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(10).optional(),
@@ -51,7 +58,7 @@ export function assertProductionSecrets(
   const problems: string[] = []
 
   const hash = config.ADMIN_PASSWORD_HASH
-  if (hash === DEV_DEFAULT_ADMIN_PASSWORD_HASH || PLACEHOLDER_VALUES.has(hash)) {
+  if (hash === '' || PLACEHOLDER_VALUES.has(hash) || LEAKED_ADMIN_HASH_FINGERPRINTS.has(sha256(hash))) {
     problems.push('ADMIN_PASSWORD_HASH is unset or a public default; set a new bcrypt hash')
   } else if (!/^\$2[aby]\$\d{2}\$.{53}$/.test(hash)) {
     problems.push('ADMIN_PASSWORD_HASH is not a valid bcrypt hash')

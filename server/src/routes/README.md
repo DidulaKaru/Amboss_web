@@ -30,7 +30,7 @@ This directory houses the Fastify REST route plugins organized by business domai
 ### 4. Quotes (`quote.ts`)
 - `POST /api/v1/quote/calculate`
   - Validates model metrics (volume, surface area, bounding box), selected material, and infill parameters.
-  - Returns itemized pricing in LKR enforcing the **250 LKR** minimum print threshold.
+  - Returns itemized pricing in LKR.
 
 ### 5. Orders (`orders.ts`)
 - `POST /api/v1/orders/validate-cart`

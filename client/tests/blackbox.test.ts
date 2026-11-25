@@ -6,7 +6,6 @@ import { describe, it, expect } from 'vitest'
 import {
   calculateCourierFee,
   calculateShopDeliveryFee,
-  MINIMUM_PRINT_PRICE_LKR,
   LOGISTICS_CONFIG,
   type DeliveryMethodId,
 } from '../src/config/logistics'
@@ -74,18 +73,18 @@ describe('EP — delivery method (one representative per partition)', () => {
   })
 })
 
-describe('BVA — minimum print price clamp (250 LKR)', () => {
-  // BUG-01 (docs/sqa/08-defects.md): the 250 LKR minimum is unreachable because the
-  // handling fee alone is 250 and machine time is at least 0.5 h × 160 = 80 LKR,
-  // so the cheapest possible quote is 450 LKR. Remove `.fails` once BUG-01 is fixed.
-  it.fails('TC-BB-18: a tiny part is clamped down to the minimum price [BUG-01]', () => {
+describe('BVA — lowest print price', () => {
+  // BUG-01 (docs/sqa/08-defects.md): the advertised 250 LKR minimum could never apply, so it was removed.
+  // The lowest price now follows only from the billable floors: 6 g × 20 + 0.5 h × 160 + 250 handling.
+  it('TC-BB-18: a tiny part costs material + machine + handling, with no separate minimum [BUG-01]', () => {
     const q = calculateQuote(stl(0.01, 0.1, 2), PLA, 20, 0.2)
-    expect(q.totalPriceLkr).toBe(MINIMUM_PRINT_PRICE_LKR)
+    expect(q.totalPriceLkr).toBe(q.materialCostLkr + q.machineTimeCostLkr + q.handlingFeeLkr)
+    expect(q.totalPriceLkr).toBe(450)
   })
 
-  it('TC-BB-19: a large part is charged above the minimum', () => {
+  it('TC-BB-19: a large part costs more than the tiny part', () => {
     const q = calculateQuote(stl(100, 200, 80), PLA, 20, 0.2)
-    expect(q.totalPriceLkr).toBeGreaterThan(MINIMUM_PRINT_PRICE_LKR)
+    expect(q.totalPriceLkr).toBeGreaterThan(450)
   })
 })
 

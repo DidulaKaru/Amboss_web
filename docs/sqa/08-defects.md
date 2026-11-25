@@ -25,14 +25,18 @@
 
 Every defect below was found during this SQA exercise and is backed by an automated test or a reproducible command.
 
-| ID | Title | Found by | Severity | Priority | Status |
-|---|---|---|---|---|---|
-| BUG-01 | Minimum print price (250 LKR) can never apply; cheapest quote is 450 LKR | BVA: TC-BB-18 | Minor | P3 | New |
-| BUG-02 | `/health` reports `database: available` when the DB is unreachable | Exploratory API testing | Major | P2 | New |
-| BUG-03 | Open or non-watertight STL gets a non-zero volume and is priced as valid | Selenium SEL-02 screenshot, then EP TC-BB-23 | Major | P2 | **Fixed** in `d3f36e9` commit |
-| BUG-04 | Public default JWT secret and admin password hash are used, with no fail-fast | OWASP A02/A07 manual check | **Critical** | **P1** | **Fixed** in `df4d5b6` (production start guard in `env.ts`); secrets rotated in production |
-| BUG-05 | Stale E2E assertion (hero heading) made CI red on `dev` | CI run #44356632231, then a local Playwright run | Minor (test defect) | P1 (blocks pipeline) | **Fixed**: `client/e2e/hero-scroll.spec.ts` updated |
-| OBS-01 | No fast-fail when Postgres is down; requests hang up to 15 s | Newman timings, JMeter run B | Major | P2 | New |
+| ID | Title | Found by | Severity | Priority | Status | Issue |
+|---|---|---|---|---|---|---|
+| BUG-01 | Minimum print price (250 LKR) can never apply; cheapest quote is 450 LKR | BVA: TC-BB-18 | Minor | P3 | **Fix ready**, not merged: minimum removed | [#6](https://github.com/DidulaKaru/Amboss_web/issues/6) |
+| BUG-02 | `/health` reports `database: available` when the DB is unreachable | Exploratory API testing | Major | P2 | New | [#7](https://github.com/DidulaKaru/Amboss_web/issues/7) |
+| BUG-03 | Open or non-watertight STL gets a non-zero volume and is priced as valid | Selenium SEL-02 screenshot, then EP TC-BB-23 | Major | P2 | **Detection fixed** in `d3f36e9`; the quote page does not use it yet | [#8](https://github.com/DidulaKaru/Amboss_web/issues/8) |
+| BUG-04 | Public default JWT secret and admin password hash are used, with no fail-fast | OWASP A02/A07 manual check | **Critical** | **P1** | **Fixed** in `df4d5b6` (production start guard in `env.ts`); secrets rotated in production | [#9](https://github.com/DidulaKaru/Amboss_web/issues/9) |
+| BUG-05 | Stale E2E assertion (hero heading) made CI red on `dev` | CI run #44356632231, then a local Playwright run | Minor (test defect) | P1 (blocks pipeline) | **Fixed**: `client/e2e/hero-scroll.spec.ts` updated | – |
+| BUG-06 | Stock quantity typed in the admin dashboard is never saved | Code review while fixing SonarCloud findings | Major | P2 | **Fix ready**, not merged | [#10](https://github.com/DidulaKaru/Amboss_web/issues/10) |
+| BUG-07 | `/shop`, `/quote` and `/projects` return HTTP 404 on the live site | Lighthouse | Major | P2 | New | [#11](https://github.com/DidulaKaru/Amboss_web/issues/11) |
+| OBS-01 | No fast-fail when Postgres is down; requests hang up to 15 s | Newman timings, JMeter run B | Major | P2 | New | – |
+
+SonarCloud findings are covered in [09-metrics-sonarqube.md](09-metrics-sonarqube.md).
 
 ### BUG-01: Minimum print price is unreachable
 - **Steps:** call `calculateQuote()` with a tiny part (0.01 cm³, PLA+, 20% infill, 0.2 mm). Or upload any tiny STL on `/quote`.
@@ -43,7 +47,8 @@ Every defect below was found during this SQA exercise and is backed by an automa
   - Machine time is at least 0.5 h × 160 = 80 LKR.
   - Material is at least 6 g × 20 = 120 LKR.
   - So `Math.max(250, raw)` never chooses 250.
-- **Evidence:** `client/tests/blackbox.test.ts` TC-BB-18 (`it.fails`).
+- **Evidence:** `client/tests/blackbox.test.ts` TC-BB-18 (was `it.fails` until the fix).
+- **Fix:** the shop owner chose to remove the minimum. The constant, the clamp (client and server), the "Min print Rs 250" label and the WhatsApp note are gone. 31 360 old and new prices were compared, and all were identical.
 - **Note:** statement and branch coverage on `pricing.ts` is 100%, yet coverage did not reveal this. Only BVA did, because `Math.max` is not counted as a branch.
 
 ### BUG-02: Health check misreports database status
@@ -60,6 +65,8 @@ Every defect below was found during this SQA exercise and is backed by an automa
   - The divergence-theorem volume is only valid for closed meshes. For an open surface it depends on the distance from the origin.
   - `isManifoldEstimate` is just `volume > 0.001`, not an edge-manifold check.
 - **Evidence:** `client/tests/blackbox.test.ts` TC-BB-23/24, `evidence/selenium/SEL-02_*.png`.
+- **Fix:** `isManifoldEstimate` now requires every edge to be shared by exactly two triangles (TDD, [05 §5.2](05-tdd-bdd.md)).
+- **Still open:** the quote page does not read this value, so an open mesh is still priced. Warning or blocking the customer is a shop-owner decision.
 
 ### BUG-04: Known default secrets (Critical)
 - **Steps:**
@@ -69,12 +76,13 @@ Every defect below was found during this SQA exercise and is backed by an automa
 - **Expected:** 401.
 - **Actual:** 200, with full admin access.
 - **Additional findings:**
-  - The local `.env` uses exactly the public default `JWT_SECRET` and `ADMIN_PASSWORD_HASH`.
-  - The plaintext admin password appears in `server/tests/helpers.ts` and the e2e specs, in a **public** repository.
+  - The local `.env` used exactly the public default `JWT_SECRET` and `ADMIN_PASSWORD_HASH`.
+  - The plaintext admin password appeared in `server/tests/helpers.ts` and the e2e specs, in a **public** repository.
 - **Fix (done):** commit `df4d5b6` + production secrets rotated. Original proposal:
   - In `env.ts`, refuse to start when `NODE_ENV=production` and `JWT_SECRET` or `ADMIN_PASSWORD_HASH` is missing or equals the default.
   - Rotate both secrets in the hosting environment.
   - Read test credentials from environment variables.
+- **Follow-up:** the default admin hash and the test password are removed from the code. Tests and CI generate throwaway credentials. The guard also rejects the leaked hash by its fingerprint.
 - ⚠ **Do not** test this against the live site. It was verified only against local servers.
 
 ### BUG-05: Stale E2E test broke the pipeline
@@ -84,6 +92,21 @@ Every defect below was found during this SQA exercise and is backed by an automa
   - The commit was pushed anyway.
 - **Root cause:** UI copy changed without running the E2E suite locally; nothing required CI to be green before continuing.
 - **Fix:** assertion updated. Preventive action: make CI a required status check on `main` (branch protection).
+
+### BUG-06: Typed stock quantity is never saved
+- **Steps:** in the admin dashboard, type a new stock quantity and press Enter or leave the field. Reload.
+- **Expected:** the new quantity is saved.
+- **Actual:** no request is sent, and the old quantity returns. The + and − buttons do save.
+- **Root cause:** typing overwrote the product's stock in memory. The save step then compared the typed value with that overwritten value, saw no change and did nothing.
+- **Fix:** the typed text is kept as a separate draft and compared with the saved stock. A failed save now shows the stored value again.
+- **Evidence:** `client/e2e/admin-cms.spec.ts` (BUG-06) fails on the old code and passes on the new code.
+
+### BUG-07: Live pages return HTTP 404
+- **Steps:** request `https://amboss.lk/shop` and read the status code.
+- **Expected:** 200.
+- **Actual:** 404. The body is the app, so visitors see a working page, but search engines may drop it. `sitemap.xml` lists `/shop` and `/quote`.
+- **Likely cause (not confirmed):** the host serves the generated `404.html` (a copy of `index.html`) instead of applying the `/* /index.html 200` rule in `_redirects`.
+- **Evidence:** Lighthouse `ERRORED_DOCUMENT_REQUEST`, status 404; [07 §7.3](07-perf-security-usability.md).
 
 ### OBS-01: No circuit breaker for database outages
 With the DB unreachable, requests that miss the cache wait for `connect_timeout` (15 s):
@@ -147,12 +170,12 @@ if (dims.x <= 211 && dims.y <= 118 && dims.z <= 220)
 
 ## 8.4 Bug lifecycle (BUG-01)
 
-Checklist to follow on GitHub, screenshotting each step:
+Tracked in [#6](https://github.com/DidulaKaru/Amboss_web/issues/6). Screenshot each step:
 
-1. **New:** file BUG-01 from the template. Labels: `bug`, `severity:minor`, `priority:P3`, `status:new`.
-2. **Assigned:** assign a team member; move the card to Assigned; label `status:assigned`.
-3. **Fixed:** branch `fix/bug-01-min-price` → change the code → remove `.fails` from TC-BB-18 → open a PR with "Fixes #N" → CI green → merge.
+1. **New:** issue filed with labels `bug`, `severity:minor`, `priority:P3`. Done.
+2. **Assigned:** triaged and assigned; label `status:assigned`. Done. Move the card once the Projects board exists.
+3. **Fixed:** the minimum is removed and TC-BB-18 rewritten. Open a PR to `main` with "Fixes #6" → CI green → merge → label `status:fixed`.
 4. **Verified:** a tester re-runs `npm test --workspace=client` and the quote page, then comments with the result and a screenshot. Label `status:verified`.
 5. **Closed:** the issue closes automatically on merge (or manually after verification). Screenshot the full issue timeline.
 
-> **Shop-owner decision needed (do not change prices without it):** this fix changes what real customers are charged, or what the quote page promises. Ask the owner which is intended. Should 250 LKR be the minimum *including* handling (then clamp the total and drop the separate handling line for tiny parts)? Or should the minimum apply to material + machine only (then clamp before adding handling)? Or should the "Min print Rs 250" label be removed?
+> **Shop-owner decision:** remove the minimum print price. The alternatives were to clamp the total including handling, or to clamp material and machine time only. Both would have changed customer prices; removal changes none.

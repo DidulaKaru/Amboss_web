@@ -16,8 +16,8 @@ async function login(world: AmbossWorld, username: string, password: string) {
   })
 }
 
-When('I log in as {string} with password {string}', async function (this: AmbossWorld, u: string, p: string) {
-  await login(this, u, p)
+When('I log in as {string} with the correct password', async function (this: AmbossWorld, u: string) {
+  await login(this, u, process.env.ADMIN_TEST_PASSWORD ?? '')
 })
 
 When('I fail to log in {int} times', async function (this: AmbossWorld, n: number) {

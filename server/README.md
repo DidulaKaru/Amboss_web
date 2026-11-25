@@ -8,7 +8,6 @@ This directory houses the Fastify REST API, PostgreSQL database layer (Drizzle O
 
 1. **Deterministic 3D Print Quoting:**
    - Evaluates part geometries, material costs, machine runtimes, and preparation QA fees.
-   - Enforces the **250 LKR** minimum order policy.
 2. **Maker Store Inventory API:**
    - Serves maker hardware catalog with categories and real-time stock levels.
    - Provides live cart stock validation before WhatsApp order redirection.

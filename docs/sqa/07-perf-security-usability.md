@@ -63,18 +63,18 @@ All checks were run **only against local servers**. Reproducible with curl or wi
 | **A01 Broken Access Control** | Admin endpoints without a cookie | `curl localhost:4000/api/v1/admin/me` | 401 ✔ |
 | A01 | Mutation without auth | `curl -X POST …/api/v1/products -d '{}'` | 401 ✔ |
 | A01 | Tampered JWT (bad signature) | Cookie `amboss_admin_token=<header>.<payload>.tampered` | 401 ✔ |
-| **A02 Cryptographic Failures / A07 Identification & Authentication Failures** | **Forged JWT with the default secret** | Sign `{role:'admin'}` with the secret hard-coded in `env.ts`, then call `/admin/me` | **200: full admin access ✘ BUG-04 (Critical)** |
+| **A02 Cryptographic Failures / A07 Identification & Authentication Failures** | **Forged JWT with the default secret** | Sign `{role:'admin'}` with the secret hard-coded in `env.ts`, then call `/admin/me` | First run: **200, full admin access ✘ BUG-04 (Critical)**. Re-test: the server refuses to start with it ✔ |
 | A07 | Brute force | 5 wrong passwords | 5th → 401 "locked", 6th → 429 + Retry-After ✔ |
-| A07 | Username enumeration | Wrong user vs wrong password | Identical message; constant-time bcrypt against a dummy hash ✔ |
+| A07 | Username enumeration | Wrong user vs wrong password | Identical message; the same bcrypt comparison runs for every username ✔ |
 | A07 | Session cookie flags | Inspect `Set-Cookie` | `HttpOnly`; `Secure` + `SameSite=None` in production ✔ |
 | A07 | Logout invalidates the session | login → logout → `/me` | 401 ✔ (cookie cleared; the JWT itself remains valid until expiry, a stateless-JWT limitation) |
 | **A03 Injection** | SQL injection in a path parameter | `GET /api/v1/products/x' OR 1=1--` | 404, no SQL error leaked ✔ (Drizzle parameterises queries) |
 | A03 | Oversized and malformed input | Long strings, wrong types | 400 via Zod `max()` / type checks ✔ |
 | **A05 Security Misconfiguration** | Security headers | `curl -I /health` | HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, COOP/CORP present; no X-Powered-By ✔ |
 | A05 | Error detail leakage | Force a 500 | Generic message ✔ (`security.test.ts`) |
-| A05 | **Insecure defaults** | `env.ts` defaults for `JWT_SECRET`, `ADMIN_PASSWORD_HASH` | **App starts in production with public defaults ✘ BUG-04** |
+| A05 | **Insecure defaults** | `env.ts` defaults for `JWT_SECRET`, `ADMIN_PASSWORD_HASH` | First run: **app starts with public defaults ✘ BUG-04**. Re-test: startup error ✔ |
 
-### BUG-04 proof of concept (local only)
+### BUG-04 proof of concept (local only, before the fix)
 
 ```bash
 # Server started from repo root (no .env) on :4002 with NODE_ENV=production
@@ -86,38 +86,37 @@ curl localhost:4002/api/v1/admin/me -H "cookie: amboss_admin_token=$TOKEN"
 # → 200 {"success":true,"user":{"username":"Dory","role":"admin",...}}
 ```
 
-The local development `.env` uses the same public values, and the repository is public. Remediation: see [08-defects.md](08-defects.md#bug-04-known-default-secrets-critical).
+At the time, the local `.env` used the same public values, and the repository is public. Both are fixed. Remediation: see [08-defects.md](08-defects.md#bug-04-known-default-secrets-critical).
 
-## 7.3 Usability **[YOU]**
+## 7.3 Usability
 
 ### Lighthouse
-In Chrome DevTools → Lighthouse, run "Navigation, Desktop" on `/`, `/quote` and `/shop`. Record the scores:
+Lighthouse 12.8.2 was run on the live site, amboss.lk, on 25 Nov 2026 (desktop preset, headless Chrome). Each score is the median of 3 runs.
 
 | Page | Performance | Accessibility | Best practices | SEO |
 |---|---|---|---|---|
-| `/` | | | | |
-| `/quote` | | | | |
-| `/shop` | | | | |
+| `/` | 90 | 98 | 96 | 92 |
+| `/quote` | 97 | 100 | 96 | 85 |
+| `/shop` | 85 | 98 | 96 | 85 |
 
-### Nielsen heuristic evaluation
-Have 2–3 users who don't know the system complete the tasks below. Note problems and give each a severity from 0 to 4.
-
-**Tasks**
-- **T1:** Get a price for a 3D model. Use the test STL from SEL-02, or download any STL.
-- **T2:** Buy two Arduino boards with courier delivery.
-- **T3:** Find out how much delivery to Galle costs for a 2500 LKR order.
-
-| # | Heuristic | What to look at in Amboss | Finding | Severity (0–4) |
+| Page | First contentful paint | Largest contentful paint | Total blocking time | Layout shift |
 |---|---|---|---|---|
-| H1 | Visibility of system status | Upload progress and parse feedback on `/quote`; "added to cart" toast | | |
-| H2 | Match with the real world | LKR currency, "infill" and "layer height" jargon for non-makers | | |
-| H3 | User control and freedom | "Upload different file"; remove items from the cart; Escape closes the drawer | | |
-| H4 | Consistency and standards | Button styles; pickup option names the same in quote and shop | | |
-| H5 | Error prevention | Out-of-stock items disabled; invalid STL warning (see **BUG-03**) | | |
-| H6 | Recognition rather than recall | Price breakdown visible next to the options | | |
-| H7 | Flexibility and efficiency | Keyboard navigation; preset infill buttons | | |
-| H8 | Aesthetic and minimalist design | Dark industrial theme; information density | | |
-| H9 | Help users recover from errors | STL parse-error banner text | | |
-| H10 | Help and documentation | Disclaimer "Automated estimate"; contact via WhatsApp | | |
+| `/` | 0.8 s | 1.8 s | 0 ms | 0 |
+| `/quote` | 0.8 s | 1.1 s | 0 ms | 0 |
+| `/shop` | 1.0 s | 2.5 s | 0 ms | 0 |
 
-Already observed: "Min print Rs 250" is shown on the quote page, but no quote can ever cost 250 (BUG-01). That violates H2 and H4: the label sets an expectation the system never meets.
+Lighthouse first refused to score `/quote` and `/shop`, because the live site returns HTTP 404 for them (BUG-07). They were scored with `--ignore-status-code`.
+
+**Findings**
+
+| Finding | Pages | Effect | Action |
+|---|---|---|---|
+| The page is returned with HTTP status 404 | `/quote`, `/shop` | SEO; search engines may not index the pages | [BUG-07](08-defects.md) |
+| `robots.txt` has an unknown directive, `Content-Signal` | All | SEO score only | Added by Cloudflare's managed `robots.txt`, not by our file |
+| 401 logged in the browser console | All | Best practices | Every visitor's browser checks `/admin/me`. Run that check only on admin pages |
+| Heading levels are skipped | `/`, `/shop` | Accessibility | Correct the heading order |
+| Largest contentful paint is 2.5 s | `/shop` | Performance | Review how the product images load |
+
+**Interpretation:** there is no blocking time or layout shift, so the pages respond quickly and do not jump while loading. `/shop` is the slowest page.
+
+📸 *Evidence: full reports in `evidence/lighthouse/`. Open the HTML files in a browser to screenshot them.*

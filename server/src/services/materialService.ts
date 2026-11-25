@@ -29,8 +29,8 @@ export async function resolveMaterial(
           id: rows[0].id,
           name: rows[0].name,
           type: rows[0].type,
-          densityGPerCm3: parseFloat(rows[0].densityGPerCm3),
-          costPerGramLkr: parseFloat(rows[0].costPerGramLkr),
+          densityGPerCm3: Number.parseFloat(rows[0].densityGPerCm3),
+          costPerGramLkr: Number.parseFloat(rows[0].costPerGramLkr),
           requiresEnclosure: rows[0].requiresEnclosure,
         }
       }
@@ -45,8 +45,8 @@ export async function resolveMaterial(
     id: fallback.slug,
     name: fallback.name,
     type: fallback.type,
-    densityGPerCm3: parseFloat(fallback.densityGPerCm3),
-    costPerGramLkr: parseFloat(fallback.costPerGramLkr),
+    densityGPerCm3: Number.parseFloat(fallback.densityGPerCm3),
+    costPerGramLkr: Number.parseFloat(fallback.costPerGramLkr),
     requiresEnclosure: fallback.requiresEnclosure,
   }
 }

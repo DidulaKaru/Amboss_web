@@ -96,7 +96,7 @@ describe('Quote Calculation API', () => {
     await app.close()
   })
 
-  it('enforces minimum print price of 250 LKR', async () => {
+  it('prices a tiny part from its cost components only (no minimum price)', async () => {
     const app = await buildApp()
     const response = await app.inject({
       method: 'POST',
@@ -116,8 +116,9 @@ describe('Quote Calculation API', () => {
     expect(response.statusCode).toBe(200)
     const json = response.json()
     expect(json.success).toBe(true)
-    expect(json.pricing.unitPriceLkr).toBeGreaterThanOrEqual(250)
-    expect(json.pricing.totalPriceLkr).toBeGreaterThanOrEqual(250)
+    const { materialCostLkr, machineCostLkr, handlingCostLkr, unitPriceLkr, totalPriceLkr } = json.pricing
+    expect(unitPriceLkr).toBe(materialCostLkr + machineCostLkr + handlingCostLkr)
+    expect(totalPriceLkr).toBe(unitPriceLkr)
     await app.close()
   })
 })

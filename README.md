@@ -47,7 +47,6 @@ Amboss_web/
    - Instant client-side STL analysis via signed tetrahedron divergence theorem inside a Web Worker.
    - Interactive Three.js CAD viewport with auto-centering, wireframe toggles, and dimension bounding boxes.
    - Material parameter presets (PLA+, PETG, ABS, TPU, PETG-CF, Nylon PA12, SLA Standard Resin).
-   - Enforces a minimum manufacturing charge of **250 LKR**.
 
 2. **Maker Hardware Catalog & Smart Cart (`/shop`):**
    - Microcontrollers, sensors, actuators, and prototyping components with real-time stock validation.

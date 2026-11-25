@@ -1,11 +1,8 @@
 import type { MaterialOption, QuoteCalculationResult } from '../types'
 import type { STLParseResult } from './stlParser'
-import {
-  MINIMUM_PRINT_PRICE_LKR,
-  calculateCourierFee,
-} from '../../../config/logistics'
+import { calculateCourierFee } from '../../../config/logistics'
 
-export { MINIMUM_PRINT_PRICE_LKR, calculateCourierFee }
+export { calculateCourierFee }
 
 /**
  * Computes deterministic 3D printing quotation in LKR based on divergence-theorem volume,
@@ -51,9 +48,8 @@ export function calculateQuote(
   // 4. Handling & Post-processing fee
   const handlingFeeLkr = material.type === 'SLA' ? 350 : 250 // SLA requires alcohol wash & UV cure
 
-  // 5. Total Price (Minimum print is 250 LKR)
-  const rawPrice = materialCostLkr + machineTimeCostLkr + handlingFeeLkr
-  const totalPriceLkr = Math.max(MINIMUM_PRINT_PRICE_LKR, rawPrice)
+  // 5. Total Price
+  const totalPriceLkr = materialCostLkr + machineTimeCostLkr + handlingFeeLkr
 
   // 6. Build Envelope & Printer Routing
   const maxDim = Math.max(

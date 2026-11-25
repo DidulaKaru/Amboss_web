@@ -11,7 +11,7 @@ This directory houses the headless Vitest test suites for the Amboss client fron
 | `adminAuth.test.ts` | Admin CMS State & Filters | Inventory metric counts (total, in stock, low stock <10, depleted), search and category filtering, non-negative stock guards, and localStorage session token handling. |
 | `cart.test.ts` | Maker Store Cart & Logistics | Cart additions, subtotal calculation, free campus/shop pickup, Galle local threshold (free >3,000 LKR), and courier rates (500 LKR flat for electronics). |
 | `groupProducts.test.ts` | Variant Grouping Algorithm | Grouping separate SKUs into unified cards (Red/Green LEDs; M-M, M-F, F-F Jumper Cables), variant label extraction, and un-grouped pass-through. |
-| `pricing.test.ts` | 3D Print Pricing & Mass Engine | Effective mass estimation via shell + infill, deterministic LKR pricing, enforcement of the **250 LKR** minimum print threshold, and dynamic courier weight tiers (500 1st kg, +150/kg thereafter). |
+| `pricing.test.ts` | 3D Print Pricing & Mass Engine | Effective mass estimation via shell + infill, deterministic LKR pricing, and dynamic courier weight tiers (500 1st kg, +150/kg thereafter). |
 | `stlParser.test.ts` | STL Binary Geometry Parsing | Signed tetrahedron volume computation using the divergence theorem, unit cube verification ($20\times 20\times 20\,\text{mm} = 8.00\,\text{cm}^3$). |
 
 ---

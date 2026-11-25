@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Amboss API — SQA Test Suite",
-    "description": "API automation for SQA section 3.6. Run with: npx newman run docs/sqa/postman/amboss.postman_collection.json -e docs/sqa/postman/local.postman_environment.json",
+    "description": "API automation for SQA section 3.6. Run with: npm run test:api -- --env-var adminPassword=<your local admin password>",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -645,6 +645,17 @@
           "name": "TC-PM-18 A01 tampered JWT",
           "event": [
             {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Well-formed header and payload with an invalid signature, built here so no JWT is stored in the repo",
+                  "const part = (o) => btoa(JSON.stringify(o)).replace(/=+$/, '');",
+                  "pm.variables.set('badJwt', [part({ alg: 'HS256' }), part({ role: 'admin' }), 'tampered'].join('.'));"
+                ]
+              }
+            },
+            {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
@@ -659,7 +670,7 @@
             "header": [
               {
                 "key": "Cookie",
-                "value": "amboss_admin_token=eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.tampered"
+                "value": "amboss_admin_token={{badJwt}}"
               }
             ],
             "url": {
