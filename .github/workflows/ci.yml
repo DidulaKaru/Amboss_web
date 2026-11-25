@@ -158,9 +158,16 @@ jobs:
         with:
           name: coverage
 
+      # Vitest writes lcov paths relative to each workspace (SF:src/App.tsx). Sonar resolves them from
+      # the repo root, so prefix them or no file matches and coverage stays empty.
+      - name: Make lcov paths repo-root relative
+        run: |
+          sed -i 's#^SF:#SF:client/#' client/coverage/lcov.info
+          sed -i 's#^SF:#SF:server/#' server/coverage/lcov.info
+
       - name: SonarCloud Scan
         if: ${{ env.SONAR_TOKEN != '' }}
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
