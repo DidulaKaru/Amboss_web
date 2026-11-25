@@ -91,32 +91,34 @@ At the time, the local `.env` used the same public values, and the repository is
 ## 7.3 Usability
 
 ### Lighthouse
-Lighthouse 12.8.2 was run on the live site, amboss.lk, on 25 Nov 2026 (desktop preset, headless Chrome). Each score is the median of 3 runs.
+Lighthouse 12.8.2 was run on the live site, amboss.lk, on 25 Nov 2026 (desktop preset, headless Chrome). Scores are medians, measured after the BUG-07 fix was deployed (8 runs of `/`, 3 runs each of the others).
 
-| Page | Performance | Accessibility | Best practices | SEO |
+| Page | Performance | Accessibility | Best practices | SEO (before → after BUG-07) |
 |---|---|---|---|---|
 | `/` | 90 | 98 | 96 | 92 |
-| `/quote` | 97 | 100 | 96 | 85 |
-| `/shop` | 85 | 98 | 96 | 85 |
+| `/quote` | 98 | 100 | 96 | 85 → **92** |
+| `/shop` | 82 | 98 | 96 | 85 → **92** |
 
 | Page | First contentful paint | Largest contentful paint | Total blocking time | Layout shift |
 |---|---|---|---|---|
-| `/` | 0.8 s | 1.8 s | 0 ms | 0 |
+| `/` | 0.8 s | 1.7 s | 16 ms | 0 |
 | `/quote` | 0.8 s | 1.1 s | 0 ms | 0 |
-| `/shop` | 1.0 s | 2.5 s | 0 ms | 0 |
+| `/shop` | 1.2 s | 2.7 s | 0 ms | 0 |
 
-Lighthouse first refused to score `/quote` and `/shop`, because the live site returns HTTP 404 for them (BUG-07). They were scored with `--ignore-status-code`.
+In the first session, Lighthouse refused to score `/quote` and `/shop`, because the live site returned HTTP 404 for them (BUG-07). They could only be scored with `--ignore-status-code`. After the fix they return 200 and are scored normally.
+
+**Measurement note:** three runs (two of `/`, one of `/shop`) scored 55 to 61 for Performance because the test machine's connection stalled: Lighthouse measured a network round trip of 0.9 to 3.1 s, against about 0.1 s normally. No run was discarded; the median limits their effect.
 
 **Findings**
 
 | Finding | Pages | Effect | Action |
 |---|---|---|---|
-| The page is returned with HTTP status 404 | `/quote`, `/shop` | SEO; search engines may not index the pages | [BUG-07](08-defects.md): fix ready, re-run after deploying |
+| The page is returned with HTTP status 404 | `/quote`, `/shop` | SEO; search engines may not index the pages | [BUG-07](08-defects.md): **fixed**, confirmed live |
 | `robots.txt` has an unknown directive, `Content-Signal` | All | SEO score only | Added by Cloudflare's managed `robots.txt`, not by our file |
 | 401 logged in the browser console | All | Best practices | Every visitor's browser checks `/admin/me`. Run that check only on admin pages |
 | Heading levels are skipped | `/`, `/shop` | Accessibility | Correct the heading order |
-| Largest contentful paint is 2.5 s | `/shop` | Performance | Review how the product images load |
+| Largest contentful paint is 2.7 s | `/shop` | Performance | Review how the product images load |
 
-**Interpretation:** there is no blocking time or layout shift, so the pages respond quickly and do not jump while loading. `/shop` is the slowest page.
+**Interpretation:** there is almost no blocking time and no layout shift, so the pages respond quickly and do not jump while loading. `/shop` is the slowest page.
 
-📸 *Evidence: full reports in `evidence/lighthouse/`. Open the HTML files in a browser to screenshot them.*
+📸 *Evidence: full reports in `evidence/lighthouse/` (`quote.html` and `shop.html` are before BUG-07, `*-after.html` are after). Open the HTML files in a browser to screenshot them.*

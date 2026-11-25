@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import type { STLParseResult } from '../utils/stlParser'
+import { getSceneSize } from '../utils/sceneSize'
 
 interface PartViewerProps {
   stlResult: STLParseResult
@@ -76,15 +77,7 @@ export default function PartViewer({
 
     // Ground Plane Grid (minimal dark zinc grid)
     const bbox = geometry.boundingBox || new THREE.Box3(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 0))
-    const rawDimX = bbox.max.x - bbox.min.x
-    const rawDimY = bbox.max.y - bbox.min.y
-    const rawDimZ = bbox.max.z - bbox.min.z
-
-    const sizeY = Number.isFinite(rawDimY) ? Math.max(0, rawDimY) : 0
-    const maxDim =
-      Number.isFinite(rawDimX) && Number.isFinite(rawDimY) && Number.isFinite(rawDimZ)
-        ? Math.max(1, rawDimX, rawDimY, rawDimZ)
-        : 20
+    const { sizeY, maxDim } = getSceneSize(bbox.min, bbox.max)
 
     const grid = new THREE.GridHelper(Math.max(100, maxDim * 2.5), 20, 0x3f3f46, 0x27272a)
     grid.position.y = -sizeY / 2 - 0.5

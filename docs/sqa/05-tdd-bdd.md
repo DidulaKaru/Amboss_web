@@ -16,7 +16,7 @@ The project is TypeScript, so we use **Vitest**, the TypeScript/Vite counterpart
 - `npm test`: all unit and integration tests
 - `npm run test:coverage`: the same, plus coverage reports in `client/coverage`, `server/coverage`
 
-**Current suite:** 189 Vitest tests (94 client, 95 server), all passing. The `it.fails` markers used for BUG-01 and BUG-03 were removed when those tests passed.
+**Current suite:** 199 Vitest tests (104 client, 95 server), all passing. The `it.fails` markers used for BUG-01 and BUG-03 were removed when those tests passed.
 
 ## 5.2 TDD: Red → Green → Refactor (team exercise)
 
