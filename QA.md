@@ -9,7 +9,7 @@ All written deliverables live in [docs/sqa/](docs/sqa/README.md). Screenshots go
 **Test counts**
 - Baseline: 88 Vitest tests
 - Now:
-  - 189 Vitest (94 client + 95 server, all passing)
+  - 199 Vitest (104 client + 95 server, all passing)
   - 9 BDD scenarios
   - 26 Newman requests (46 assertions)
   - 4 Selenium tests
@@ -56,7 +56,7 @@ All written deliverables live in [docs/sqa/](docs/sqa/README.md). Screenshots go
 - [x] **D3a [C]** Labels created; BUG-01 to 04, BUG-06 and BUG-07 filed as issues #6 to #11
 - [ ] **D3b [YOU]** Create the Projects board (New/Assigned/Fixed/Verified/Closed). Claude's GitHub token has no `project` scope
 - [x] **D4a [C]** BUG-01: minimum print price removed (shop-owner decision); no customer price changes
-- [ ] **D4b [YOU]** Verify and close #6 and #10 (merged in PR #12). Open the next PR to `main` with "Fixes #8, fixes #11", merge, verify, and screenshot the timelines (#9 / BUG-04 is already closed)
+- [ ] **D4b [YOU]** Verify and close #6 and #10 (merged in PR #12) and screenshot the timelines. #8, #9 and #11 are closed
 
 ## Phase E: Documentation
 - [x] **E1–E7 [C]** Docs 01–10 written in `docs/sqa/`
