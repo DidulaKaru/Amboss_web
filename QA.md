@@ -9,11 +9,11 @@ All written deliverables live in [docs/sqa/](docs/sqa/README.md). Screenshots go
 **Test counts**
 - Baseline: 88 Vitest tests
 - Now:
-  - 179 Vitest (84 client + 95 server, all passing)
+  - 189 Vitest (94 client + 95 server, all passing)
   - 9 BDD scenarios
   - 26 Newman requests (46 assertions)
   - 4 Selenium tests
-  - 10 Playwright tests
+  - 11 Playwright tests
 
 ---
 
@@ -41,8 +41,8 @@ All written deliverables live in [docs/sqa/](docs/sqa/README.md). Screenshots go
   - Add the `SONAR_TOKEN` GitHub secret.
   - Put the org and project key into `sonar-project.properties`.
 - [x] **B4 [YOU]** Commit and push to `dev` (after Step 0). Screenshot the green Actions run: job graph, step logs, artifacts.
-- [x] **B5a [C]** SonarCloud table filled in and 3 issues described in [09](docs/sqa/09-metrics-sonarqube.md); all 47 issues addressed in the code
-- [ ] **B5b [YOU]** After merging to `main`, screenshot the new scan as `docs/sqa/evidence/SonarQube/After.png`
+- [x] **B5a [C]** SonarCloud table filled in and 3 issues described in [09](docs/sqa/09-metrics-sonarqube.md); all 47 issues fixed (0 open in the scan of `8536e9b`)
+- [ ] **B5b [YOU]** After the next merge to `main`, check that the quality gate passes and screenshot it as `docs/sqa/evidence/SonarQube/After.png`
 
 ## Phase C: Performance & security
 - [x] **C1 [C]** JMeter plan `docs/sqa/jmeter/amboss.jmx`. Ran 3 runs (capacity, stress at 2 000 req/s, rate-limited); results are in doc 07.
@@ -56,7 +56,7 @@ All written deliverables live in [docs/sqa/](docs/sqa/README.md). Screenshots go
 - [x] **D3a [C]** Labels created; BUG-01 to 04, BUG-06 and BUG-07 filed as issues #6 to #11
 - [ ] **D3b [YOU]** Create the Projects board (New/Assigned/Fixed/Verified/Closed). Claude's GitHub token has no `project` scope
 - [x] **D4a [C]** BUG-01: minimum print price removed (shop-owner decision); no customer price changes
-- [ ] **D4b [YOU]** Open the PR to `main` with "Fixes #6" and "Fixes #10", merge, verify and screenshot the issue timelines
+- [ ] **D4b [YOU]** Verify and close #6 and #10 (merged in PR #12). Open the next PR to `main` with "Fixes #8, fixes #11", merge, verify, and screenshot the timelines (#9 / BUG-04 is already closed)
 
 ## Phase E: Documentation
 - [x] **E1–E7 [C]** Docs 01–10 written in `docs/sqa/`

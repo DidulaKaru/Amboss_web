@@ -111,7 +111,7 @@ Lighthouse first refused to score `/quote` and `/shop`, because the live site re
 
 | Finding | Pages | Effect | Action |
 |---|---|---|---|
-| The page is returned with HTTP status 404 | `/quote`, `/shop` | SEO; search engines may not index the pages | [BUG-07](08-defects.md) |
+| The page is returned with HTTP status 404 | `/quote`, `/shop` | SEO; search engines may not index the pages | [BUG-07](08-defects.md): fix ready, re-run after deploying |
 | `robots.txt` has an unknown directive, `Content-Signal` | All | SEO score only | Added by Cloudflare's managed `robots.txt`, not by our file |
 | 401 logged in the browser console | All | Best practices | Every visitor's browser checks `/admin/me`. Run that check only on admin pages |
 | Heading levels are skipped | `/`, `/shop` | Accessibility | Correct the heading order |

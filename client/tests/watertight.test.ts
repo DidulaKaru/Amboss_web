@@ -85,6 +85,12 @@ describe('BUG-03: watertight (closed-surface) check in parseSTL', () => {
     expect(parseSTL(toAscii([...cube, fin])).isManifoldEstimate).toBe(false)
   })
 
+  it('ignores zero-area triangles, so they cause no false warning', () => {
+    const sliver: Tri = [0, 0, 0, 0, 0, 0, 10, 0, 0]
+    expect(parseSTL(toAscii([...cube, sliver])).isManifoldEstimate).toBe(true)
+    expect(parseSTL(toAscii([sliver])).isManifoldEstimate).toBe(false)
+  })
+
   it('treats 0 and -0 as the same corner', () => {
     const negZero = cube.map((t, i) => (i % 2 ? t.map((n) => (n === 0 ? -0 : n)) : t) as Tri)
     expect(parseSTL(toBinary(negZero)).isManifoldEstimate).toBe(true)

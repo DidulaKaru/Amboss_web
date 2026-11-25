@@ -71,4 +71,26 @@ endsolid cube`
     const orderBtn = page.locator('button:has-text("Order via WhatsApp")')
     await expect(orderBtn).toBeVisible()
   })
+
+  test('warns about an open STL without blocking the order, and not about a closed one (BUG-03)', async ({ page }) => {
+    const stl = (tris: number[][][]) =>
+      Buffer.from(
+        ['solid t', ...tris.map((t) => `facet normal 0 0 1\nouter loop\n${t.map((v) => `vertex ${v.join(' ')}`).join('\n')}\nendloop\nendfacet`), 'endsolid t'].join('\n')
+      )
+    const [a, b, c, d] = [[0, 0, 0], [20, 0, 0], [0, 20, 0], [0, 0, 20]]
+    const closed = [[a, c, b], [a, b, d], [b, c, d], [a, d, c]]
+    const upload = (name: string, tris: number[][][]) =>
+      page.locator('input[type="file"]').setInputFiles({ name, mimeType: 'application/sla', buffer: stl(tris) })
+    const warning = page.getByRole('alert').filter({ hasText: 'may not be watertight' })
+
+    await page.goto('/quote')
+    await upload('open.stl', closed.slice(1))
+    await expect(warning).toBeVisible()
+    await expect(page.locator('button:has-text("Order via WhatsApp")')).toBeEnabled()
+
+    await page.getByRole('button', { name: 'Upload different file' }).click()
+    await upload('closed.stl', closed)
+    await expect(page.getByRole('heading', { name: 'Specification' })).toBeVisible()
+    await expect(warning).toHaveCount(0)
+  })
 })

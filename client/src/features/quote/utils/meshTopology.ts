@@ -66,10 +66,17 @@ export function isClosedSurface(positions: Float32Array): boolean {
   const high = new Int32Array(mask + 1)
   const uses = new Uint8Array(mask + 1)
   let unpairedEdges = 0
+  let edgeCount = 0
 
   for (let i = 0; i < ids.length; i++) {
+    // Zero-area triangles (two equal corners) bound nothing; exporters emit them in otherwise good files
+    const first = i - (i % 3)
+    const collapsed =
+      ids[first] === ids[first + 1] || ids[first + 1] === ids[first + 2] || ids[first + 2] === ids[first]
+    if (collapsed) continue
+
     const from = ids[i]
-    const to = ids[i % 3 === 2 ? i - 2 : i + 1]
+    const to = ids[i % 3 === 2 ? first : i + 1]
     const a = Math.min(from, to)
     const b = Math.max(from, to)
     let slot = mix(a, b) & mask
@@ -77,8 +84,9 @@ export function isClosedSurface(positions: Float32Array): boolean {
     low[slot] = a
     high[slot] = b
     uses[slot]++
+    edgeCount++
     if (uses[slot] > 2) return false
     unpairedEdges += uses[slot] === 1 ? 1 : -1
   }
-  return unpairedEdges === 0
+  return edgeCount > 0 && unpairedEdges === 0
 }

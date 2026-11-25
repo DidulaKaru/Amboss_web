@@ -23,10 +23,10 @@ npx sonar-scanner -Dsonar.host.url=http://localhost:9000 -Dsonar.token=<token>
 | Scope | Statements | Branches | Functions | Lines |
 |---|---|---|---|---|
 | **Server** (`server/src`) | 70.3% | 57.0% | 87.3% | 72.3% |
-| **Client** (`client/src`) | 25.3% | 23.3% | 10.2% | 22.9% |
+| **Client** (`client/src`) | 26.2% | 24.2% | 10.6% | 23.6% |
 | Client `pricing.ts` + `logistics.ts` | 100% | 100% | 100% | 100% |
 | `stlParser.ts` | 89.4% | 80.2% | 100% | 95.3% |
-| `meshTopology.ts` | 98.1% | 94.4% | 100% | 100% |
+| `meshTopology.ts` | 98.3% | 96.0% | 100% | 100% |
 
 The client's overall figure is low because React components (pages, the 3D canvas, forms) are tested by Playwright/Selenium E2E, which doesn't produce v8 unit coverage. The client's pricing and delivery rules are fully covered.
 
@@ -34,36 +34,38 @@ The client's overall figure is low because React components (pages, the 3D canva
 
 | Metric | Value |
 |---|---|
-| Lines of code (non-blank, TS/TSX) | client 6 572 + server 2 257 = **8 829 (8.8 KLOC)** |
+| Lines of code (non-blank, TS/TSX) | client 6 592 + server 2 257 = **8 849 (8.8 KLOC)** |
 | Defects found in this SQA cycle | 7 (BUG-01 to 07) + 1 observation |
 | **Defect density** | 7 / 8.8 = **0.80 defects/KLOC** (excluding Sonar issues) |
 | Defect density incl. Sonar bugs | (7 + 4 Sonar bugs) / 12.9 Sonar KLOC = **0.85 defects/KLOC** |
 | Defects by severity | Critical 1 · Major 4 · Minor 2 |
-| Test count | 179 Vitest + 9 BDD scenarios + 26 API requests (46 assertions) + 4 Selenium + 10 Playwright tests |
+| Test count | 189 Vitest + 9 BDD scenarios + 26 API requests (46 assertions) + 4 Selenium + 11 Playwright tests |
 
-### From SonarCloud (`main`, commit `37c2440`, 25 Nov 2026)
+### From SonarCloud (`main`, 25 Nov 2026)
 
-| Metric | Value | Rating |
+| Metric | Before (`37c2440`) | After the fixes (`8536e9b`) |
 |---|---|---|
-| Coverage | 26.4% (2 505 of 3 268 lines uncovered) | – |
-| Bugs | 4 | Reliability: **C** |
-| Vulnerabilities | 18 | Security: **E** |
-| Security hotspots | 0 | A |
-| Code smells | 25 | Maintainability: **A** |
-| Technical debt | 59 min | Debt ratio: 0.0% |
-| Duplications | 2.2% | – |
-| Lines of code | 12 894 | – |
-| Quality gate | **Passed** (the previous scan failed) | – |
+| Coverage | 26.4% | 26.7% |
+| Bugs | 4 (Reliability **C**) | 0 (Reliability **A**) |
+| Vulnerabilities | 18 (Security **E**) | 0 (Security **A**) |
+| Security hotspots | 0 | 0 |
+| Code smells | 25 (Maintainability **A**) | 0 (Maintainability **A**) |
+| Technical debt | 59 min (ratio 0.0%) | 0 min |
+| Duplications | 2.2% | 2.1% |
+| Lines of code | 12 894 | 13 080 |
+| Quality gate | Passed | **Failed**: coverage on new code 53.7% (80% required) |
 
-These are SonarCloud's classic issue types: 4 + 18 + 25 = 47 issues. The dashboard groups the same issues by software quality instead (Security 18, Reliability 29, Maintainability 24), and one issue can count under two qualities.
+The "before" issue counts are SonarCloud's classic issue types: 4 + 18 + 25 = 47 issues. The dashboard groups the same issues by software quality instead (Security 18, Reliability 29, Maintainability 24), and one issue can count under two qualities.
 
-Coverage is lower than Vitest's server figure because it combines both workspaces, and React components are tested by E2E, which produces no lcov.
+Coverage is lower than Vitest's server figure because it combines both workspaces, React components are tested by E2E, which produces no lcov, and in these scans SonarCloud also counted test files as code to be covered.
 
-**Quality gate history:** the gate first failed on new code (Security rating C) because the SonarCloud GitHub Action was referenced by a tag. Pinning it to a commit SHA (`ec54d09`) made the gate pass.
+**Quality gate history:**
+1. Failed (`09a7008`): Security rating C on new code, because the SonarCloud GitHub Action was referenced by a tag. Pinning it to a commit SHA (`ec54d09`) fixed it.
+2. Failed (`8536e9b`): no open issues, but 53.7% coverage on new code. The largest group of uncovered lines was in our own test files, which SonarCloud counted as product code. Tests and test tooling are now excluded from the coverage measure; the next scan will confirm the result.
 
 ## 9.3 Issues found by SonarQube
 
-The scan reported 47 issues, and all 47 have been addressed in the code. Three representative ones are described here. The numbers in 9.2 are the state **before** these fixes; the next scan of `main` will confirm the result.
+The scan reported 47 issues, and all 47 have been addressed in the code. Three representative ones are described here. The scan after the fixes reports 0 open issues.
 
 | # | Issue | Rule | Type and severity | Location |
 |---|---|---|---|---|
@@ -102,4 +104,4 @@ The scan reported 47 issues, and all 47 have been addressed in the code. Three r
 - **Action:** move the shared rules into a `shared/` workspace package (`@amboss/pricing`) imported by both.
 - **Expected effect:** a pricing bug fixed once is fixed everywhere.
 
-📸 *Evidence: `evidence/SonarQube/Before.png` (before the fixes). After merging, capture the same page as `After.png`, plus the Activity graph.*
+📸 *Evidence: `evidence/SonarQube/Before.png` (before the fixes). Capture the same page as `After.png`, plus the Activity graph.*
