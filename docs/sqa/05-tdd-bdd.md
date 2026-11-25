@@ -16,77 +16,152 @@ The project is TypeScript, so we use **Vitest**, the TypeScript/Vite counterpart
 - `npm test`: all unit and integration tests
 - `npm run test:coverage`: the same, plus coverage reports in `client/coverage`, `server/coverage`
 
-**Current suite:** 156 Vitest tests. 154 pass; 2 are expected-fail markers for open defects BUG-01 and BUG-03.
+**Current suite:** 165 Vitest tests. 163 pass; 2 are expected-fail markers for open defects BUG-01 and BUG-03. (After the TDD exercise in 5.2, BUG-03's marker is removed and 8 tests are added.)
 
 ## 5.2 TDD: Red → Green → Refactor (team exercise)
 
 > **[YOU]** Do these three steps yourselves as **three separate commits**, so the git history shows real TDD. Screenshot the terminal after steps 1 and 2.
 
-**Feature (new requirement REQ-Q-07):** bulk discount on 3D-print quotes.
-- quantity 1–9 → 0%
-- 10–49 → 5%
-- 50–100 → 10%
+**Task:** fix **BUG-03** (REQ-Q-06): an open-surface STL is reported as a valid solid. This is a real defect we found, not a new feature, so it needs no business decision. `isManifoldEstimate` is not read by the UI today, so the fix changes no prices and does not reject any customer upload.
 
-### Step 1: RED (write the test first; it must fail)
-Create `client/tests/bulkDiscount.test.ts`:
+**Rule to implement:** a mesh is a closed solid only if **every edge is shared by exactly two triangles**.
 
-```ts
-import { describe, it, expect } from 'vitest'
-import { bulkDiscountRate } from '../src/features/quote/utils/bulkDiscount'
+### Step 1: RED (the test is already written; it must fail)
+The test file [client/tests/watertight.test.ts](../../client/tests/watertight.test.ts) is in the repo. It builds a cube in ASCII and binary STL and checks:
 
-describe('REQ-Q-07 bulk discount', () => {
-  it.each([
-    [1, 0], [9, 0],        // partition 1, upper boundary
-    [10, 0.05], [49, 0.05], // partition 2, both boundaries
-    [50, 0.1], [100, 0.1],  // partition 3, both boundaries
-  ])('quantity %i → %d', (qty, rate) => {
-    expect(bulkDiscountRate(qty)).toBe(rate)
-  })
+| Case | Expected `isManifoldEstimate` | Today |
+|---|---|---|
+| Closed cube (ASCII, binary) | `true` | passes |
+| Cube missing one face (ASCII, binary) | `false` | **fails** |
+| Cube missing one triangle | `false` | **fails** |
+| One lone triangle | `false` | **fails** |
+| Reversed (inside-out) closed cube | `true` | passes |
+| Empty file | `false` | passes |
 
-  it('rejects quantities outside 1–100', () => {
-    expect(() => bulkDiscountRate(0)).toThrow(RangeError)
-    expect(() => bulkDiscountRate(101)).toThrow(RangeError)
-  })
-})
+Run in `client/`:
+
+```bash
+npx vitest run tests/watertight.test.ts
 ```
 
-Run `npx vitest run tests/bulkDiscount.test.ts` in `client/`. It fails because the module doesn't exist. 📸 screenshot.
-Commit: `test: add failing tests for bulk discount (RED)`
+Expected: **4 failed, 4 passed**. The old check only asks `volume > 0`, so open surfaces pass. 📸 screenshot.
+
+Commit: `test: add failing watertight-mesh tests for BUG-03 (RED)`
+
+> The RED commit makes CI fail on purpose. Push all three commits together, or screenshot the red run as evidence of TDD.
 
 ### Step 2: GREEN (the simplest code that passes)
-Create `client/src/features/quote/utils/bulkDiscount.ts`:
+In `client/src/features/quote/utils/stlParser.ts`, change **both** `isManifoldEstimate` lines (binary and ASCII parser) to:
 
 ```ts
-export function bulkDiscountRate(quantity: number): number {
-  if (quantity < 1 || quantity > 100) throw new RangeError('quantity must be 1–100')
-  if (quantity >= 50) return 0.1
-  if (quantity >= 10) return 0.05
-  return 0
+isManifoldEstimate: absVolumeMm3 > 0.001 && isWatertight(positions),
+```
+
+and add this function at the bottom of the file:
+
+```ts
+/** True when every edge is shared by exactly two triangles (a closed surface). */
+function isWatertight(positions: Float32Array): boolean {
+  const triangleCount = positions.length / 9
+  if (triangleCount === 0) return false
+
+  const vertexIds = new Map<string, number>()
+  const idOf = (o: number): number => {
+    const key = positions[o] + ',' + positions[o + 1] + ',' + positions[o + 2]
+    let id = vertexIds.get(key)
+    if (id === undefined) {
+      id = vertexIds.size
+      vertexIds.set(key, id)
+    }
+    return id
+  }
+
+  const edgeUses = new Map<string, number>()
+  const addEdge = (a: number, b: number) => {
+    const key = a < b ? a + '_' + b : b + '_' + a
+    edgeUses.set(key, (edgeUses.get(key) ?? 0) + 1)
+  }
+
+  for (let t = 0; t < triangleCount; t++) {
+    const a = idOf(t * 9)
+    const b = idOf(t * 9 + 3)
+    const c = idOf(t * 9 + 6)
+    addEdge(a, b)
+    addEdge(b, c)
+    addEdge(c, a)
+  }
+
+  for (const uses of edgeUses.values()) if (uses !== 2) return false
+  return true
 }
 ```
 
-Run again: all tests pass. 📸 screenshot.
-Commit: `feat: implement bulk discount rate (GREEN)`
+Also in `client/tests/blackbox.test.ts`, change `it.fails('TC-BB-23 …` to `it('TC-BB-23 …`. The bug is fixed, so the expected-failure marker must go (that is exactly what `it.fails` is for). Tests that pass: `npm test --workspace=client`. 📸 screenshot.
+
+Commit: `fix: detect open STL surfaces via edge check (GREEN, fixes BUG-03)`
 
 ### Step 3: REFACTOR (improve the design; tests stay green)
-Replace the magic numbers with a data table:
+Move the check into its own module, name the pieces, and use a numeric edge key instead of a string per edge (about 225 ms for a 200 000-triangle mesh).
+
+Create `client/src/features/quote/utils/meshTopology.ts`:
 
 ```ts
-const TIERS = [
-  { minQty: 50, rate: 0.1 },
-  { minQty: 10, rate: 0.05 },
-] as const
+/** Identifies a vertex by value: STL repeats each shared corner in every triangle that uses it. */
+const vertexKey = (p: Float32Array, o: number): string => `${p[o]},${p[o + 1]},${p[o + 2]}`
 
-export function bulkDiscountRate(quantity: number): number {
-  if (!Number.isInteger(quantity) || quantity < 1 || quantity > 100) {
-    throw new RangeError('quantity must be an integer 1–100')
+/**
+ * A solid is "closed" (watertight) when every edge is shared by exactly two triangles.
+ * An open surface has edges used once (the boundary); a broken mesh may have edges used 3+ times.
+ *
+ * @param positions flat [x, y, z, x, y, z, ...] array, 9 numbers per triangle
+ */
+export function isClosedSurface(positions: Float32Array): boolean {
+  const triangleCount = positions.length / 9
+  if (triangleCount === 0) return false
+
+  const vertexIds = new Map<string, number>()
+  const idOf = (offset: number): number => {
+    const key = vertexKey(positions, offset)
+    let id = vertexIds.get(key)
+    if (id === undefined) {
+      id = vertexIds.size
+      vertexIds.set(key, id)
+    }
+    return id
   }
-  return TIERS.find((t) => quantity >= t.minQty)?.rate ?? 0
+
+  // Edge (a, b) with a < b is packed into one safe integer, avoiding a string allocation per edge.
+  const edgeUses = new Map<number, number>()
+  const countEdge = (a: number, b: number): void => {
+    const key = a < b ? a * 2 ** 26 + b : b * 2 ** 26 + a
+    edgeUses.set(key, (edgeUses.get(key) ?? 0) + 1)
+  }
+
+  for (let t = 0; t < triangleCount; t++) {
+    const a = idOf(t * 9)
+    const b = idOf(t * 9 + 3)
+    const c = idOf(t * 9 + 6)
+    countEdge(a, b)
+    countEdge(b, c)
+    countEdge(c, a)
+  }
+
+  for (const uses of edgeUses.values()) {
+    if (uses !== 2) return false
+  }
+  return true
 }
 ```
 
-Run again: still green.
-Commit: `refactor: table-driven discount tiers`
+In `stlParser.ts`: delete `isWatertight`, add `import { isClosedSurface } from './meshTopology'` at the top, and use `isClosedSurface(positions)` in both `isManifoldEstimate` lines. Do **not** name helpers `useXxx`: the React hooks lint rule flags them.
+
+Run `npm test --workspace=client` and `npm run lint --workspace=client`: still green.
+
+Commit: `refactor: extract closed-surface check into meshTopology`
+
+**Result:** BUG-03's expected-fail marker is gone (1 left: BUG-01), and the suite gains 8 passing tests. Update the defect log: BUG-03 → Fixed (note in [08-defects.md](08-defects.md)).
+
+> **Scope note:** this fixes the *detection*. Whether the quote page should warn or block the customer when `isManifoldEstimate` is false is a product decision for the shop owner. Do not add that without their approval.
 
 ## 5.3 BDD with Gherkin + Cucumber
 

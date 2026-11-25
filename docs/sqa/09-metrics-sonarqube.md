@@ -37,7 +37,7 @@ The client's overall figure is low because React components (pages, the 3D canva
 | **Defect density** | 5 / 8.7 = **0.57 defects/KLOC** (excluding Sonar issues) |
 | Defect density incl. Sonar bugs | (5 + *Sonar bugs*) / *Sonar KLOC* = TODO |
 | Defects by severity | Critical 1 · Major 2 · Minor 2 |
-| Test count | 156 Vitest (154 pass + 2 expected-fail) + 9 BDD scenarios + 26 API requests (46 assertions) + 4 Selenium + 8 Playwright tests |
+| Test count | 165 Vitest (163 pass + 2 expected-fail) + 9 BDD scenarios + 26 API requests (46 assertions) + 4 Selenium + 8 Playwright tests |
 
 ### From SonarCloud **[YOU: fill in after the first scan]**
 

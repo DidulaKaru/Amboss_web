@@ -74,7 +74,7 @@
 | Automation engineer | Vitest, Cucumber, Selenium, Newman, CI | TODO(team) |
 | Performance & security tester | JMeter, OWASP checks | TODO(team) |
 
-**Tools:** Node 20, Vitest 5, Cucumber 13, Playwright, Selenium WebDriver 4, Postman/Newman, JMeter 5.6.3, SonarCloud, GitHub Actions, GitHub Issues/Projects.
+**Tools:** Node 22, Vitest 5, Cucumber 13, Playwright, Selenium WebDriver 4, Postman/Newman, JMeter 5.6.3, SonarCloud, GitHub Actions, GitHub Issues/Projects.
 
 ## 1.7 Schedule
 

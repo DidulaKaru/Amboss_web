@@ -9,7 +9,7 @@ All written deliverables live in [docs/sqa/](docs/sqa/README.md). Screenshots go
 **Test counts**
 - Baseline: 88 Vitest tests
 - Now:
-  - 156 Vitest (154 pass + 2 expected-fail for known bugs)
+  - 165 Vitest (163 pass + 2 expected-fail for known bugs)
   - 9 BDD scenarios
   - 26 Newman requests (46 assertions)
   - 4 Selenium tests
@@ -31,7 +31,7 @@ All written deliverables live in [docs/sqa/](docs/sqa/README.md). Screenshots go
 - [x] **A6 [C]** Postman collection + Newman → `docs/sqa/postman/`
 - [x] **A7 [C]** Selenium WebDriver suite → `client/selenium/` (screenshots auto-saved)
 - [x] **A7b [C]** Fixed the stale Playwright test that was making CI red (BUG-05)
-- [ ] **A8 [YOU]** TDD: make the 3 commits (Red → Green → Refactor) from [05-tdd-bdd.md §5.2](docs/sqa/05-tdd-bdd.md); screenshot the failing and passing runs
+- [ ] **A8 [YOU]** TDD: make the 3 commits (Red → Green → Refactor) for BUG-03 (open-STL detection) from [05-tdd-bdd.md §5.2](docs/sqa/05-tdd-bdd.md); the RED test is already in `client/tests/watertight.test.ts`; screenshot the failing and passing runs
 
 ## Phase B: CI/CD & quality tooling
 - [x] **B1 [C]** `.github/workflows/ci.yml`: validate (lint, coverage, BDD, build) → api (Newman) + e2e (Playwright, Selenium) + sonar
@@ -53,7 +53,7 @@ All written deliverables live in [docs/sqa/](docs/sqa/README.md). Screenshots go
 - [x] **D1 [C]** Issue template (`.github/ISSUE_TEMPLATE/bug_report.md`) + 5 bug reports drafted in [08-defects.md](docs/sqa/08-defects.md)
 - [x] **D2 [C]** RCA (5 Whys + fishbone) for SEC-01 and GEO-02
 - [ ] **D3 [YOU]** Create labels and the Projects board (New/Assigned/Fixed/Verified/Closed); file BUG-01 to 04 as issues (BUG-04 only after Step 0)
-- [ ] **D4 [YOU → C]** Decide how BUG-01 should be fixed (see the end of doc 08); then I'll implement the fix in a PR with "Fixes #N"; you assign, verify, close and screenshot the timeline
+- [ ] **D4 [YOU → C]** **Ask the shop owner** how BUG-01 should be fixed (it changes real prices; see the end of doc 08); then I'll implement the fix in a PR with "Fixes #N"; you assign, verify, close and screenshot the timeline
 
 ## Phase E: Documentation
 - [x] **E1–E7 [C]** Docs 01–10 written in `docs/sqa/`

@@ -67,7 +67,7 @@ Full automated sets: `TC-BB-*` in `client/tests/blackbox.test.ts`, `TC-API-*` in
 | Item | Local | CI (GitHub Actions) |
 |---|---|---|
 | OS | Windows 11 Home (26200) | ubuntu-latest |
-| Runtime | Node 24 (local) / Node 20 (CI) | Node 20 |
+| Runtime | Node 24 (local) / Node 22 (CI) | Node 22 |
 | Browser | Google Chrome (Selenium), Playwright Chromium | Chrome (preinstalled), Playwright Chromium |
 | Java | JDK 27 (for JMeter 5.6.3) | — |
 | Database | **Disabled for tests** (`NODE_ENV=test` → `getDb()` returns null) or unreachable URL → seed-data fallback | Same |

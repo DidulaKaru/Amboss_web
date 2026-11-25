@@ -30,7 +30,7 @@ Every defect below was found during this SQA exercise and is backed by an automa
 | BUG-01 | Minimum print price (250 LKR) can never apply; cheapest quote is 450 LKR | BVA: TC-BB-18 | Minor | P3 | New |
 | BUG-02 | `/health` reports `database: available` when the DB is unreachable | Exploratory API testing | Major | P2 | New |
 | BUG-03 | Open or non-watertight STL gets a non-zero volume and is priced as valid | Selenium SEL-02 screenshot, then EP TC-BB-23 | Major | P2 | New |
-| BUG-04 | Public default JWT secret and admin password hash are used, with no fail-fast | OWASP A02/A07 manual check | **Critical** | **P1** | New |
+| BUG-04 | Public default JWT secret and admin password hash are used, with no fail-fast | OWASP A02/A07 manual check | **Critical** | **P1** | **Fixed** in `df4d5b6` (production start guard in `env.ts`); secrets rotated in production |
 | BUG-05 | Stale E2E assertion (hero heading) made CI red on `dev` | CI run #44356632231, then a local Playwright run | Minor (test defect) | P1 (blocks pipeline) | **Fixed**: `client/e2e/hero-scroll.spec.ts` updated |
 | OBS-01 | No fast-fail when Postgres is down; requests hang up to 15 s | Newman timings, JMeter run B | Major | P2 | New |
 
@@ -71,7 +71,7 @@ Every defect below was found during this SQA exercise and is backed by an automa
 - **Additional findings:**
   - The local `.env` uses exactly the public default `JWT_SECRET` and `ADMIN_PASSWORD_HASH`.
   - The plaintext admin password appears in `server/tests/helpers.ts` and the e2e specs, in a **public** repository.
-- **Fix proposal:**
+- **Fix (done):** commit `df4d5b6` + production secrets rotated. Original proposal:
   - In `env.ts`, refuse to start when `NODE_ENV=production` and `JWT_SECRET` or `ADMIN_PASSWORD_HASH` is missing or equals the default.
   - Rotate both secrets in the hosting environment.
   - Read test credentials from environment variables.
@@ -155,4 +155,4 @@ Checklist to follow on GitHub, screenshotting each step:
 4. **Verified:** a tester re-runs `npm test --workspace=client` and the quote page, then comments with the result and a screenshot. Label `status:verified`.
 5. **Closed:** the issue closes automatically on merge (or manually after verification). Screenshot the full issue timeline.
 
-> **Team decision needed:** should 250 LKR be the minimum *including* handling (then clamp the total and drop the separate handling line for tiny parts)? Or should the minimum apply to material + machine only (then clamp before adding handling)? Or should the "Min print Rs 250" label be removed?
+> **Shop-owner decision needed (do not change prices without it):** this fix changes what real customers are charged, or what the quote page promises. Ask the owner which is intended. Should 250 LKR be the minimum *including* handling (then clamp the total and drop the separate handling line for tiny parts)? Or should the minimum apply to material + machine only (then clamp before adding handling)? Or should the "Min print Rs 250" label be removed?
