@@ -43,17 +43,17 @@ The client's overall figure is low because React components (pages, the 3D canva
 
 ### From SonarCloud (`main`, 25 Nov 2026)
 
-| Metric | Before (`37c2440`) | After the fixes (`8536e9b`) | Latest (`713c2fe`) |
+| Metric | Before (`37c2440`) | After the fixes (`8536e9b`) | Latest (`388c6a8`) |
 |---|---|---|---|
-| Coverage | 26.4% | 26.7% | **35.8%** |
+| Coverage | 26.4% | 26.7% | **36.1%** |
 | Bugs | 4 (Reliability **C**) | 0 (Reliability **A**) | 0 (**A**) |
 | Vulnerabilities | 18 (Security **E**) | 0 (Security **A**) | 0 (**A**) |
 | Security hotspots | 0 | 0 | 0 |
 | Code smells | 25 (Maintainability **A**) | 0 (Maintainability **A**) | 0 (**A**) |
 | Technical debt | 59 min (ratio 0.0%) | 0 min | 0 min |
 | Duplications | 2.2% | 2.1% | 2.1% |
-| Lines of code | 12 894 | 13 080 | 13 149 |
-| Quality gate | Passed | **Failed**: coverage on new code 53.7% (80% required) | **Failed**: coverage on new code 77.8% |
+| Lines of code | 12 894 | 13 080 | 13 189 |
+| Quality gate | Passed | **Failed**: coverage on new code 53.7% (80% required) | **Passed**: coverage on new code 85.0% |
 
 The "before" issue counts are SonarCloud's classic issue types: 4 + 18 + 25 = 47 issues. The dashboard groups the same issues by software quality instead (Security 18, Reliability 29, Maintainability 24), and one issue can count under two qualities.
 
@@ -62,7 +62,10 @@ Coverage is lower than Vitest's server figure because it combines both workspace
 **Quality gate history:**
 1. Failed (`09a7008`): Security rating C on new code, because the SonarCloud GitHub Action was referenced by a tag. Pinning it to a commit SHA (`ec54d09`) fixed it.
 2. Failed (`8536e9b`): no open issues, but 53.7% coverage on new code. The largest group of uncovered lines was in our own test files, which SonarCloud counted as product code. Tests and test tooling are now excluded from the coverage measure.
-3. Failed (`713c2fe`): 77.8%, 3 covered lines or branches short. The size calculation inside the 3D viewer component had no unit tests, so it was moved to `sceneSize.ts` and given 10 tests. The next scan will confirm the result.
+3. Failed (`713c2fe`): 77.8%, a few covered lines or branches short. The size calculation inside the 3D viewer component had no unit tests, so it was moved to `sceneSize.ts` and given 10 tests.
+4. **Passed** (`388c6a8`): coverage on new code 85.0%, with every other condition also passing.
+
+The gate failed three times, each time for a different real reason, and each fix was verified by the next scan.
 
 ## 9.3 Issues found by SonarQube
 
@@ -105,4 +108,4 @@ The scan reported 47 issues, and all 47 have been addressed in the code. Three r
 - **Action:** move the shared rules into a `shared/` workspace package (`@amboss/pricing`) imported by both.
 - **Expected effect:** a pricing bug fixed once is fixed everywhere.
 
-📸 *Evidence: `evidence/SonarQube/Before.png` (before the fixes). Capture the same page as `After.png`, plus the Activity graph.*
+📸 *Evidence: `evidence/SonarQube/Before.png` (before the fixes) and `evidence/SonarQube/After.png` (after).*

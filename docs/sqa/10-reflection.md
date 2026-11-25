@@ -29,4 +29,4 @@ Amboss is built iteratively by a small team. The commit history shows short feat
 - a staging environment with its own database, so integration and load tests can include real Postgres behaviour
 - a SonarCloud quality gate as a required PR check
 - contract tests to keep the duplicated client and server pricing logic in sync until it is unified
-- production monitoring with a health check that actually queries the database (BUG-02), so operations sees outages before customers do
+- production monitoring with a health check that actually queries the database (BUG-02, planned), so operations sees outages before customers do
