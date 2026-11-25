@@ -31,7 +31,7 @@ All written deliverables live in [docs/sqa/](docs/sqa/README.md). Screenshots go
 - [x] **A6 [C]** Postman collection + Newman → `docs/sqa/postman/`
 - [x] **A7 [C]** Selenium WebDriver suite → `client/selenium/` (screenshots auto-saved)
 - [x] **A7b [C]** Fixed the stale Playwright test that was making CI red (BUG-05)
-- [ ] **A8 [YOU]** TDD: make the 3 commits (Red → Green → Refactor) for BUG-03 (open-STL detection) from [05-tdd-bdd.md §5.2](docs/sqa/05-tdd-bdd.md); the RED test is already in `client/tests/watertight.test.ts`; screenshot the failing and passing runs
+- [x] **A8 [YOU]** TDD: make the 3 commits (Red → Green → Refactor) for BUG-03 (open-STL detection) from [05-tdd-bdd.md §5.2](docs/sqa/05-tdd-bdd.md); the RED test is already in `client/tests/watertight.test.ts`; screenshot the failing and passing runs
 
 ## Phase B: CI/CD & quality tooling
 - [x] **B1 [C]** `.github/workflows/ci.yml`: validate (lint, coverage, BDD, build) → api (Newman) + e2e (Playwright, Selenium) + sonar
