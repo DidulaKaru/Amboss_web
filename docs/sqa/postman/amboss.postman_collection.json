@@ -1,0 +1,956 @@
+{
+  "info": {
+    "name": "Amboss API — SQA Test Suite",
+    "description": "API automation for SQA section 3.6. Run with: npx newman run docs/sqa/postman/amboss.postman_collection.json -e docs/sqa/postman/local.postman_environment.json",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 Smoke",
+      "item": [
+        {
+          "name": "TC-PM-01 Health check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('service is ok', () => pm.expect(pm.response.json().status).to.eql('ok'));",
+                  "pm.test('responds under 1000 ms', () => pm.expect(pm.response.responseTime).to.be.below(1000));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          }
+        },
+        {
+          "name": "TC-PM-02 List materials",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test('has materials', () => pm.expect(j.data.length).to.be.above(0));",
+                  "pm.test('includes pla-plus', () => pm.expect(j.data.map(m => m.slug)).to.include('pla-plus'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/materials",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "materials"
+              ]
+            }
+          }
+        },
+        {
+          "name": "TC-PM-03 List products",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Cache-Control set on public list', () => pm.expect(pm.response.headers.get('Cache-Control')).to.exist);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products"
+              ]
+            }
+          }
+        },
+        {
+          "name": "TC-PM-04 Product by SKU",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/products/MCU-ARDUINO-UNO-R3",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products",
+                "MCU-ARDUINO-UNO-R3"
+              ]
+            }
+          }
+        },
+        {
+          "name": "TC-PM-05 Unknown SKU",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/products/NOPE-SKU",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products",
+                "NOPE-SKU"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Quote (BVA / EP)",
+      "item": [
+        {
+          "name": "TC-PM-06 Valid PLA+ quote",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const p = pm.response.json().pricing;",
+                  "pm.test('total = material + machine + handling', () => pm.expect(p.totalPriceLkr).to.eql(p.materialCostLkr + p.machineCostLkr + p.handlingCostLkr));",
+                  "pm.test('routed to A1 Mini', () => pm.expect(p.recommendedMachine).to.include('A1 Mini'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/quote/calculate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "quote",
+                "calculate"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fileName\": \"cube.stl\",\n  \"volumeCm3\": 8,\n  \"surfaceAreaCm2\": 24,\n  \"dimensions\": {\n    \"x\": 20,\n    \"y\": 20,\n    \"z\": 20\n  },\n  \"materialSlug\": \"pla-plus\",\n  \"infillPct\": 20,\n  \"layerHeightMm\": 0.2,\n  \"quantity\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "TC-PM-07 infillPct = 100 (upper boundary)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/quote/calculate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "quote",
+                "calculate"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fileName\": \"cube.stl\",\n  \"volumeCm3\": 8,\n  \"surfaceAreaCm2\": 24,\n  \"dimensions\": {\n    \"x\": 20,\n    \"y\": 20,\n    \"z\": 20\n  },\n  \"materialSlug\": \"pla-plus\",\n  \"infillPct\": 100,\n  \"layerHeightMm\": 0.2,\n  \"quantity\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "TC-PM-08 infillPct = 101 (just above)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));",
+                  "pm.test('validation error', () => pm.expect(pm.response.json().error).to.eql('Validation failed'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/quote/calculate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "quote",
+                "calculate"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fileName\": \"cube.stl\",\n  \"volumeCm3\": 8,\n  \"surfaceAreaCm2\": 24,\n  \"dimensions\": {\n    \"x\": 20,\n    \"y\": 20,\n    \"z\": 20\n  },\n  \"materialSlug\": \"pla-plus\",\n  \"infillPct\": 101,\n  \"layerHeightMm\": 0.2,\n  \"quantity\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "TC-PM-09 infillPct = 9 (just below)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/quote/calculate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "quote",
+                "calculate"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fileName\": \"cube.stl\",\n  \"volumeCm3\": 8,\n  \"surfaceAreaCm2\": 24,\n  \"dimensions\": {\n    \"x\": 20,\n    \"y\": 20,\n    \"z\": 20\n  },\n  \"materialSlug\": \"pla-plus\",\n  \"infillPct\": 9,\n  \"layerHeightMm\": 0.2,\n  \"quantity\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "TC-PM-10 layerHeightMm = 0.41",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/quote/calculate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "quote",
+                "calculate"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fileName\": \"cube.stl\",\n  \"volumeCm3\": 8,\n  \"surfaceAreaCm2\": 24,\n  \"dimensions\": {\n    \"x\": 20,\n    \"y\": 20,\n    \"z\": 20\n  },\n  \"materialSlug\": \"pla-plus\",\n  \"infillPct\": 20,\n  \"layerHeightMm\": 0.41,\n  \"quantity\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "TC-PM-11 quantity = 0",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/quote/calculate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "quote",
+                "calculate"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fileName\": \"cube.stl\",\n  \"volumeCm3\": 8,\n  \"surfaceAreaCm2\": 24,\n  \"dimensions\": {\n    \"x\": 20,\n    \"y\": 20,\n    \"z\": 20\n  },\n  \"materialSlug\": \"pla-plus\",\n  \"infillPct\": 20,\n  \"layerHeightMm\": 0.2,\n  \"quantity\": 0\n}"
+            }
+          }
+        },
+        {
+          "name": "TC-PM-12 Unknown material",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/quote/calculate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "quote",
+                "calculate"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fileName\": \"cube.stl\",\n  \"volumeCm3\": 8,\n  \"surfaceAreaCm2\": 24,\n  \"dimensions\": {\n    \"x\": 20,\n    \"y\": 20,\n    \"z\": 20\n  },\n  \"materialSlug\": \"unobtainium\",\n  \"infillPct\": 20,\n  \"layerHeightMm\": 0.2,\n  \"quantity\": 1\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 Orders",
+      "item": [
+        {
+          "name": "TC-PM-13 Cart in stock",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cart valid', () => pm.expect(pm.response.json().valid).to.be.true);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/validate-cart",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "validate-cart"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"items\":[{\"sku\":\"MCU-ARDUINO-UNO-R3\",\"quantity\":1}]}"
+            }
+          }
+        },
+        {
+          "name": "TC-PM-14 Cart exceeds stock",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('cart invalid with stock error', () => { const j = pm.response.json(); pm.expect(j.valid).to.be.false; pm.expect(j.errors[0]).to.include('only has'); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/validate-cart",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "validate-cart"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"items\":[{\"sku\":\"MCU-ARDUINO-UNO-R3\",\"quantity\":100}]}"
+            }
+          }
+        },
+        {
+          "name": "TC-PM-15 WhatsApp payload, courier",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test('includes courier fee 500', () => pm.expect(j.messageText).to.include('Delivery Fee: Rs 500'));",
+                  "pm.test('wa.me link', () => pm.expect(j.whatsappUrl).to.match(/^https:\\/\\/wa\\.me\\//));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders/whatsapp-payload",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "orders",
+                "whatsapp-payload"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"type\":\"shop\",\"deliveryMethod\":\"courier\",\"items\":[{\"sku\":\"MCU-ARDUINO-UNO-R3\",\"quantity\":2}]}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 Security (OWASP)",
+      "item": [
+        {
+          "name": "TC-PM-16 A01 admin /me without cookie",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "me"
+              ]
+            }
+          }
+        },
+        {
+          "name": "TC-PM-17 A01 create product without auth",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "TC-PM-18 A01 tampered JWT",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Cookie",
+                "value": "amboss_admin_token=eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYWRtaW4ifQ.tampered"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "me"
+              ]
+            }
+          }
+        },
+        {
+          "name": "TC-PM-19 A03 SQL injection in SKU",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 404', () => pm.response.to.have.status(404));",
+                  "pm.test('no SQL error leaked', () => pm.expect(pm.response.text()).to.not.match(/syntax|postgres|sql/i));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/products/x' OR 1=1--",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "products",
+                "x' OR 1=1--"
+              ]
+            }
+          }
+        },
+        {
+          "name": "TC-PM-20 A05 security headers",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "['X-Content-Type-Options','X-Frame-Options','Strict-Transport-Security','Referrer-Policy'].forEach(h => pm.test(h + ' present', () => pm.expect(pm.response.headers.get(h)).to.exist));",
+                  "pm.test('no X-Powered-By', () => pm.expect(pm.response.headers.get('X-Powered-By')).to.be.undefined);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          }
+        },
+        {
+          "name": "TC-PM-21 A07 wrong password, generic error",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('generic message', () => pm.expect(pm.response.json().error).to.eql('Invalid username or password'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\":\"Dory\",\"password\":\"wrong\"}"
+            }
+          }
+        },
+        {
+          "name": "TC-PM-22 A07 unknown user, same error",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 401', () => pm.response.to.have.status(401));",
+                  "pm.test('identical message (no enumeration)', () => pm.expect(pm.response.json().error).to.eql('Invalid username or password'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\":\"ghost\",\"password\":\"wrong\"}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 Admin session",
+      "item": [
+        {
+          "name": "TC-PM-23 Login with valid credentials",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                  "pm.test('HttpOnly cookie set', () => pm.expect(pm.response.headers.get('Set-Cookie')).to.match(/HttpOnly/i));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\":\"{{adminUser}}\",\"password\":\"{{adminPassword}}\"}"
+            }
+          }
+        },
+        {
+          "name": "TC-PM-24 Session is recognised",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "me"
+              ]
+            }
+          }
+        },
+        {
+          "name": "TC-PM-25 Logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/logout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "logout"
+              ]
+            }
+          }
+        },
+        {
+          "name": "TC-PM-26 Session gone after logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status is 401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "me"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -24,7 +24,9 @@ test.describe('Landing Page & Hero Navigation', () => {
     const heroHeading = page.locator('h1')
     await expect(heroHeading).toHaveCount(1)
     await expect(heroHeading).toBeVisible()
-    await expect(heroHeading).toHaveText(/from idea to physical part/i)
+    // BUG-05: heading copy changed to "From Concept to Reality" (commit 2e79235) but this
+    // assertion was not updated, turning CI red on dev.
+    await expect(heroHeading).toHaveText(/from concept to reality/i)
 
     // Stage title lives in a separate aria-live region and starts at "Concept"
     const stageTitle = page.getByTestId('hero-stage-title')
