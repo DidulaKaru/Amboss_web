@@ -5,26 +5,31 @@ on:
     paths:
       - 'client/**'
       - 'server/**'
+      - 'docs/sqa/postman/**'
       - 'package.json'
+      - 'sonar-project.properties'
       - '.github/workflows/**'
   pull_request:
     paths:
       - 'client/**'
       - 'server/**'
+      - 'docs/sqa/postman/**'
       - 'package.json'
+      - 'sonar-project.properties'
       - '.github/workflows/**'
+  workflow_dispatch:
 
 jobs:
   validate:
-    name: Lint, Unit Tests & Build
+    name: Lint, Unit Tests (coverage), BDD & Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js 20
+      - name: Use Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -33,23 +38,82 @@ jobs:
       - name: Run Linter
         run: npm run lint --if-present
 
-      - name: Run Vitest Suites (Client & Server)
-        run: npm test
+      - name: Run Vitest Suites with Coverage (Client & Server)
+        run: npm run test:coverage
+
+      - name: Run Cucumber BDD Scenarios
+        run: npm run test:bdd --workspace=server
 
       - name: Compile Production Build
         run: npm run build
 
-  e2e:
-    name: Playwright E2E Tests
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: |
+            client/coverage/
+            server/coverage/
+
+      - name: Upload Cucumber report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-report
+          path: server/reports/
+
+  api:
+    name: API Tests (Postman / Newman)
     runs-on: ubuntu-latest
     needs: validate
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js 20
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Start API server (seed-data fallback, no database)
+        working-directory: server
+        env:
+          NODE_ENV: development
+          DATABASE_URL: postgresql://qa:qa@127.0.0.1:1/none
+        run: |
+          npx tsx src/index.ts > server.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://localhost:4000/health && break; sleep 1; done
+
+      - name: Run Postman collection with Newman
+        run: |
+          mkdir -p docs/sqa/reports/newman
+          npx newman run docs/sqa/postman/amboss.postman_collection.json \
+            -e docs/sqa/postman/local.postman_environment.json \
+            --reporters cli,junit \
+            --reporter-junit-export docs/sqa/reports/newman/newman-junit.xml
+
+      - name: Upload Newman report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-report
+          path: |
+            docs/sqa/reports/newman/
+            server/server.log
+
+  e2e:
+    name: UI Tests (Playwright & Selenium)
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -60,3 +124,55 @@ jobs:
 
       - name: Run Playwright Tests
         run: npm run test:e2e
+
+      - name: Start API + frontend for Selenium
+        env:
+          NODE_ENV: development
+          DATABASE_URL: postgresql://qa:qa@127.0.0.1:1/none
+        run: |
+          (cd server && npx tsx src/index.ts > server.log 2>&1 &)
+          (cd client && npx vite --port 5173 --strictPort > vite.log 2>&1 &)
+          for i in $(seq 1 30); do curl -sf http://localhost:4000/health && curl -sf -o /dev/null http://localhost:5173 && break; sleep 1; done
+
+      - name: Run Selenium WebDriver Tests (headless Chrome)
+        run: npm run test:selenium --workspace=client
+
+      - name: Upload Selenium screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-screenshots
+          path: docs/sqa/evidence/selenium/
+
+  sonar:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history for accurate blame / new-code detection
+
+      - name: Download coverage reports
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage
+
+      # Vitest writes lcov paths relative to each workspace (SF:src/App.tsx). Sonar resolves them from
+      # the repo root, so prefix them or no file matches and coverage stays empty.
+      - name: Make lcov paths repo-root relative
+        run: |
+          sed -i 's#^SF:#SF:client/#' client/coverage/lcov.info
+          sed -i 's#^SF:#SF:server/#' server/coverage/lcov.info
+
+      - name: SonarCloud Scan
+        if: ${{ env.SONAR_TOKEN != '' }}
+        uses: SonarSource/sonarqube-scan-action@v6
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Skip notice (no SONAR_TOKEN secret configured)
+        if: ${{ env.SONAR_TOKEN == '' }}
+        run: echo "SONAR_TOKEN secret not set — skipping SonarCloud scan. See docs/sqa/09-metrics-sonarqube.md"
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

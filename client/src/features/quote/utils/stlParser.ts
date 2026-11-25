@@ -1,3 +1,5 @@
+import { isClosedSurface } from './meshTopology'
+
 export interface STLParseResult {
   triangleCount: number
   volumeMm3: number
@@ -170,7 +172,7 @@ function parseBinarySTL(buffer: ArrayBuffer): STLParseResult {
     boundingBox: computeSafeBoundingBox(minX, minY, minZ, maxX, maxY, maxZ, triangleCount),
     positions,
     isAscii: false,
-    isManifoldEstimate: absVolumeMm3 > 0.001,
+    isManifoldEstimate: absVolumeMm3 > 0.001 && isClosedSurface(positions),
   }
 }
 
@@ -290,6 +292,6 @@ function parseAsciiSTL(text: string): STLParseResult {
     boundingBox: computeSafeBoundingBox(minX, minY, minZ, maxX, maxY, maxZ, triangleCount),
     positions,
     isAscii: true,
-    isManifoldEstimate: absVolumeMm3 > 0.001,
+    isManifoldEstimate: absVolumeMm3 > 0.001 && isClosedSurface(positions),
   }
 }

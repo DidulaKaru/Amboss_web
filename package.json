@@ -14,11 +14,13 @@
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "test:e2e": "npm run test:e2e --workspace=client",
-    "lint": "npm run lint --workspaces --if-present"
+    "lint": "npm run lint --workspaces --if-present",
+    "test:coverage": "npm run test:coverage --workspaces --if-present"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
-    "esbuild": "^0.28.2"
+    "esbuild": "^0.28.2",
+    "newman": "^6.2.3"
   },
   "overrides": {
     "esbuild": "$esbuild"
