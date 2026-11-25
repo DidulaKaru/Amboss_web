@@ -78,7 +78,8 @@ describe('Amboss UI — Selenium', () => {
     const input = await driver.wait(until.elementLocated(By.css('input[type="file"]')), TIMEOUT)
     await input.sendKeys(file)
 
-    await waitVisible(byText('h2', 'Specification'))
+    const spec = await waitVisible(byText('h2', 'Specification'))
+    assert.ok(await spec.isDisplayed(), 'the quote specification panel is shown after upload')
     await waitVisible(byText('button', 'PLA+'))
     await waitVisible(byText('button', 'Order via WhatsApp'))
   })
