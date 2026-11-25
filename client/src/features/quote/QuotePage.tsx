@@ -170,6 +170,20 @@ export default function QuotePage() {
               </button>
             </div>
 
+            {/* Open mesh: the volume, and so the price, is unreliable. Warn, but do not block the order. */}
+            {!stlResult.isManifoldEstimate && (
+              <div
+                role="alert"
+                className="p-3.5 rounded border border-amber-500/50 bg-amber-950/20 text-xs leading-relaxed space-y-1"
+              >
+                <p className="font-medium text-amber-300">This model may not be watertight</p>
+                <p className="text-amber-200/90">
+                  Its surface looks open or damaged, so the price shown may be wrong. Please repair the model and upload
+                  it again. You can still order, but mention this when you message us.
+                </p>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* Left Column: 3D Previewer */}
               <div className="lg:col-span-7">

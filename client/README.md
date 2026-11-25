@@ -9,7 +9,7 @@ This directory contains the production React 19 Single Page Application (SPA) fo
 ```
 client/
 ├── public/
-│   ├── _redirects           # Cloudflare Pages SPA rewrite rule (/* /index.html 200)
+│   ├── _redirects           # Cloudflare Pages: lists each client-side route (HTTP 200)
 │   ├── images/              # Static product, project, and brand assets
 │   ├── robots.txt           # Production search crawler instructions
 │   └── sitemap.xml          # XML sitemap for SEO indexation
@@ -84,7 +84,7 @@ All visual elements strictly follow [`client/DESIGN_PHILOSOPHY.md`](file:///c:/U
 ## Deployment to Cloudflare Pages
 
 1. **SPA Routing Configuration:**
-   - The file [`client/public/_redirects`](file:///c:/Users/didul/Documents/GitHub/Amboss_web/client/public/_redirects) (`/* /index.html 200`) ensures all routes (`/shop`, `/projects`, `/quote`, `/about-us`, `/admin`) return HTTP 200 OK on direct page refreshes.
+   - The file [`client/public/_redirects`](file:///c:/Users/didul/Documents/GitHub/Amboss_web/client/public/_redirects) lists every client-side route so that it returns HTTP 200. Unknown URLs get `404.html`. Add new `App.tsx` routes there; `tests/redirects.test.ts` checks this. A catch-all `/* /index.html 200` does not work: Pages rejects it as an infinite loop.
 2. **Build Settings:**
    - **Framework:** `Vite`
    - **Build Command:** `npm run build`

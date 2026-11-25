@@ -27,13 +27,13 @@ Every defect below was found during this SQA exercise and is backed by an automa
 
 | ID | Title | Found by | Severity | Priority | Status | Issue |
 |---|---|---|---|---|---|---|
-| BUG-01 | Minimum print price (250 LKR) can never apply; cheapest quote is 450 LKR | BVA: TC-BB-18 | Minor | P3 | **Fix ready**, not merged: minimum removed | [#6](https://github.com/DidulaKaru/Amboss_web/issues/6) |
+| BUG-01 | Minimum print price (250 LKR) can never apply; cheapest quote is 450 LKR | BVA: TC-BB-18 | Minor | P3 | **Fixed** in `1534c60` (PR #12): minimum removed. Awaiting verification | [#6](https://github.com/DidulaKaru/Amboss_web/issues/6) |
 | BUG-02 | `/health` reports `database: available` when the DB is unreachable | Exploratory API testing | Major | P2 | New | [#7](https://github.com/DidulaKaru/Amboss_web/issues/7) |
-| BUG-03 | Open or non-watertight STL gets a non-zero volume and is priced as valid | Selenium SEL-02 screenshot, then EP TC-BB-23 | Major | P2 | **Detection fixed** in `d3f36e9`; the quote page does not use it yet | [#8](https://github.com/DidulaKaru/Amboss_web/issues/8) |
-| BUG-04 | Public default JWT secret and admin password hash are used, with no fail-fast | OWASP A02/A07 manual check | **Critical** | **P1** | **Fixed** in `df4d5b6` (production start guard in `env.ts`); secrets rotated in production | [#9](https://github.com/DidulaKaru/Amboss_web/issues/9) |
+| BUG-03 | Open or non-watertight STL gets a non-zero volume and is priced as valid | Selenium SEL-02 screenshot, then EP TC-BB-23 | Major | P2 | **Fix ready**, not merged: detection (`d3f36e9`) plus a warning on the quote page | [#8](https://github.com/DidulaKaru/Amboss_web/issues/8) |
+| BUG-04 | Public default JWT secret and admin password hash are used, with no fail-fast | OWASP A02/A07 manual check | **Critical** | **P1** | **Closed**: fixed in `df4d5b6`; both production secrets rotated; verified on the live admin login | [#9](https://github.com/DidulaKaru/Amboss_web/issues/9) |
 | BUG-05 | Stale E2E assertion (hero heading) made CI red on `dev` | CI run #44356632231, then a local Playwright run | Minor (test defect) | P1 (blocks pipeline) | **Fixed**: `client/e2e/hero-scroll.spec.ts` updated | – |
-| BUG-06 | Stock quantity typed in the admin dashboard is never saved | Code review while fixing SonarCloud findings | Major | P2 | **Fix ready**, not merged | [#10](https://github.com/DidulaKaru/Amboss_web/issues/10) |
-| BUG-07 | `/shop`, `/quote` and `/projects` return HTTP 404 on the live site | Lighthouse | Major | P2 | New | [#11](https://github.com/DidulaKaru/Amboss_web/issues/11) |
+| BUG-06 | Stock quantity typed in the admin dashboard is never saved | Code review while fixing SonarCloud findings | Major | P2 | **Fixed** in `1534c60` (PR #12). Awaiting verification | [#10](https://github.com/DidulaKaru/Amboss_web/issues/10) |
+| BUG-07 | `/shop`, `/quote` and `/projects` return HTTP 404 on the live site | Lighthouse | Major | P2 | **Fix ready**, not merged | [#11](https://github.com/DidulaKaru/Amboss_web/issues/11) |
 | OBS-01 | No fast-fail when Postgres is down; requests hang up to 15 s | Newman timings, JMeter run B | Major | P2 | New | – |
 
 SonarCloud findings are covered in [09-metrics-sonarqube.md](09-metrics-sonarqube.md).
@@ -59,14 +59,15 @@ SonarCloud findings are covered in [09-metrics-sonarqube.md](09-metrics-sonarqub
 
 ### BUG-03: Open-surface STL priced as a valid part
 - **Steps:** upload an STL with a single 20 × 20 mm square at z = 20 (2 triangles).
-- **Expected:** a warning that the mesh is not watertight, or rejection.
+- **Expected:** a warning that the mesh is not watertight.
 - **Actual:** reported as 2.67 cm³ (= ⅓ × 400 mm² × 20 mm), bounding box 20 × 20 × **0** mm, and priced normally.
 - **Root cause:**
   - The divergence-theorem volume is only valid for closed meshes. For an open surface it depends on the distance from the origin.
   - `isManifoldEstimate` is just `volume > 0.001`, not an edge-manifold check.
 - **Evidence:** `client/tests/blackbox.test.ts` TC-BB-23/24, `evidence/selenium/SEL-02_*.png`.
 - **Fix:** `isManifoldEstimate` now requires every edge to be shared by exactly two triangles (TDD, [05 §5.2](05-tdd-bdd.md)).
-- **Still open:** the quote page does not read this value, so an open mesh is still priced. Warning or blocking the customer is a shop-owner decision.
+- **Warning (shop-owner decision):** the quote page now warns that the model may not be watertight and that the price may be wrong. The customer can still order. Zero-area triangles are ignored, so they cause no false warning.
+- **Regression test:** `client/e2e/quote-flow.spec.ts` (BUG-03), which fails if the check is removed. Screenshot: `evidence/defects/BUG-03-warning.png`.
 
 ### BUG-04: Known default secrets (Critical)
 - **Steps:**
@@ -83,6 +84,7 @@ SonarCloud findings are covered in [09-metrics-sonarqube.md](09-metrics-sonarqub
   - Rotate both secrets in the hosting environment.
   - Read test credentials from environment variables.
 - **Follow-up:** the default admin hash and the test password are removed from the code. Tests and CI generate throwaway credentials. The guard also rejects the leaked hash by its fingerprint.
+- **Verification:** on the live admin login, the new password works and the old one is rejected. Both `ADMIN_PASSWORD_HASH` and `JWT_SECRET` were rotated.
 - ⚠ **Do not** test this against the live site. It was verified only against local servers.
 
 ### BUG-05: Stale E2E test broke the pipeline
@@ -105,7 +107,9 @@ SonarCloud findings are covered in [09-metrics-sonarqube.md](09-metrics-sonarqub
 - **Steps:** request `https://amboss.lk/shop` and read the status code.
 - **Expected:** 200.
 - **Actual:** 404. The body is the app, so visitors see a working page, but search engines may drop it. `sitemap.xml` lists `/shop` and `/quote`.
-- **Likely cause (not confirmed):** the host serves the generated `404.html` (a copy of `index.html`) instead of applying the `/* /index.html 200` rule in `_redirects`.
+- **Root cause:** Cloudflare Pages rejects the `_redirects` rule `/* /index.html 200` as an infinite loop and ignores it. Every client-side route was therefore answered with the generated `404.html`.
+- **Fix:** `_redirects` lists each client-side route. Real pages return 200, and unknown URLs still return 404.
+- **Verification:** reproduced and re-tested with the Cloudflare Pages emulator (`wrangler pages dev`). `client/tests/redirects.test.ts` fails if a route is missing from the list. Re-check the live site after deploying.
 - **Evidence:** Lighthouse `ERRORED_DOCUMENT_REQUEST`, status 404; [07 §7.3](07-perf-security-usability.md).
 
 ### OBS-01: No circuit breaker for database outages
@@ -174,8 +178,8 @@ Tracked in [#6](https://github.com/DidulaKaru/Amboss_web/issues/6). Screenshot e
 
 1. **New:** issue filed with labels `bug`, `severity:minor`, `priority:P3`. Done.
 2. **Assigned:** triaged and assigned; label `status:assigned`. Done. Move the card once the Projects board exists.
-3. **Fixed:** the minimum is removed and TC-BB-18 rewritten. Open a PR to `main` with "Fixes #6" → CI green → merge → label `status:fixed`.
+3. **Fixed:** the minimum is removed and TC-BB-18 rewritten; merged to `main` in PR #12 with CI green; label `status:fixed`. Done.
 4. **Verified:** a tester re-runs `npm test --workspace=client` and the quote page, then comments with the result and a screenshot. Label `status:verified`.
-5. **Closed:** the issue closes automatically on merge (or manually after verification). Screenshot the full issue timeline.
+5. **Closed:** close the issue after verification. Screenshot the full issue timeline.
 
 > **Shop-owner decision:** remove the minimum print price. The alternatives were to clamp the total including handling, or to clamp material and machine time only. Both would have changed customer prices; removal changes none.

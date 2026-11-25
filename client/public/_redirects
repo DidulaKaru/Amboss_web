@@ -1,1 +1,10 @@
-/*    /index.html   200
+# Cloudflare Pages: serve the app with HTTP 200 for every client-side route; anything else gets 404.html.
+# "/* /index.html 200" does not work: Pages rejects it as an infinite loop. Add new App.tsx routes here
+# (client/tests/redirects.test.ts checks this).
+/quote         /  200
+/projects      /  200
+/news          /  200
+/about-us      /  200
+/shop          /  200
+/admin         /  200
+/admin/login   /  200

@@ -98,7 +98,7 @@ Amboss_web/
 - **Frontend on Cloudflare Pages:**
   - Build command: `npm run build`
   - Output directory: `dist`
-  - SPA routing guaranteed via `client/public/_redirects` (`/* /index.html 200`).
+  - SPA routing via `client/public/_redirects`: each client-side route is listed and served with HTTP 200; unknown URLs get 404.
   - Set `VITE_API_URL` to your backend URL (e.g. `https://api.amboss.lk` or `https://<app>.koyeb.app`).
 - **Backend on Koyeb:**
   - Build with `server/Dockerfile` or native buildpack.

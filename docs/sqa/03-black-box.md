@@ -33,7 +33,7 @@ All cases below are automated:
 |---|---|---|---|---|---|
 | E1 | Valid closed mesh (binary/ASCII) | 20 mm cube | Correct volume | ✔ | existing `stlParser.test.ts` |
 | E2 | Invalid: zero triangles / empty | empty file | Safe zero bbox, error banner | ✔ | existing (GEO-01) |
-| E3 | Invalid: **open surface** | one square at z = 20 | Flagged non-manifold | ✔ after the fix (first run: ✘ "manifold") | TC-BB-23/24 → **BUG-03** |
+| E3 | Invalid: **open surface** | one square at z = 20 | Flagged non-manifold | ✔ after the fix, and the quote page warns (first run: ✘ "manifold") | TC-BB-23/24 → **BUG-03** |
 | E4 | Invalid: zero or negative volume to API | `volumeCm3: 0` | 400 | ✔ | TC-API-23 |
 | E5 | Invalid: negative dimension | `x: -1` | 400 | ✔ | TC-API-24 |
 | E6 | Invalid type | `volumeCm3: "eight"` | 400 | ✔ | TC-API-25 |

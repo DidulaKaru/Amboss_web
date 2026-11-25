@@ -13,4 +13,4 @@ if (!existsSync(src)) {
 }
 
 copyFileSync(src, dest);
-console.log('Copied index.html to 404.html for GitHub Pages SPA routing');
+console.log('Copied index.html to 404.html (served for unknown URLs)');

@@ -462,9 +462,9 @@ npx playwright install --with-deps chromium
 * **Media Assets:** **Cloudflare Pages `public/images/`** with **Cloudflare R2** (10 GB free, zero egress fees) for dynamic uploads.
 
 ### 9.2 Cloudflare Pages SPA Routing
-* Created `client/public/_redirects`:
+* Created `client/public/_redirects` (one line per client-side route; a `/*` catch-all is rejected by Pages as a loop):
   ```
-  /*    /index.html   200
+  /shop    /   200
   ```
 * Ensures that client-side routes (`/shop`, `/projects`, `/quote`, `/about-us`, `/admin`) return HTTP 200 OK on page refreshes rather than 404 errors.
 

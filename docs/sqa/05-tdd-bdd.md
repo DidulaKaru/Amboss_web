@@ -16,7 +16,7 @@ The project is TypeScript, so we use **Vitest**, the TypeScript/Vite counterpart
 - `npm test`: all unit and integration tests
 - `npm run test:coverage`: the same, plus coverage reports in `client/coverage`, `server/coverage`
 
-**Current suite:** 179 Vitest tests (84 client, 95 server), all passing. The `it.fails` markers used for BUG-01 and BUG-03 were removed when those tests passed.
+**Current suite:** 189 Vitest tests (94 client, 95 server), all passing. The `it.fails` markers used for BUG-01 and BUG-03 were removed when those tests passed.
 
 ## 5.2 TDD: Red → Green → Refactor (team exercise)
 
@@ -165,7 +165,7 @@ Commit: `refactor: extract closed-surface check into meshTopology`
 
 **Later optimisation:** the string-keyed maps made the check slow on very large uploads. They were replaced by typed-array hash tables. On a 980 000-triangle mesh the check went from about 2.5 s to 0.24 s, and old and new agreed on 20 000 random meshes. Two tests were added. This was only safe because the TDD tests already existed.
 
-> **Scope note:** this fixes the *detection*. Whether the quote page should warn or block the customer when `isManifoldEstimate` is false is a product decision for the shop owner. Do not add that without their approval.
+> **Scope note:** this exercise fixed the *detection*. The shop owner later decided that the quote page should warn the customer without blocking the order; that was added separately ([BUG-03](08-defects.md)).
 
 ## 5.3 BDD with Gherkin + Cucumber
 
