@@ -170,7 +170,7 @@ function parseBinarySTL(buffer: ArrayBuffer): STLParseResult {
     boundingBox: computeSafeBoundingBox(minX, minY, minZ, maxX, maxY, maxZ, triangleCount),
     positions,
     isAscii: false,
-    isManifoldEstimate: absVolumeMm3 > 0.001,
+    isManifoldEstimate: absVolumeMm3 > 0.001 && isWatertight(positions),
   }
 }
 
@@ -290,6 +290,41 @@ function parseAsciiSTL(text: string): STLParseResult {
     boundingBox: computeSafeBoundingBox(minX, minY, minZ, maxX, maxY, maxZ, triangleCount),
     positions,
     isAscii: true,
-    isManifoldEstimate: absVolumeMm3 > 0.001,
+    isManifoldEstimate: absVolumeMm3 > 0.001 && isWatertight(positions),
   }
+}
+
+/** True when every edge is shared by exactly two triangles (a closed surface). */
+function isWatertight(positions: Float32Array): boolean {
+  const triangleCount = positions.length / 9
+  if (triangleCount === 0) return false
+
+  const vertexIds = new Map<string, number>()
+  const idOf = (o: number): number => {
+    const key = positions[o] + ',' + positions[o + 1] + ',' + positions[o + 2]
+    let id = vertexIds.get(key)
+    if (id === undefined) {
+      id = vertexIds.size
+      vertexIds.set(key, id)
+    }
+    return id
+  }
+
+  const edgeUses = new Map<string, number>()
+  const addEdge = (a: number, b: number) => {
+    const key = a < b ? a + '_' + b : b + '_' + a
+    edgeUses.set(key, (edgeUses.get(key) ?? 0) + 1)
+  }
+
+  for (let t = 0; t < triangleCount; t++) {
+    const a = idOf(t * 9)
+    const b = idOf(t * 9 + 3)
+    const c = idOf(t * 9 + 6)
+    addEdge(a, b)
+    addEdge(b, c)
+    addEdge(c, a)
+  }
+
+  for (const uses of edgeUses.values()) if (uses !== 2) return false
+  return true
 }

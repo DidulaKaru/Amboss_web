@@ -122,7 +122,7 @@ describe('EP — STL geometry partitions (parseSTL)', () => {
   // BUG-03 (docs/sqa/08-defects.md): an open surface encloses no volume, but the
   // divergence-theorem sum measures it against the origin → 2.67 cm³, and
   // isManifoldEstimate (= volume > 0) reports it as valid. Remove `.fails` once fixed.
-  it.fails('TC-BB-23: open surface is NOT reported as a valid manifold [BUG-03]', () => {
+  it('TC-BB-23: open surface is NOT reported as a valid manifold [BUG-03]', () => {
     expect(parseSTL(openSquare).isManifoldEstimate).toBe(false)
   })
 
