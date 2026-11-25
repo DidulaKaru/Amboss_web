@@ -1,13 +1,13 @@
 import './App.css'
 import Navbar from './components/navbar'
-import Home from './pages/landing/home'
-import Projects from './pages/Projects/projects'
-import AboutUs from './pages/AboutUs/aboutUs'
 import { lazy, Suspense } from 'react'
 import { CartProvider } from './features/shop/cartContext'
 import { AdminAuthProvider } from './features/admin/AdminAuthContext'
 import AdminRoute from './features/admin/AdminRoute'
 
+const Home = lazy(() => import('./pages/landing/home'))
+const Projects = lazy(() => import('./pages/Projects/projects'))
+const AboutUs = lazy(() => import('./pages/AboutUs/aboutUs'))
 const QuotePage = lazy(() => import('./features/quote/QuotePage'))
 const Shop = lazy(() => import('./features/shop/ShopPage'))
 const AdminLogin = lazy(() => import('./features/admin/AdminLogin'))

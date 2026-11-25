@@ -24,19 +24,18 @@ export default function STLDropzone({ onFileLoaded, isLoading }: STLDropzoneProp
       return
     }
 
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const buffer = e.target?.result as ArrayBuffer
-      if (buffer) {
-        onFileLoaded(file, buffer)
-      } else {
-        setError('Failed to read file content.')
-      }
-    }
-    reader.onerror = () => {
-      setError('Error reading file from disk.')
-    }
-    reader.readAsArrayBuffer(file)
+    file
+      .arrayBuffer()
+      .then((buffer) => {
+        if (buffer && buffer.byteLength > 0) {
+          onFileLoaded(file, buffer)
+        } else {
+          setError('Failed to read file content.')
+        }
+      })
+      .catch(() => {
+        setError('Error reading file from disk.')
+      })
   }
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -101,55 +100,73 @@ export default function STLDropzone({ onFileLoaded, isLoading }: STLDropzoneProp
     onFileLoaded(mockFile, buffer)
   }
 
+  const openFilePicker = () => fileInputRef.current?.click()
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    // Ignore keys bubbling up from nested controls
+    if (e.target !== e.currentTarget) return
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      openFilePicker()
+    }
+  }
+
   return (
     <div className="w-full">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".stl"
+        onChange={handleFileInputChange}
+        className="hidden"
+        tabIndex={-1}
+        aria-hidden="true"
+      />
+
       <div
+        role="button"
+        tabIndex={0}
+        aria-label="Upload STL file. Drag and drop an .stl file here, or press Enter to browse. Maximum 50MB."
+        aria-busy={isLoading}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
-        onClick={() => fileInputRef.current?.click()}
-        className={`flex flex-col items-center justify-center p-10 sm:p-14 rounded-lg border border-dashed transition cursor-pointer ${
+        onClick={openFilePicker}
+        onKeyDown={handleKeyDown}
+        className={`flex flex-col items-center justify-center p-10 sm:p-14 rounded-lg border border-dashed transition cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-300 ${
           isDragOver
             ? 'border-zinc-500 bg-zinc-900/60'
             : 'border-zinc-800 bg-zinc-950/60 hover:border-zinc-700 hover:bg-zinc-900/40'
         }`}
       >
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".stl"
-          onChange={handleFileInputChange}
-          className="hidden"
-        />
-
         <div className="w-10 h-10 rounded border border-zinc-800 bg-zinc-900/50 flex items-center justify-center text-zinc-400 mb-3">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
           </svg>
         </div>
 
-        <h3 className="text-sm font-medium text-zinc-200 mb-1 text-center">
+        <p className="text-sm font-medium text-zinc-200 mb-1 text-center">
           {isLoading ? 'Reading STL mesh geometry...' : 'Upload STL file'}
-        </h3>
-
-        <p className="text-xs text-zinc-500 text-center max-w-sm mb-4">
-          Drag and drop an .stl file here, or click to browse. Maximum 50MB.
         </p>
 
+        <p className="text-xs text-zinc-400 text-center max-w-sm">
+          Drag and drop an .stl file here, or click to browse. Maximum 50MB.
+        </p>
+      </div>
+
+      {/* Sits outside the role="button" dropzone so interactive controls are not nested */}
+      <div className="mt-3 text-center">
         <button
           type="button"
-          onClick={(e) => {
-            e.stopPropagation()
-            loadSampleCube()
-          }}
-          className="text-xs font-mono text-zinc-400 hover:text-zinc-200 underline underline-offset-4 transition"
+          onClick={loadSampleCube}
+          className="text-xs font-mono text-zinc-400 hover:text-zinc-200 underline underline-offset-4 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-300"
         >
           Or load a sample 20mm cube
         </button>
       </div>
 
       {error && (
-        <div className="mt-3 p-3 rounded border border-red-900/50 bg-red-950/30 text-red-300 text-xs">
+        <div role="alert" className="mt-3 p-3 rounded border border-red-900/50 bg-red-950/30 text-red-300 text-xs">
           {error}
         </div>
       )}

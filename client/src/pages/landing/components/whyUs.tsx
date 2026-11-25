@@ -19,7 +19,7 @@ function WhyUs({
         {/* Heading */}
         <div className="space-y-2">
           {kicker && (
-            <p className="text-[11px] uppercase tracking-wider font-mono text-zinc-400">
+            <p className="text-xs uppercase tracking-wider font-mono text-zinc-400">
               {kicker}
             </p>
           )}

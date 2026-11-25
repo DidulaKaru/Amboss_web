@@ -1,28 +1,35 @@
 import type { FastifyPluginAsync } from 'fastify'
 import { z } from 'zod'
 import { getDb, schema } from '../db/index.js'
-import { INITIAL_MATERIALS } from '../db/seedData.js'
+import { resolveMaterial } from '../services/materialService.js'
+import { limitFor, RATE_LIMITS } from '../config/rateLimit.js'
 import { computeServerPricing } from '../services/pricingService.js'
-import { eq } from 'drizzle-orm'
 
-const calculateQuoteSchema = z.object({
-  fileName: z.string().default('model.stl'),
-  volumeCm3: z.number().positive('volumeCm3 must be greater than 0'),
-  surfaceAreaCm2: z.number().positive('surfaceAreaCm2 must be greater than 0'),
+/** Geometry/material inputs shared by /quote/calculate and the quote branch of the order payload. */
+export const quoteInputSchema = z.object({
+  fileName: z.string().max(255).default('model.stl'),
+  volumeCm3: z.number().positive('volumeCm3 must be greater than 0').max(50_000),
+  surfaceAreaCm2: z.number().positive('surfaceAreaCm2 must be greater than 0').max(500_000),
   dimensions: z.object({
-    x: z.number().positive(),
-    y: z.number().positive(),
-    z: z.number().positive(),
+    x: z.number().positive().max(2000),
+    y: z.number().positive().max(2000),
+    z: z.number().positive().max(2000),
   }),
-  materialSlug: z.string().min(1, 'materialSlug is required'),
+  materialSlug: z.string().min(1, 'materialSlug is required').max(50),
   infillPct: z.number().min(10).max(100).default(20),
   layerHeightMm: z.number().min(0.05).max(0.40).default(0.20),
-  quantity: z.number().int().min(1).default(1),
-  customerPhone: z.string().optional(),
+  quantity: z.number().int().min(1).max(100).default(1),
+})
+
+const calculateQuoteSchema = quoteInputSchema.extend({
+  customerPhone: z.string().max(30).optional(),
 })
 
 export const quoteRoutes: FastifyPluginAsync = async (fastify) => {
-  fastify.post('/api/v1/quote/calculate', async (request, reply) => {
+  fastify.post(
+    '/api/v1/quote/calculate',
+    { config: { rateLimit: { max: limitFor(RATE_LIMITS.quote), timeWindow: '1 minute' } } },
+    async (request, reply) => {
     const parseResult = calculateQuoteSchema.safeParse(request.body)
     if (!parseResult.success) {
       return reply.code(400).send({
@@ -45,43 +52,8 @@ export const quoteRoutes: FastifyPluginAsync = async (fastify) => {
     } = parseResult.data
 
     // Locate material
-    let material: any = null
     const db = getDb()
-    if (db) {
-      try {
-        const rows = await db
-          .select()
-          .from(schema.materials)
-          .where(eq(schema.materials.slug, materialSlug))
-          .limit(1)
-        if (rows && rows.length > 0) {
-          material = {
-            id: rows[0].id,
-            name: rows[0].name,
-            type: rows[0].type,
-            densityGPerCm3: parseFloat(rows[0].densityGPerCm3),
-            costPerGramLkr: parseFloat(rows[0].costPerGramLkr),
-            requiresEnclosure: rows[0].requiresEnclosure,
-          }
-        }
-      } catch (err) {
-        fastify.log.warn({ err }, `Database query for material ${materialSlug} failed`)
-      }
-    }
-
-    if (!material) {
-      const fallback = INITIAL_MATERIALS.find((m) => m.slug === materialSlug)
-      if (fallback) {
-        material = {
-          id: fallback.slug,
-          name: fallback.name,
-          type: fallback.type,
-          densityGPerCm3: parseFloat(fallback.densityGPerCm3),
-          costPerGramLkr: parseFloat(fallback.costPerGramLkr),
-          requiresEnclosure: fallback.requiresEnclosure,
-        }
-      }
-    }
+    const material = await resolveMaterial(materialSlug, fastify.log)
 
     if (!material) {
       return reply.code(404).send({
@@ -154,5 +126,6 @@ export const quoteRoutes: FastifyPluginAsync = async (fastify) => {
       disclaimer:
         'Automated estimate based on geometric volume. Final pricing and schedule may vary based on orientation, support structures, and specific requirements.',
     }
-  })
+    }
+  )
 }

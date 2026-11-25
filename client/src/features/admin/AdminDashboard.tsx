@@ -112,11 +112,18 @@ export default function AdminDashboard() {
     if (includeContentType) {
       headers['Content-Type'] = 'application/json'
     }
-    const token = localStorage.getItem('amboss_admin_token')
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`
-    }
     return headers
+  }
+
+  // Fetch wrapper for admin-protected endpoints. Auth is the HttpOnly cookie only.
+  // A 401 means the session is gone: clear user state and send the user to login.
+  const adminFetch = async (url: string, init: RequestInit = {}): Promise<Response> => {
+    const res = await fetch(url, { ...init, credentials: 'include' })
+    if (res.status === 401) {
+      await logout()
+      navigate('/admin/login', { replace: true })
+    }
+    return res
   }
 
   // Fetch Products
@@ -172,9 +179,8 @@ export default function AdminDashboard() {
     if (newStock < 0) return
     setSavingSku(sku)
     try {
-      const res = await fetch(`${API_BASE}/api/v1/products/${sku}`, {
+      const res = await adminFetch(`${API_BASE}/api/v1/products/${sku}`, {
         method: 'PUT',
-        credentials: 'include',
         headers: getAuthHeaders(),
         body: JSON.stringify({ stockQuantity: newStock }),
       })
@@ -251,9 +257,8 @@ export default function AdminDashboard() {
         isActive: formData.isActive,
       }
 
-      const res = await fetch(endpoint, {
+      const res = await adminFetch(endpoint, {
         method,
-        credentials: 'include',
         headers: getAuthHeaders(),
         body: JSON.stringify(payload),
       })
@@ -287,9 +292,8 @@ export default function AdminDashboard() {
     if (!deleteTarget) return
     setIsDeleting(true)
     try {
-      const res = await fetch(`${API_BASE}/api/v1/products/${deleteTarget.sku}`, {
+      const res = await adminFetch(`${API_BASE}/api/v1/products/${deleteTarget.sku}`, {
         method: 'DELETE',
-        credentials: 'include',
         headers: getAuthHeaders(false),
       })
 
@@ -312,9 +316,8 @@ export default function AdminDashboard() {
   const handleTogglePortfolioActive = async (id: string, currentStatus: boolean) => {
     setTogglingPortfolioId(id)
     try {
-      const res = await fetch(`${API_BASE}/api/v1/portfolio/${id}`, {
+      const res = await adminFetch(`${API_BASE}/api/v1/portfolio/${id}`, {
         method: 'PUT',
-        credentials: 'include',
         headers: getAuthHeaders(),
         body: JSON.stringify({ isActive: !currentStatus }),
       })
@@ -384,9 +387,8 @@ export default function AdminDashboard() {
         isActive: portfolioFormData.isActive,
       }
 
-      const res = await fetch(endpoint, {
+      const res = await adminFetch(endpoint, {
         method,
-        credentials: 'include',
         headers: getAuthHeaders(),
         body: JSON.stringify(payload),
       })
@@ -419,9 +421,8 @@ export default function AdminDashboard() {
     if (!deletePortfolioTarget) return
     setIsDeletingPortfolio(true)
     try {
-      const res = await fetch(`${API_BASE}/api/v1/portfolio/${deletePortfolioTarget.id}`, {
+      const res = await adminFetch(`${API_BASE}/api/v1/portfolio/${deletePortfolioTarget.id}`, {
         method: 'DELETE',
-        credentials: 'include',
         headers: getAuthHeaders(false),
       })
       if (res.ok) {

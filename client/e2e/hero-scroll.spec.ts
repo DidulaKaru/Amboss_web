@@ -20,9 +20,16 @@ test.describe('Landing Page & Hero Navigation', () => {
     await expect(shopLink).toBeVisible()
     await expect(shopLink).toContainText('Shop')
 
-    // Check Hero Section heading
+    // Static, crawlable page heading (does not change with scroll)
     const heroHeading = page.locator('h1')
+    await expect(heroHeading).toHaveCount(1)
     await expect(heroHeading).toBeVisible()
+    await expect(heroHeading).toHaveText(/from idea to physical part/i)
+
+    // Stage title lives in a separate aria-live region and starts at "Concept"
+    const stageTitle = page.getByTestId('hero-stage-title')
+    await expect(stageTitle).toHaveText('Concept')
+    await expect(page.getByTestId('hero-stage')).toHaveAttribute('aria-live', 'polite')
 
     // Scroll down and verify services & capabilities sections
     const services = page.locator('#services')

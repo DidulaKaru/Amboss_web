@@ -2,7 +2,6 @@
 
 :root {
 	color-scheme: dark;
-	scroll-behavior: smooth;
 	--color-bg: #09090b;
 	--color-section: #18181b;
 	--color-accent: #27272a;
@@ -24,11 +23,11 @@ body,
 	}
 }
 
-/* Focus rings */
+/* Focus rings: high-contrast on zinc-950 backgrounds, no layout or radius change.
+   The inner dark offset keeps the ring visible on light (zinc-100) buttons too. */
 *:focus-visible {
-	outline: none;
-	box-shadow: 0 0 0 2px rgba(50, 130, 184, 0.5);
-	border-radius: 0.25rem;
+	outline: 2px solid #38bdf8;
+	outline-offset: 2px;
 }
 
 /* Smooth site-wide transition utility */
@@ -37,9 +36,9 @@ body,
 	--amboss-animation-ease: cubic-bezier(.2,.9,.2,1);
 }
 
-/* Apply lightweight smooth transitions for common properties. */
-/* Use the `.smooth-transitions` utility on high-level containers to enable. */
-.smooth-transitions * {
+/* Lightweight smooth transitions, scoped to interactive elements only. */
+/* (Avoids a transition on every node in the tree.) */
+.smooth-transitions :is(a, button, input, select, textarea, [role="button"]) {
 	transition-property: background-color, border-color, color, transform, opacity, box-shadow;
 	transition-duration: var(--amboss-animation-duration);
 	transition-timing-function: var(--amboss-animation-ease);
@@ -71,4 +70,14 @@ body,
 	color: var(--color-bg);
 }
 
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+	.smooth-transitions :is(a, button, input, select, textarea, [role="button"]) {
+		transition: none;
+	}
 
+	.btn-add-animate {
+		animation: none;
+		will-change: auto;
+	}
+}

@@ -210,4 +210,35 @@ describe('STL Parser & Mathematical Calculation Engine', () => {
     expect(result.boundingBox.dimensions.z).toBe(20)
     expect(result.isAscii).toBe(true)
   })
+
+  it('parses ASCII STL vertices written in scientific notation', () => {
+    const text = `solid sci
+facet normal 0 0 1
+  outer loop
+    vertex 0.0E+0 0 0
+    vertex 1e1 0 0
+    vertex 0 1.0e+1 0
+  endloop
+endfacet
+endsolid sci`
+    const result = parseSTL(new TextEncoder().encode(text).buffer)
+
+    expect(result.isAscii).toBe(true)
+    expect(result.triangleCount).toBe(1)
+    expect(result.surfaceAreaMm2).toBeCloseTo(50, 5)
+    expect(result.boundingBox.dimensions.x).toBe(10)
+    expect(result.boundingBox.dimensions.y).toBe(10)
+  })
+
+  it('ignores vertex lines containing stray letters instead of producing NaN', () => {
+    const cube = createCalibrationCubeAsciiSTL(20)
+    // Prepend a malformed vertex line; the old [\d.-eE] class would match "abc" and misalign triangles.
+    const text = cube.replace('solid cube', 'solid cube\nvertex 1 2 abc\nvertex x y z\nvertex 1 2 3e')
+    const result = parseSTL(new TextEncoder().encode(text).buffer)
+
+    expect(result.triangleCount).toBe(12)
+    expect(result.volumeMm3).toBeCloseTo(8000, 1)
+    expect(Number.isNaN(result.volumeMm3)).toBe(false)
+    expect(result.boundingBox.dimensions.x).toBe(20)
+  })
 })

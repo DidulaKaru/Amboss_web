@@ -84,23 +84,24 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Category metadata strip */}
-      <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-zinc-500">
+      <div className="flex items-center justify-between text-xs font-mono uppercase tracking-wider text-zinc-400">
         <span>{product.category || 'Component'}</span>
       </div>
 
       {/* Product Name & Description */}
       <div className="space-y-1">
         <h3 className="text-sm font-medium text-zinc-100 line-clamp-1">{product.name}</h3>
-        <p className="text-[11px] text-zinc-400 line-clamp-1 leading-relaxed">{activeDesc}</p>
+        <p className="text-xs text-zinc-400 line-clamp-1 leading-relaxed">{activeDesc}</p>
       </div>
 
       {/* Variant Dropdown: e.g. Color for LEDs, Termination for Jumper Cables */}
       {product.variants && product.variants.length > 1 && (
         <div className="space-y-1 pt-1">
-          <label className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 block font-medium">
+          <label htmlFor={`variant-${product.id}`} className="text-xs font-mono uppercase tracking-wider text-zinc-400 block font-medium">
             {product.variantLabel || 'Option'}
           </label>
           <select
+            id={`variant-${product.id}`}
             data-testid="variant-select"
             value={selectedVariant?.id}
             onChange={(e) => {
@@ -124,17 +125,17 @@ export default function ProductCard({ product }: ProductCardProps) {
           <span className="font-mono text-sm font-semibold text-zinc-100">
             Rs {activePrice.toLocaleString()}
           </span>
-          <span className="text-[10px] font-mono text-zinc-500 ml-1">LKR</span>
+          <span className="text-xs font-mono text-zinc-400 ml-1">LKR</span>
         </div>
 
         <div>
           {isOutOfStock ? (
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-mono text-zinc-500">
+            <span className="inline-flex items-center gap-1.5 text-xs font-mono text-zinc-400">
               <span className="w-1.5 h-1.5 rounded-full bg-zinc-600" />
               Out of stock
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-mono text-emerald-400">
+            <span className="inline-flex items-center gap-1.5 text-xs font-mono text-emerald-400">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
               In stock
             </span>
@@ -150,9 +151,9 @@ export default function ProductCard({ product }: ProductCardProps) {
               type="button"
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
               className="py-1 px-1.5 text-xs text-zinc-400 hover:text-white transition cursor-pointer"
-              title="Decrease quantity"
+              aria-label={`Decrease quantity of ${activeName}`}
             >
-              -
+              <span aria-hidden="true">-</span>
             </button>
             <span className="w-5 text-center text-xs font-mono text-zinc-200">{quantity}</span>
             <button
@@ -160,9 +161,9 @@ export default function ProductCard({ product }: ProductCardProps) {
               onClick={() => setQuantity(Math.min(remainingStock, quantity + 1))}
               disabled={quantity >= remainingStock}
               className="py-1 px-1.5 text-xs text-zinc-400 hover:text-white transition disabled:opacity-40 cursor-pointer"
-              title="Increase quantity"
+              aria-label={`Increase quantity of ${activeName}`}
             >
-              +
+              <span aria-hidden="true">+</span>
             </button>
           </div>
         )}
@@ -173,7 +174,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           disabled={isOutOfStock || remainingStock <= 0}
           className={`flex-1 rounded py-2 px-3 text-xs font-medium transition cursor-pointer flex items-center justify-center ${
             isOutOfStock
-              ? 'bg-zinc-900 text-zinc-500 cursor-not-allowed border border-zinc-800'
+              ? 'bg-zinc-900 text-zinc-400 cursor-not-allowed border border-zinc-800'
               : remainingStock <= 0
               ? 'bg-zinc-900 text-zinc-400 cursor-not-allowed border border-zinc-800'
               : added

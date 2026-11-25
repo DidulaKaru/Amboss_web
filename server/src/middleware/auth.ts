@@ -16,16 +16,9 @@ declare module '@fastify/jwt' {
 
 export async function verifyAdmin(request: FastifyRequest, reply: FastifyReply) {
   try {
-    // 1. Check HttpOnly cookie
-    let token = request.cookies?.amboss_admin_token
-
-    // 2. Fallback to Authorization: Bearer <token>
-    if (!token && request.headers.authorization) {
-      const parts = request.headers.authorization.split(' ')
-      if (parts.length === 2 && parts[0].toLowerCase() === 'bearer') {
-        token = parts[1]
-      }
-    }
+    // Cookie-only auth: the HttpOnly session cookie is the sole credential
+    // (no Authorization header fallback, so tokens are never script-readable).
+    const token = request.cookies?.amboss_admin_token
 
     if (!token) {
       return reply.code(401).send({

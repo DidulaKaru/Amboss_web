@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
-import type { CartItem, Product, DeliveryMethod, InventoryValidationResponse, WhatsAppOrderResponse } from './types'
-import { CartContext, STORAGE_KEY } from './cartInternal'
+import type { CartItem, Product, DeliveryMethod, InventoryValidationResponse, WhatsAppOrderResponse, CartNotice } from './types'
+import { CartContext, STORAGE_KEY, GENERIC_ORDER_REJECTION, getOrderErrorMessage } from './cartInternal'
 import { calculateShopDeliveryFee } from '../../config/logistics'
 import { SITE } from '../../config/site'
 
 const API_BASE = import.meta.env.VITE_API_URL || ''
+const NOTICE_TIMEOUT_MS = 4000
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([])
@@ -13,6 +14,23 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [customerName, setCustomerName] = useState<string>('')
   const [isCheckingOut, setIsCheckingOut] = useState<boolean>(false)
   const [validationErrors, setValidationErrors] = useState<string[]>([])
+  const [isCartOpen, setIsCartOpen] = useState<boolean>(false)
+  const [notice, setNotice] = useState<CartNotice | null>(null)
+
+  const showNotice = useCallback((message: string, type: CartNotice['type'] = 'error') => {
+    setNotice({ message, type })
+  }, [])
+  const dismissNotice = useCallback(() => setNotice(null), [])
+
+  // Auto-dismiss notices; a new notice object restarts the timer
+  useEffect(() => {
+    if (!notice) return
+    const t = setTimeout(() => setNotice(null), NOTICE_TIMEOUT_MS)
+    return () => clearTimeout(t)
+  }, [notice])
+
+  const openCart = useCallback(() => setIsCartOpen(true), [])
+  const closeCart = useCallback(() => setIsCartOpen(false), [])
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -39,14 +57,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (quantity <= 0) return false
 
     if (product.stock <= 0) {
-      alert(`"${product.name}" is currently out of stock.`)
+      showNotice(`"${product.name}" is currently out of stock.`)
       return false
     }
 
     const existing = cartItems.find((item) => item.id === product.id)
     const currentQty = existing ? existing.quantity : 0
     if (currentQty + quantity > product.stock) {
-      alert(`Cannot add item. Maximum available stock reached for "${product.name}".`)
+      showNotice(`Cannot add item. Maximum available stock reached for "${product.name}".`)
       return false
     }
 
@@ -67,7 +85,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     })
 
     return true
-  }, [cartItems])
+  }, [cartItems, showNotice])
 
   const removeFromCart = useCallback((id: string) => {
     setCartItems((prev) => prev.filter((item) => item.id !== id))
@@ -84,7 +102,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (!item) return false
 
     if (newQuantity > item.stock) {
-      alert('Cannot update quantity. Maximum available stock reached.')
+      showNotice(`Cannot update quantity. Maximum available stock reached for "${item.name}".`)
       return false
     }
 
@@ -92,7 +110,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       prev.map((i) => (i.id === id ? { ...i, quantity: newQuantity } : i))
     )
     return true
-  }, [cartItems, removeFromCart])
+  }, [cartItems, removeFromCart, showNotice])
 
   const clearCart = useCallback(() => {
     setCartItems([])
@@ -177,7 +195,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const validation = await validateLiveCart()
     if (!validation.valid) {
       setIsCheckingOut(false)
-      alert(`Please resolve the inventory alerts before ordering:\n\n• ${validation.errors.join('\n• ')}`)
+      // Inventory alerts are shown in the cart drawer's validation list
+      setValidationErrors(
+        validation.errors.length > 0 ? validation.errors : ['Unable to validate inventory. Please try again.']
+      )
       return false
     }
 
@@ -207,6 +228,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           setIsCheckingOut(false)
           return true
         }
+      } else if (res.status >= 400 && res.status < 500) {
+        // The server explicitly rejected the order (unknown SKU, insufficient stock, ...):
+        // surface its message instead of silently falling back to a local link.
+        let message = GENERIC_ORDER_REJECTION
+        try {
+          message = getOrderErrorMessage(await res.json())
+        } catch {
+          // non-JSON error body; keep generic message
+        }
+        setValidationErrors([message])
+        setIsCheckingOut(false)
+        return false
       }
     } catch (e) {
       console.warn('Failed to get formatted WhatsApp payload from backend, falling back:', e)
@@ -269,7 +302,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         deliveryFee,
         cartTotal,
         itemCount,
+        isCartOpen,
+        openCart,
+        closeCart,
         isCheckingOut,
+        notice,
+        dismissNotice,
         validationErrors,
         clearValidationErrors,
         validateLiveCart,

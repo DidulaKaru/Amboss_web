@@ -6,7 +6,7 @@ export default function AboutUs() {
       <div className="max-w-3xl mx-auto space-y-10">
         {/* Header */}
         <div className="space-y-2 border-b border-zinc-800/80 pb-6">
-          <p className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
+          <p className="text-xs font-mono uppercase tracking-wider text-zinc-400">
             About Amboss
           </p>
           <h1 className="text-2xl sm:text-3xl font-medium tracking-tight text-zinc-100">
@@ -33,25 +33,25 @@ export default function AboutUs() {
         {/* Studio Specs */}
         <div className="pt-6 border-t border-zinc-800/80 grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono text-xs">
           <div className="p-4 rounded border border-zinc-800 bg-zinc-900/40 space-y-1">
-            <span className="text-zinc-500 text-[10px] uppercase">Location</span>
+            <span className="text-zinc-400 text-xs uppercase">Location</span>
             <p className="text-zinc-200">Galle, Sri Lanka</p>
           </div>
           <div className="p-4 rounded border border-zinc-800 bg-zinc-900/40 space-y-1">
-            <span className="text-zinc-500 text-[10px] uppercase">Enclosure Volume</span>
+            <span className="text-zinc-400 text-xs uppercase">Enclosure Volume</span>
             <p className="text-zinc-200">Up to 350×350×350 mm</p>
           </div>
           <div className="p-4 rounded border border-zinc-800 bg-zinc-900/40 space-y-1">
-            <span className="text-zinc-500 text-[10px] uppercase">Turnaround</span>
+            <span className="text-zinc-400 text-xs uppercase">Turnaround</span>
             <p className="text-zinc-200">24–48 hours</p>
           </div>
         </div>
 
         {/* Colophon & Discreet System Access */}
-        <div className="pt-10 border-t border-zinc-900 flex justify-between items-center text-[10px] font-mono text-zinc-600">
+        <div className="pt-10 border-t border-zinc-900 flex flex-wrap gap-2 justify-between items-center text-xs font-mono text-zinc-400">
           <span>AMBOSS Engineering & Manufacturing</span>
           <Link
             to="/admin/login"
-            className="text-zinc-600 hover:text-zinc-400 transition"
+            className="text-zinc-400 hover:text-zinc-200 transition"
             title="System Terminal"
           >
             SYS / CTRL

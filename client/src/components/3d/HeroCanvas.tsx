@@ -40,9 +40,12 @@ export default function HeroCanvas() {
     if (!canvas || !container) return
 
     // 1. Initialize Lenis Smooth Scrolling
+    const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const prefersReducedMotion = reducedMotionQuery.matches
+
     const lenis = new Lenis({
       lerp: 0.08,
-      smoothWheel: true,
+      smoothWheel: !prefersReducedMotion,
     })
 
     lenis.on('scroll', ScrollTrigger.update)
@@ -71,7 +74,9 @@ export default function HeroCanvas() {
       alpha: true,
       powerPreference: 'high-performance',
     })
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    const getPixelRatio = () =>
+      Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1.5 : 2)
+    renderer.setPixelRatio(getPixelRatio())
     renderer.setSize(window.innerWidth, window.innerHeight)
     renderer.outputColorSpace = THREE.SRGBColorSpace
 
@@ -125,6 +130,7 @@ export default function HeroCanvas() {
     window.addEventListener('pointermove', onPointerMove, { passive: true })
 
     // 5. GSAP ScrollTrigger Scrub Timeline
+    let lastStage = 0
     const trigger = ScrollTrigger.create({
       trigger: container,
       start: 'top top',
@@ -134,7 +140,7 @@ export default function HeroCanvas() {
         const progress = self.progress
         shaderUniforms.uProgress.value = progress
 
-        // Rotate mesh through 360 deg during the 300vh scroll scrub
+        // Rotate mesh through 360 deg across the scroll scrub
         mesh.rotation.y = -0.4 + progress * Math.PI * 2.2
         mesh.rotation.x = 0.35 + Math.sin(progress * Math.PI) * 0.2
 
@@ -144,19 +150,19 @@ export default function HeroCanvas() {
         // Grid opacity fades out in later stages
         grid.material.opacity = Math.max(0.04, 0.3 - progress * 0.25)
 
-        // Stage updater
-        if (progress < 0.33) {
-          setActiveStage(0)
-        } else if (progress < 0.66) {
-          setActiveStage(1)
-        } else {
-          setActiveStage(2)
+        // Stage updater: only touch React state when the stage actually changes
+        const stage = progress < 0.33 ? 0 : progress < 0.66 ? 1 : 2
+        if (stage !== lastStage) {
+          lastStage = stage
+          setActiveStage(stage)
         }
       },
     })
 
-    // 6. Animation Loop (60 FPS)
-    let animationFrameId: number
+    // 6. Animation Loop (60 FPS), paused when off-screen or tab hidden
+    let animationFrameId = 0
+    let running = false
+    let heroVisible = true
     const startTime = performance.now()
 
     const animate = () => {
@@ -165,20 +171,52 @@ export default function HeroCanvas() {
       const elapsedTime = (performance.now() - startTime) * 0.001
       shaderUniforms.uTime.value = elapsedTime
 
-      // Smooth mouse follow interpolation
-      currentMouseX += (targetMouseX - currentMouseX) * 0.05
-      currentMouseY += (targetMouseY - currentMouseY) * 0.05
+      if (prefersReducedMotion) {
+        // No mouse parallax or idle float; still render so scroll progress updates.
+        mesh.position.y = 0
+        mesh.rotation.z = 0
+        camera.position.x = 0
+        camera.position.y = 0.4
+      } else {
+        // Smooth mouse follow interpolation
+        currentMouseX += (targetMouseX - currentMouseX) * 0.05
+        currentMouseY += (targetMouseY - currentMouseY) * 0.05
 
-      // Continuous subtle idle float + mouse tilt
-      mesh.position.y = Math.sin(elapsedTime * 1.2) * 0.06
-      mesh.rotation.z = currentMouseX * 0.5
-      camera.position.x = currentMouseX * 0.8
-      camera.position.y = 0.4 - currentMouseY * 0.8
+        // Continuous subtle idle float + mouse tilt
+        mesh.position.y = Math.sin(elapsedTime * 1.2) * 0.06
+        mesh.rotation.z = currentMouseX * 0.5
+        camera.position.x = currentMouseX * 0.8
+        camera.position.y = 0.4 - currentMouseY * 0.8
+      }
       camera.lookAt(0, 0, 0)
 
       renderer.render(scene, camera)
     }
-    animate()
+
+    const syncLoop = () => {
+      const shouldRun = heroVisible && !document.hidden
+      if (shouldRun && !running) {
+        running = true
+        animationFrameId = requestAnimationFrame(animate)
+      } else if (!shouldRun && running) {
+        running = false
+        cancelAnimationFrame(animationFrameId)
+      }
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          heroVisible = entry.isIntersecting
+        }
+        syncLoop()
+      },
+      { threshold: 0 }
+    )
+    observer.observe(container)
+
+    document.addEventListener('visibilitychange', syncLoop)
+    syncLoop()
 
     // 7. Responsive Window Resize
     const onResize = () => {
@@ -187,7 +225,7 @@ export default function HeroCanvas() {
       camera.aspect = width / height
       camera.updateProjectionMatrix()
       renderer.setSize(width, height)
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+      renderer.setPixelRatio(getPixelRatio())
       shaderUniforms.uResolution.value.set(width, height)
     }
     window.addEventListener('resize', onResize)
@@ -196,12 +234,18 @@ export default function HeroCanvas() {
     return () => {
       window.removeEventListener('resize', onResize)
       window.removeEventListener('pointermove', onPointerMove)
+      document.removeEventListener('visibilitychange', syncLoop)
+      observer.disconnect()
+      running = false
       cancelAnimationFrame(animationFrameId)
       trigger.kill()
+      lenis.off('scroll', ScrollTrigger.update)
       gsap.ticker.remove(tickerCb)
       lenis.destroy()
       geometry.dispose()
       material.dispose()
+      grid.geometry.dispose()
+      ;(grid.material as THREE.Material).dispose()
       renderer.dispose()
     }
   }, [])
@@ -210,7 +254,7 @@ export default function HeroCanvas() {
     <div
       id="hero-scroll-track"
       ref={containerRef}
-      className="relative w-full h-[300vh] bg-zinc-950"
+      className="relative w-full h-[200vh] md:h-[300vh] bg-zinc-950"
     >
       {/* Pinned Viewport Container */}
       <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-between pointer-events-none select-none">
@@ -236,7 +280,7 @@ export default function HeroCanvas() {
         {/* Top Header / Indicator */}
         <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="hidden sm:inline-block text-[11px] font-mono text-zinc-500 uppercase tracking-wider">
+            <span className="hidden sm:inline-block text-xs font-mono text-zinc-400 uppercase tracking-wider">
               Scroll to explore process
             </span>
           </div>
@@ -246,21 +290,31 @@ export default function HeroCanvas() {
         <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col justify-center pointer-events-none">
           <div className="max-w-xl">
 
-            {/* Dynamic Stage Main Title */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight text-zinc-100 leading-tight">
-              {STAGES[activeStage].title}
+            {/* Static page heading (stable for crawlers and screen readers) */}
+            <h1 className="text-xs sm:text-sm font-mono uppercase tracking-wider text-zinc-400">
+              From Concept to Reality
             </h1>
 
-            {/* Subtitle description */}
-            <p className="mt-3 text-sm sm:text-base text-zinc-300 max-w-md leading-relaxed">
-              {STAGES[activeStage].subtitle}
-            </p>
+            {/* Scroll-driven stage title + description, announced politely */}
+            <div aria-live="polite" aria-atomic="true" data-testid="hero-stage">
+              <h2
+                data-testid="hero-stage-title"
+                className="mt-3 text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight text-zinc-100 leading-tight"
+              >
+                {STAGES[activeStage].title}
+              </h2>
+              <p
+                data-testid="hero-stage-subtitle"
+                className="mt-3 text-sm sm:text-base text-zinc-300 max-w-md leading-relaxed"
+              >
+                {STAGES[activeStage].subtitle}
+              </p>
+            </div>
 
             {/* Minimalist CTAs */}
             <div className="mt-8 flex flex-wrap items-center gap-3 pointer-events-auto">
               <Link
                 to="/quote"
-                style={{ color: '#09090b' }}
                 className="inline-flex items-center justify-center rounded bg-zinc-100 hover:bg-white px-5 py-2.5 text-xs sm:text-sm font-semibold text-zinc-950 hover:text-black transition shadow-sm"
               >
                 Instant Quote

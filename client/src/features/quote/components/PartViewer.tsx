@@ -17,6 +17,7 @@ export default function PartViewer({
   const [autoRotate, setAutoRotate] = useState(true)
   const materialRef = useRef<THREE.MeshStandardMaterial | null>(null)
   const controlsRef = useRef<OrbitControls | null>(null)
+  const invalidateRef = useRef<() => void>(() => {})
 
   useEffect(() => {
     const container = mountRef.current
@@ -34,8 +35,6 @@ export default function PartViewer({
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false })
     renderer.setSize(width, height)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    renderer.shadowMap.enabled = true
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap
     container.appendChild(renderer.domElement)
 
     // OrbitControls
@@ -51,7 +50,6 @@ export default function PartViewer({
 
     const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.2)
     dirLight1.position.set(5, 10, 7)
-    dirLight1.castShadow = true
     scene.add(dirLight1)
 
     const dirLight2 = new THREE.DirectionalLight(0xa1a1aa, 0.5)
@@ -74,8 +72,6 @@ export default function PartViewer({
     materialRef.current = material
 
     const mesh = new THREE.Mesh(geometry, material)
-    mesh.castShadow = true
-    mesh.receiveShadow = true
     scene.add(mesh)
 
     // Ground Plane Grid (minimal dark zinc grid)
@@ -100,31 +96,50 @@ export default function PartViewer({
     camera.lookAt(0, 0, 0)
     controls.target.set(0, 0, 0)
 
-    // Render loop
-    let animId: number
+    // Render on demand: only draw when something changed (controls moved,
+    // damping still settling, auto-rotate active, resize, or wireframe toggle).
+    let animId = 0
+    let needsRender = true
+    const invalidate = () => {
+      needsRender = true
+    }
+    invalidateRef.current = invalidate
+    controls.addEventListener('change', invalidate)
+
     const animate = () => {
       animId = requestAnimationFrame(animate)
+      // controls.update() returns true (and fires 'change') when the camera moved,
+      // which covers auto-rotate and damping inertia.
       controls.update()
-      renderer.render(scene, camera)
+      if (needsRender) {
+        needsRender = false
+        renderer.render(scene, camera)
+      }
     }
     animate()
 
     // Handle container resize
     const handleResize = () => {
-      if (!container) return
       const w = container.clientWidth
       const h = container.clientHeight || 400
+      if (w === 0) return
       camera.aspect = w / h
       camera.updateProjectionMatrix()
       renderer.setSize(w, h)
+      invalidate()
     }
-    window.addEventListener('resize', handleResize)
+    const resizeObserver = new ResizeObserver(handleResize)
+    resizeObserver.observe(container)
 
     return () => {
-      window.removeEventListener('resize', handleResize)
+      resizeObserver.disconnect()
+      controls.removeEventListener('change', invalidate)
+      invalidateRef.current = () => {}
       cancelAnimationFrame(animId)
       controls.dispose()
       geometry.dispose()
+      grid.geometry.dispose()
+      ;(grid.material as THREE.Material).dispose()
       material.dispose()
       renderer.dispose()
       if (container.contains(renderer.domElement)) {
@@ -137,6 +152,7 @@ export default function PartViewer({
   useEffect(() => {
     if (materialRef.current) {
       materialRef.current.wireframe = wireframe
+      invalidateRef.current()
     }
   }, [wireframe])
 
@@ -154,7 +170,7 @@ export default function PartViewer({
 
       {/* Top Header & Controls */}
       <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-zinc-900/90 border border-zinc-800 text-[11px] font-mono text-zinc-300">
+        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-zinc-900/90 border border-zinc-800 text-xs font-mono text-zinc-300">
           <span className="truncate max-w-[160px] sm:max-w-xs">{fileName}</span>
         </div>
 
@@ -162,32 +178,34 @@ export default function PartViewer({
         <div className="flex items-center gap-1.5 pointer-events-auto">
           <button
             type="button"
+            aria-pressed={wireframe}
             onClick={() => setWireframe(!wireframe)}
-            className={`px-2 py-1 rounded text-[11px] font-mono border transition ${
+            className={`px-2 py-1 rounded text-xs font-mono border transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-300 ${
               wireframe
                 ? 'bg-zinc-800 border-zinc-600 text-zinc-100'
                 : 'bg-zinc-900/90 border-zinc-800 text-zinc-400 hover:text-zinc-200'
             }`}
           >
-            {wireframe ? 'Solid' : 'Wireframe'}
+            Wireframe
           </button>
 
           <button
             type="button"
+            aria-pressed={autoRotate}
             onClick={() => setAutoRotate(!autoRotate)}
-            className={`px-2 py-1 rounded text-[11px] font-mono border transition ${
+            className={`px-2 py-1 rounded text-xs font-mono border transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-300 ${
               autoRotate
                 ? 'bg-zinc-800 border-zinc-600 text-zinc-100'
                 : 'bg-zinc-900/90 border-zinc-800 text-zinc-400 hover:text-zinc-200'
             }`}
           >
-            {autoRotate ? 'Pause' : 'Rotate'}
+            Rotate
           </button>
         </div>
       </div>
 
       {/* Bottom Model Dimensions Pill */}
-      <div className="absolute bottom-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2 pointer-events-none text-[11px] font-mono">
+      <div className="absolute bottom-3 left-3 right-3 flex flex-wrap items-center justify-between gap-2 pointer-events-none text-xs font-mono">
         <div className="px-2.5 py-1 rounded bg-zinc-900/90 border border-zinc-800 text-zinc-300">
           {stlResult.boundingBox.dimensions.x} × {stlResult.boundingBox.dimensions.y} × {stlResult.boundingBox.dimensions.z} mm
         </div>

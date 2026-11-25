@@ -36,7 +36,6 @@ test.describe('Admin CMS & Discreet System Gateway Flow', () => {
           contentType: 'application/json',
           body: JSON.stringify({
             success: true,
-            token: 'mock_jwt_token',
             user: { username: 'Dory', role: 'admin' },
           }),
         })

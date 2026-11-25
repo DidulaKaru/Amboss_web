@@ -52,6 +52,21 @@ endsolid cube`
     await expect(page.locator('button:has-text("Hapugala Shop")')).toBeVisible()
     await expect(page.locator('button:has-text("Courier")')).toBeVisible()
 
+    // Selected options are exposed to assistive tech via aria-pressed
+    await expect(page.locator('button:has-text("UoR Faculty")')).toHaveAttribute('aria-pressed', 'true')
+    await page.locator('button:has-text("Courier")').click()
+    await expect(page.locator('button:has-text("Courier")')).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.locator('button:has-text("UoR Faculty")')).toHaveAttribute('aria-pressed', 'false')
+
+    // Quantity stepper is labelled and capped at 100
+    const decrease = page.getByRole('button', { name: 'Decrease quantity' })
+    const increase = page.getByRole('button', { name: 'Increase quantity' })
+    await expect(decrease).toBeDisabled()
+    await increase.click()
+    await expect(decrease).toBeEnabled()
+    await decrease.click()
+    await expect(decrease).toBeDisabled()
+
     // Verify WhatsApp order button
     const orderBtn = page.locator('button:has-text("Order via WhatsApp")')
     await expect(orderBtn).toBeVisible()

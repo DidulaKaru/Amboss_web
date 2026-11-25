@@ -17,7 +17,7 @@ This directory houses the Fastify REST API, PostgreSQL database layer (Drizzle O
    - Protected endpoints for adding, updating, and removing portfolio records.
 4. **Single-Owner Admin Authentication & CMS:**
    - Environment-driven bcrypt verification (`ADMIN_PASSWORD_HASH`).
-   - Issues 24-hour JWT tokens stored in HttpOnly cookies (`amboss_admin_token`) and Bearer headers.
+   - Issues 12-hour JWT tokens stored only in an HttpOnly cookie (`amboss_admin_token`). The token is never returned in the JSON body and `Authorization: Bearer` headers are not accepted.
    - Restricts catalog mutations (`POST`, `PUT`, `DELETE /api/v1/products` and `/api/v1/portfolio`) with `verifyAdmin` middleware.
 5. **Logistics & WhatsApp Payload Generation:**
    - Formats customer orders with transparent itemization and delivery calculations.
@@ -60,9 +60,20 @@ Copy `server/.env.example` to `server/.env` to configure settings:
 | `CORS_ORIGIN` | `http://localhost:5173` | Allowed CORS origins (comma-separated in production) |
 | `DATABASE_URL` | `postgresql://...` | PostgreSQL pooled connection string (Neon pooled URL with `?sslmode=require`) |
 | `DATABASE_URL_DIRECT` | `postgresql://...` | Unpooled direct connection string for running migrations & seeds |
+| `TRUST_PROXY_HOPS` | `1` (production), `0` otherwise | Number of reverse-proxy hops trusted for `X-Forwarded-For`. Set to the number of proxies in front of the server; `0` trusts none. Controls `request.ip`, which keys the login lockout and rate limits, so it must match your deployment to prevent IP spoofing |
 | `JWT_SECRET` | `amboss-industrial-...` | Secret used to sign admin session tokens |
 | `ADMIN_USERNAME`| `Dory` | Single-owner admin username |
 | `ADMIN_PASSWORD_HASH` | `$2b$10$...` | Bcrypt hash for admin password |
+
+---
+
+## Security Notes
+
+- **Rate limiting** (`@fastify/rate-limit`, per IP): 120 req/min globally, 20/min on `POST /api/v1/quote/calculate`, 30/min on `POST /api/v1/orders/*`, 10/min on admin login (in addition to the 5-failure / 15-minute lockout). Limits are effectively disabled under `NODE_ENV=test` unless `RATE_LIMIT_IN_TEST=1`. State is in-memory (per process); use a shared store if you scale horizontally.
+- **Order totals are computed server-side.** `POST /api/v1/orders/whatsapp-payload` ignores client prices. Shop items are `{ sku, quantity }` (SKU-only matching, stock enforced, unknown/insufficient items return 400). Quote orders take the same fields as `/quote/calculate` (`volumeCm3`, `surfaceAreaCm2`, `dimensions`, `materialSlug`, ...) and are re-priced. The WhatsApp number is fixed in `src/config/business.ts`.
+- **Input bounds**: request bodies are capped at 100kb; all zod schemas have `.max()` limits; `imageUrl` must be a relative `images/...` path.
+- **Errors**: 5xx responses return a generic `Internal Server Error`; details are only logged.
+- **Caching**: public list endpoints (products, portfolio, materials, machines) send `Cache-Control: public, max-age=60, stale-while-revalidate=300`; admin and mutating routes do not.
 
 ---
 

@@ -1,23 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-const mockStorage: Record<string, string> = {}
-const localStorageMock = {
-  getItem: (key: string) => mockStorage[key] || null,
-  setItem: (key: string, val: string) => {
-    mockStorage[key] = val
-  },
-  removeItem: (key: string) => {
-    delete mockStorage[key]
-  },
-  clear: () => {
-    for (const k of Object.keys(mockStorage)) delete mockStorage[k]
-  },
-}
-
 describe('Admin Authentication & Inventory Control Suite', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
-    localStorageMock.clear()
   })
 
   it('correctly calculates metrics for inventory management', () => {
@@ -73,39 +58,51 @@ describe('Admin Authentication & Inventory Control Suite', () => {
     expect(handleStockUpdate(5, 1)).toBe(6)
   })
 
-  it('validates authentication token storage in localStorage', () => {
-    const sampleToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test'
-    localStorageMock.setItem('amboss_admin_token', sampleToken)
-    expect(localStorageMock.getItem('amboss_admin_token')).toBe(sampleToken)
-
-    localStorageMock.removeItem('amboss_admin_token')
-    expect(localStorageMock.getItem('amboss_admin_token')).toBeNull()
-  })
-
-  it('generates correct auth headers for JSON mutations vs body-less DELETE requests', () => {
-    const sampleToken = 'valid-jwt-token'
-    localStorageMock.setItem('amboss_admin_token', sampleToken)
-
+  it('generates JSON headers for mutations and omits Content-Type on body-less DELETE, never sending Authorization', () => {
+    // Mirrors AdminDashboard.getAuthHeaders: auth is the HttpOnly cookie (credentials: 'include') only
     const getAuthHeaders = (includeContentType = true): Record<string, string> => {
       const headers: Record<string, string> = {}
       if (includeContentType) {
         headers['Content-Type'] = 'application/json'
       }
-      const token = localStorageMock.getItem('amboss_admin_token')
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`
-      }
       return headers
     }
 
-    // POST / PUT with body
     const postHeaders = getAuthHeaders(true)
     expect(postHeaders['Content-Type']).toBe('application/json')
-    expect(postHeaders['Authorization']).toBe(`Bearer ${sampleToken}`)
+    expect(postHeaders['Authorization']).toBeUndefined()
 
     // DELETE without body (must not set Content-Type to avoid 400 Bad Request in Fastify)
     const deleteHeaders = getAuthHeaders(false)
     expect(deleteHeaders['Content-Type']).toBeUndefined()
-    expect(deleteHeaders['Authorization']).toBe(`Bearer ${sampleToken}`)
+    expect(deleteHeaders['Authorization']).toBeUndefined()
+  })
+
+  describe('cookie-only session (no client-side token)', () => {
+    const sources = import.meta.glob('../src/features/admin/*.tsx', {
+      query: '?raw',
+      import: 'default',
+      eager: true,
+    }) as Record<string, string>
+    const read = (f: string) => sources[`../src/features/admin/${f}`]
+
+    it('AdminAuthContext only removes the legacy localStorage token and sends no Authorization header', () => {
+      const src = read('AdminAuthContext.tsx')
+      expect(src).not.toMatch(/localStorage\.(getItem|setItem)/)
+      expect(src).not.toMatch(/Authorization/)
+      expect(src).toMatch(/localStorage\.removeItem\('amboss_admin_token'\)/)
+      expect(src).toMatch(/credentials: 'include'/)
+    })
+
+    it('AdminDashboard never touches localStorage or Authorization and routes mutations through adminFetch', () => {
+      const src = read('AdminDashboard.tsx')
+      expect(src).not.toMatch(/localStorage/)
+      expect(src).not.toMatch(/Authorization/)
+      expect(src).toMatch(/credentials: 'include'/)
+      // Every non-GET fetch must go through adminFetch (credentials + 401 handling)
+      expect(src).not.toMatch(/await fetch\([^)]*\{\s*method:/)
+      expect(src).toMatch(/res\.status === 401/)
+      expect(src).toMatch(/navigate\('\/admin\/login'/)
+    })
   })
 })

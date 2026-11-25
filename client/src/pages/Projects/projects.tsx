@@ -19,7 +19,7 @@ export default function Projects() {
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent" />
 
         <div className="relative z-10 mx-auto w-full max-w-6xl px-4 pb-10 sm:px-6 lg:px-8 space-y-4">
-          <p className="text-[11px] font-mono uppercase tracking-wider text-zinc-400">
+          <p className="text-xs font-mono uppercase tracking-wider text-zinc-400">
             Featured
           </p>
           <div className="inline-flex items-center">

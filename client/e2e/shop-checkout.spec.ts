@@ -29,10 +29,12 @@ test.describe('Maker Shop Browsing & Cart Flow', () => {
     await addBtn.click()
 
     // Open Cart Drawer using header cart icon button
-    const cartBtn = page.locator('header button[aria-label="Shopping cart"]').first()
+    const cartBtn = page.locator('header button[aria-label^="Shopping cart"]').first()
     await cartBtn.click()
 
-    // Cart drawer should be visible with item
+    // Cart drawer is an accessible dialog (no blocking alert() dialogs are used anywhere)
+    const drawer = page.getByRole('dialog', { name: 'Cart' })
+    await expect(drawer).toBeVisible()
     await expect(page.locator('h2:has-text("Cart")').first()).toBeVisible()
     await expect(page.locator('button:has-text("Order via WhatsApp")').first()).toBeVisible()
 
@@ -40,5 +42,11 @@ test.describe('Maker Shop Browsing & Cart Flow', () => {
     await expect(page.locator('text=UoR Faculty').first()).toBeVisible()
     await expect(page.locator('text=Hapugala Shop').first()).toBeVisible()
     await expect(page.locator('text=Islandwide Courier').first()).toBeVisible()
+
+    // Escape closes the drawer and returns focus to the opener
+    await page.keyboard.press('Escape')
+    // closed drawer is aria-hidden/inert, so it drops out of the accessibility tree
+    await expect(drawer).toHaveCount(0)
+    await expect(cartBtn).toBeFocused()
   })
 })

@@ -61,7 +61,7 @@ function Capabilities({
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="space-y-2">
-          <p className="text-[11px] uppercase tracking-wider font-mono text-zinc-400">{kicker}</p>
+          <p className="text-xs uppercase tracking-wider font-mono text-zinc-400">{kicker}</p>
           <h2 className="text-2xl sm:text-3xl font-medium tracking-tight text-zinc-100">{title}</h2>
           <p className="text-xs sm:text-sm text-zinc-400 max-w-2xl">{subtitle}</p>
         </div>
@@ -96,7 +96,7 @@ function Capabilities({
                     {c.specs.map((s, i) => (
                       <li
                         key={i}
-                        className="rounded border border-zinc-800 bg-zinc-900/80 px-2.5 py-1 text-[11px] font-mono text-zinc-400"
+                        className="rounded border border-zinc-800 bg-zinc-900/80 px-2.5 py-1 text-xs font-mono text-zinc-400"
                       >
                         {s}
                       </li>

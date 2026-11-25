@@ -111,7 +111,8 @@ describe('Admin Authentication & CMS API', () => {
     expect(resLogin.statusCode).toBe(200)
     const jsonLogin = resLogin.json()
     expect(jsonLogin.success).toBe(true)
-    expect(jsonLogin.token).toBeDefined()
+    // Token must only travel in the HttpOnly cookie, never in the JSON body
+    expect(jsonLogin.token).toBeUndefined()
     expect(jsonLogin.user.username).toBe('Dory')
 
     // Verify Set-Cookie header contains amboss_admin_token and HttpOnly
@@ -120,9 +121,21 @@ describe('Admin Authentication & CMS API', () => {
     expect(cookieHeader).toContain('amboss_admin_token')
     expect(cookieHeader.toLowerCase()).toContain('httponly')
 
-    const authHeaders = {
-      Authorization: `Bearer ${jsonLogin.token}`,
-    }
+    const authHeaders = { cookie: cookieHeader.split(';')[0] }
+
+    // Bearer tokens are no longer accepted: a valid JWT in the Authorization header must be rejected
+    const jwtValue = authHeaders.cookie.split('=')[1]
+    const resBearer = await app.inject({
+      method: 'GET',
+      url: '/api/v1/admin/me',
+      headers: { authorization: `Bearer ${jwtValue}` },
+    })
+    expect(resBearer.statusCode).toBe(401)
+
+    // Cookie lifetime and JWT expiry both 12h
+    expect(cookieHeader).toContain('Max-Age=43200')
+    const payload = JSON.parse(Buffer.from(jwtValue.split('.')[1], 'base64url').toString())
+    expect(payload.exp - payload.iat).toBe(43200)
 
     // 2. GET /api/v1/admin/me
     const resMe = await app.inject({
@@ -207,6 +220,30 @@ describe('Admin Authentication & CMS API', () => {
     expect(resOptions.headers['access-control-allow-methods']).toContain('POST')
 
     await app.close()
+  })
+
+  it('does not let a spoofed X-Forwarded-For bypass the login lockout (production trust-proxy)', async () => {
+    const originalEnv = env.NODE_ENV
+    ;(env as any).NODE_ENV = 'production'
+    try {
+      const app = await buildApp()
+      // Real peer is the proxy; the proxy appends the true client IP as the right-most entry.
+      // The attacker rotates the left-hand (client-supplied) entries on every attempt.
+      let last
+      for (let i = 0; i < 6; i++) {
+        last = await app.inject({
+          method: 'POST',
+          url: '/api/v1/admin/login',
+          remoteAddress: '10.0.0.1',
+          headers: { 'x-forwarded-for': `203.0.113.${i + 1}, 198.51.100.77` },
+          payload: { username: 'admin', password: 'bad-password' },
+        })
+      }
+      expect(last!.statusCode).toBe(429)
+      await app.close()
+    } finally {
+      ;(env as any).NODE_ENV = originalEnv
+    }
   })
 
   it('sets SameSite=None and Secure on admin cookie when in production mode for cross-origin deployments', async () => {

@@ -1,43 +1,53 @@
 import type { FastifyPluginAsync } from 'fastify'
 import { getDb, schema } from '../db/index.js'
 import { INITIAL_PORTFOLIO_ITEMS } from '../db/seedData.js'
-import { eq, asc } from 'drizzle-orm'
+import { and, eq, asc } from 'drizzle-orm'
 import { z } from 'zod'
 import { verifyAdmin } from '../middleware/auth.js'
 import { env } from '../config/env.js'
+import { imageUrlSchema, LIMITS } from '../config/validation.js'
+import { PUBLIC_CACHE_CONTROL } from '../config/cache.js'
 import { randomUUID } from 'node:crypto'
 
 const querySchema = z.object({
-  category: z.string().optional(),
+  category: z.string().max(LIMITS.category).optional(),
 })
 
 const createPortfolioItemSchema = z.object({
   title: z.string().min(2, 'Title is required').max(255),
-  category: z.string().optional().default('general'),
+  category: z.string().max(LIMITS.category).optional().default('general'),
   material: z.string().max(100).optional().default(''),
-  imageUrl: z.string().min(1, 'Image URL is required'),
-  aspectRatio: z.string().optional().default('auto'),
-  description: z.string().optional().default(''),
-  displayOrder: z.coerce.number().int().optional().default(0),
+  imageUrl: imageUrlSchema,
+  aspectRatio: z.string().max(20).optional().default('auto'),
+  description: z.string().max(5000).optional().default(''),
+  displayOrder: z.coerce.number().int().min(0).max(100_000).optional().default(0),
   isActive: z.boolean().default(true),
 })
 
 const updatePortfolioItemSchema = z.object({
   title: z.string().min(2).max(255).optional(),
-  category: z.string().optional(),
+  category: z.string().max(LIMITS.category).optional(),
   material: z.string().max(100).optional(),
-  imageUrl: z.string().min(1).optional(),
-  aspectRatio: z.string().optional(),
-  description: z.string().optional(),
-  displayOrder: z.coerce.number().int().optional(),
+  imageUrl: imageUrlSchema.optional(),
+  aspectRatio: z.string().max(20).optional(),
+  description: z.string().max(5000).optional(),
+  displayOrder: z.coerce.number().int().min(0).max(100_000).optional(),
   isActive: z.boolean().optional(),
 })
 
 export const portfolioRoutes: FastifyPluginAsync = async (fastify) => {
   // Public: List active portfolio items ordered by displayOrder asc
-  fastify.get('/api/v1/portfolio', async (request) => {
+  fastify.get('/api/v1/portfolio', async (request, reply) => {
     const parseResult = querySchema.safeParse(request.query)
-    const category = parseResult.success ? parseResult.data.category : undefined
+    if (!parseResult.success) {
+      return reply.code(400).send({
+        success: false,
+        error: 'Validation failed',
+        details: parseResult.error.errors,
+      })
+    }
+    const category = parseResult.data.category
+    reply.header('Cache-Control', PUBLIC_CACHE_CONTROL)
 
     const db = getDb()
     if (db) {
@@ -45,11 +55,17 @@ export const portfolioRoutes: FastifyPluginAsync = async (fastify) => {
         const rows = await db
           .select()
           .from(schema.portfolioItems)
-          .where(eq(schema.portfolioItems.isActive, true))
+          .where(
+            category
+              ? and(
+                  eq(schema.portfolioItems.isActive, true),
+                  eq(schema.portfolioItems.category, category)
+                )
+              : eq(schema.portfolioItems.isActive, true)
+          )
           .orderBy(asc(schema.portfolioItems.displayOrder))
 
-        const filtered = category ? rows.filter((r) => r.category === category) : rows
-        return { success: true, count: filtered.length, data: filtered }
+        return { success: true, count: rows.length, data: rows }
       } catch (err) {
         fastify.log.warn({ err }, 'Querying portfolio_items failed, using fallback dataset')
       }
@@ -72,6 +88,7 @@ export const portfolioRoutes: FastifyPluginAsync = async (fastify) => {
   // Public: Single portfolio item by ID
   fastify.get('/api/v1/portfolio/:id', async (request, reply) => {
     const { id } = request.params as { id: string }
+    reply.header('Cache-Control', PUBLIC_CACHE_CONTROL)
 
     const db = getDb()
     if (db) {

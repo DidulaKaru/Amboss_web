@@ -211,33 +211,46 @@ function computeSafeBoundingBox(
   }
 }
 
+// A finite decimal number, optionally signed, with optional exponent (e.g. 1.5, -2, .5, 1e-3, 3.2E+4)
+const NUM = String.raw`[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?`
+
 function parseAsciiSTL(text: string): STLParseResult {
-  const vertexPattern = /vertex\s+([\d.-eE]+)\s+([\d.-eE]+)\s+([\d.-eE]+)/g
-  const matches = [...text.matchAll(vertexPattern)]
-  const vertexCount = matches.length
+  // Lazily iterate vertex lines with exec() and fill a growing Float32Array,
+  // instead of materialising every regex match in memory.
+  const vertexPattern = new RegExp(
+    String.raw`vertex\s+(${NUM})\s+(${NUM})\s+(${NUM})(?=\s|$)`,
+    'g'
+  )
+  let coords = new Float32Array(3 * 3 * 1024)
+  let coordCount = 0
+  let match: RegExpExecArray | null
+  while ((match = vertexPattern.exec(text)) !== null) {
+    if (coordCount + 3 > coords.length) {
+      const grown = new Float32Array(coords.length * 2)
+      grown.set(coords)
+      coords = grown
+    }
+    coords[coordCount++] = parseFloat(match[1])
+    coords[coordCount++] = parseFloat(match[2])
+    coords[coordCount++] = parseFloat(match[3])
+  }
+
+  const vertexCount = coordCount / 3
   const triangleCount = Math.floor(vertexCount / 3)
 
-  const positions = new Float32Array(triangleCount * 9)
+  const positions = coords.slice(0, triangleCount * 9)
 
   let minX = Infinity, minY = Infinity, minZ = Infinity
   let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity
 
   let totalVolume = 0
   let totalArea = 0
-  let posIdx = 0
 
   for (let i = 0; i < triangleCount; i++) {
-    const m1 = matches[i * 3]
-    const m2 = matches[i * 3 + 1]
-    const m3 = matches[i * 3 + 2]
-
-    const v1x = parseFloat(m1[1]), v1y = parseFloat(m1[2]), v1z = parseFloat(m1[3])
-    const v2x = parseFloat(m2[1]), v2y = parseFloat(m2[2]), v2z = parseFloat(m2[3])
-    const v3x = parseFloat(m3[1]), v3y = parseFloat(m3[2]), v3z = parseFloat(m3[3])
-
-    positions[posIdx++] = v1x; positions[posIdx++] = v1y; positions[posIdx++] = v1z
-    positions[posIdx++] = v2x; positions[posIdx++] = v2y; positions[posIdx++] = v2z
-    positions[posIdx++] = v3x; positions[posIdx++] = v3y; positions[posIdx++] = v3z
+    const o = i * 9
+    const v1x = positions[o], v1y = positions[o + 1], v1z = positions[o + 2]
+    const v2x = positions[o + 3], v2y = positions[o + 4], v2z = positions[o + 5]
+    const v3x = positions[o + 6], v3y = positions[o + 7], v3z = positions[o + 8]
 
     if (v1x < minX) minX = v1x; if (v1x > maxX) maxX = v1x
     if (v2x < minX) minX = v2x; if (v2x > maxX) maxX = v2x
