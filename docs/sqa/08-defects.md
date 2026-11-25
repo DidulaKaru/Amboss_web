@@ -28,13 +28,13 @@ Every defect below was found during this SQA exercise and is backed by an automa
 | ID | Title | Found by | Severity | Priority | Status | Issue |
 |---|---|---|---|---|---|---|
 | BUG-01 | Minimum print price (250 LKR) can never apply; cheapest quote is 450 LKR | BVA: TC-BB-18 | Minor | P3 | **Fixed** in `1534c60` (PR #12): minimum removed. Awaiting verification | [#6](https://github.com/DidulaKaru/Amboss_web/issues/6) |
-| BUG-02 | `/health` reports `database: available` when the DB is unreachable | Exploratory API testing | Major | P2 | New | [#7](https://github.com/DidulaKaru/Amboss_web/issues/7) |
+| BUG-02 | `/health` reports `database: available` when the DB is unreachable | Exploratory API testing | Major | P2 | **Open, deferred**: fix planned for later | [#7](https://github.com/DidulaKaru/Amboss_web/issues/7) |
 | BUG-03 | Open or non-watertight STL gets a non-zero volume and is priced as valid | Selenium SEL-02 screenshot, then EP TC-BB-23 | Major | P2 | **Closed**: detection (`d3f36e9`) and quote page warning (`97a4c75`, PR #13) | [#8](https://github.com/DidulaKaru/Amboss_web/issues/8) |
 | BUG-04 | Public default JWT secret and admin password hash are used, with no fail-fast | OWASP A02/A07 manual check | **Critical** | **P1** | **Closed**: fixed in `df4d5b6`; both production secrets rotated; verified on the live admin login | [#9](https://github.com/DidulaKaru/Amboss_web/issues/9) |
 | BUG-05 | Stale E2E assertion (hero heading) made CI red on `dev` | CI run #44356632231, then a local Playwright run | Minor (test defect) | P1 (blocks pipeline) | **Fixed**: `client/e2e/hero-scroll.spec.ts` updated | – |
 | BUG-06 | Stock quantity typed in the admin dashboard is never saved | Code review while fixing SonarCloud findings | Major | P2 | **Fixed** in `1534c60` (PR #12). Awaiting verification | [#10](https://github.com/DidulaKaru/Amboss_web/issues/10) |
 | BUG-07 | `/shop`, `/quote` and `/projects` return HTTP 404 on the live site | Lighthouse | Major | P2 | **Closed**: fixed in `97a4c75` (PR #13); verified live | [#11](https://github.com/DidulaKaru/Amboss_web/issues/11) |
-| OBS-01 | No fast-fail when Postgres is down; requests hang up to 15 s | Newman timings, JMeter run B | Major | P2 | New | – |
+| OBS-01 | No fast-fail when Postgres is down; requests hang up to 15 s | Newman timings, JMeter run B | Major | P2 | **Open, deferred**: fix planned for later | – |
 
 SonarCloud findings are covered in [09-metrics-sonarqube.md](09-metrics-sonarqube.md).
 
@@ -56,6 +56,8 @@ SonarCloud findings are covered in [09-metrics-sonarqube.md](09-metrics-sonarqub
 - **Expected:** `"database": "fallback"` or `"unavailable"`.
 - **Actual:** `"database": "available"`.
 - **Root cause:** `postgres()` connects lazily, so `getDb()` returns a client object even when no connection is possible. `health.ts` only checks `db ? 'available' : 'fallback'` and never runs a query such as `SELECT 1`.
+- **Planned fix (not done yet):** run `SELECT 1` with a short timeout and report `fallback` or `unavailable` when it fails. A health check that queries the database can keep a sleeping Neon database awake if a monitor calls it often, so the check may need caching.
+- **Impact today:** low. The API serves its seed data when the database is down, so customers are not blocked, but monitoring cannot see the outage.
 
 ### BUG-03: Open-surface STL priced as a valid part
 - **Steps:** upload an STL with a single 20 × 20 mm square at z = 20 (2 triangles).

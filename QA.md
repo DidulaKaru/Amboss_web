@@ -41,8 +41,8 @@ All written deliverables live in [docs/sqa/](docs/sqa/README.md). Screenshots go
   - Add the `SONAR_TOKEN` GitHub secret.
   - Put the org and project key into `sonar-project.properties`.
 - [x] **B4 [YOU]** Commit and push to `dev` (after Step 0). Screenshot the green Actions run: job graph, step logs, artifacts.
-- [x] **B5a [C]** SonarCloud table filled in and 3 issues described in [09](docs/sqa/09-metrics-sonarqube.md); all 47 issues fixed (0 open in the scan of `8536e9b`)
-- [ ] **B5b [YOU]** After the next merge to `main`, check that the quality gate passes and screenshot it as `docs/sqa/evidence/SonarQube/After.png`
+- [x] **B5a [C]** SonarCloud table filled in and 3 issues described in [09](docs/sqa/09-metrics-sonarqube.md); all 47 issues fixed (0 open since `8536e9b`); quality gate passes in the scan of `388c6a8` (85.0% coverage on new code)
+- [x] **B5b [YOU]** Screenshot of the new scan saved as `docs/sqa/evidence/SonarQube/After.png`
 
 ## Phase C: Performance & security
 - [x] **C1 [C]** JMeter plan `docs/sqa/jmeter/amboss.jmx`. Ran 3 runs (capacity, stress at 2 000 req/s, rate-limited); results are in doc 07.
@@ -51,12 +51,17 @@ All written deliverables live in [docs/sqa/](docs/sqa/README.md). Screenshots go
 - [x] **C4 [C]** Usability: Lighthouse run on amboss.lk; scores in [07 §7.3](docs/sqa/07-perf-security-usability.md)
 
 ## Phase D: Defect tracking
-- [x] **D1 [C]** Issue template (`.github/ISSUE_TEMPLATE/bug_report.md`) + 5 bug reports drafted in [08-defects.md](docs/sqa/08-defects.md)
+- [x] **D1 [C]** Issue template (`.github/ISSUE_TEMPLATE/bug_report.md`) + bug reports in [08-defects.md](docs/sqa/08-defects.md)
 - [x] **D2 [C]** RCA (5 Whys + fishbone) for SEC-01 and GEO-02
 - [x] **D3a [C]** Labels created; BUG-01 to 04, BUG-06 and BUG-07 filed as issues #6 to #11
 - [ ] **D3b [YOU]** Create the Projects board (New/Assigned/Fixed/Verified/Closed). Claude's GitHub token has no `project` scope
 - [x] **D4a [C]** BUG-01: minimum print price removed (shop-owner decision); no customer price changes
-- [ ] **D4b [YOU]** Verify and close #6 and #10 (merged in PR #12) and screenshot the timelines. #8, #9 and #11 are closed
+- [ ] **D4b [YOU]** Verify and close #6 (minimum price) and #10 (stock saving) on the live site, and screenshot the timelines. #8, #9 and #11 are already closed
+
+## Later (planned, not part of the assignment so far)
+- [ ] **L1** Fix BUG-02 (`/health` must query the database), [#7](https://github.com/DidulaKaru/Amboss_web/issues/7), together with OBS-01 (no fast-fail when Postgres is down)
+- [ ] **L2** Heading order on `/` and `/shop`, the `Content-Signal` line that Cloudflare adds to `robots.txt`, and the 401 console error from the admin check (see [07 §7.3](docs/sqa/07-perf-security-usability.md))
+- [ ] **L3** Improvements 1 and 2 in [09 §9.4](docs/sqa/09-metrics-sonarqube.md) (parser complexity, duplicated client and server rules)
 
 ## Phase E: Documentation
 - [x] **E1–E7 [C]** Docs 01–10 written in `docs/sqa/`
